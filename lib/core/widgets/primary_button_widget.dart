@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/styling/app_colors.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 
 class PrimaryButtonWidget extends StatelessWidget {
   final void Function()? onPress;
@@ -11,6 +11,7 @@ class PrimaryButtonWidget extends StatelessWidget {
   final double? width;
   final double? height;
   final double? fontSize;
+
   const PrimaryButtonWidget({
     super.key,
     this.onPress,
@@ -27,8 +28,8 @@ class PrimaryButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: buttonColor ?? AppColors.primaryColor,
-        fixedSize: Size(width ?? 331.sp, height ?? 57.sp),
+        backgroundColor: buttonColor ?? context.colors.primary,
+        fixedSize: Size(width ?? 331.w, height ?? 57.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius ?? 8.r),
         ),
@@ -36,10 +37,9 @@ class PrimaryButtonWidget extends StatelessWidget {
       onPressed: onPress,
       child: Text(
         buttonText ?? "",
-        style: TextStyle(
-          color: textColor ?? Colors.white,
+        style: context.text.titleMedium?.copyWith(
+          color: textColor ?? context.colors.onPrimary,
           fontSize: fontSize ?? 16.sp,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );

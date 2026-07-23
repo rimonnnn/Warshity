@@ -1,22 +1,17 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/routing/router_generator_config.dart';
+import 'package:warshity/features/splash/splash_screen.dart';
 
-void main() async {
+import 'core/di/injection.dart';
+import 'core/theme/app_theme.dart';
+import 'core/theme/theme_cubit.dart';
+import 'core/theme/theme_state.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
-
-  runApp(
-    EasyLocalization(
-      supportedLocales: [Locale('en'), Locale('ar')],
-      path:
-          'assets/translations', // <-- change the path of the translation files
-      fallbackLocale: Locale('en'),
-      startLocale: const Locale("en"),
-      child: MyApp(),
-    ),
-  );
+  await setupDependencies();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,21 +19,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(430, 932),
-      minTextAdapt: true,
-      splitScreenMode: false,
-      builder: (context, child) {
-        return MaterialApp.router(
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          routerConfig: RouterGeneratorConfig.goRouter,
-          title: 'Warshity',
-          debugShowCheckedModeBanner: false,
-        );
-      },
-      child: Scaffold(),
+    return BlocProvider(
+      create: (_) => ThemeCubit(getIt()),
+      child: ScreenUtilInit(
+        designSize: const Size(390, 884),
+        minTextAdapt: true,
+        builder: (context, child) {
+          return BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, state) {
+              return MaterialApp(
+                title: 'warshity',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: state.themeMode,
+                home: const SplashScreen(),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
