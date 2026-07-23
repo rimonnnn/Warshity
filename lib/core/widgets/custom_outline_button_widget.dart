@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/styling/app_colors.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 
 class CustomOutlineButtonWidget extends StatelessWidget {
   final void Function()? onPress;
@@ -28,11 +28,11 @@ class CustomOutlineButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color effectiveColor = borderColor ?? AppColors.primaryColor;
+    final Color effectiveColor = borderColor ?? context.colors.primary;
 
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-        fixedSize: Size(width ?? 331.sp, height ?? 57.sp),
+        fixedSize: Size(width ?? 331.w, height ?? 57.h),
         side: BorderSide(color: effectiveColor, width: borderWidth ?? 1.5.w),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius ?? 8.r),
@@ -41,10 +41,9 @@ class CustomOutlineButtonWidget extends StatelessWidget {
       onPressed: onPress,
       child: Text(
         buttonText ?? "",
-        style: TextStyle(
+        style: context.text.titleMedium?.copyWith(
           color: textColor ?? effectiveColor,
           fontSize: fontSize ?? 16.sp,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );
