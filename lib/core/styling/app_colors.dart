@@ -5,6 +5,7 @@ class AppColors {
 
   // Brand
   static const primary = Color(0xFF6F4627);
+  static const primaryContainer = Color(0xFF8B5E3C);
   static const secondary = Color(0xFF50652A);
   static const tertiary = Color(0xFF7E3F06);
 
