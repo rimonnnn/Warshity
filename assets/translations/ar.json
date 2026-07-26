@@ -1,11 +1,14 @@
 {
-    "explore" : "استكشف",
-    "travel": "سفر",
-    "technology": "تكنلوجيا",
-    "business": "أعمال",
-    "entertainment": "ترفيه",
-    "cancel": "الغاء",
-    "searchResults": "نتائج البحث",
-    "no_results": "لا توجد نتائج",
-    "search": "بحث"
+    "wershity": "ورشتي",
+    "sales management and invoice speed": "ادارة المبيعات و سرعة الفواتير",
+    "close monitoring of inventory and the store": "متابعة دقيقة للمخزون الورشة",
+    "all your adta is safe and secure": "كل بياناتك محفوظة و امنة",
+    "issue your cash and credit invoices in just a few seconds easily and without any hassle" : "اصدر فواتيرك للكاش والآجل في ثوانٍ معدودة بسهولة وبدون تعقيد",
+    "instant alerts for low-stock products and wood material management" : "تنبيهات فورية للمنتجات منخفضة المخزون وإدارة خامات الأخشاب",
+    "keep working without the internet, and your data will sync automatically later": "واصل عملك دون إنترنت، وستتم مزامنة بياناتك تلقائيًا لاحقًا",
+    "next": "التالي",
+    "get started" : "البدأ الأن",
+    "skip": "تخطي"
+
+    
 }
