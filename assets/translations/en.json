@@ -1,5 +1,36 @@
 {
 
+  "create_account": "Create Account",
+  "start" : "Start managing your workshop and store in minutes",
+  "labelname_of_shop": "Name of Shop / Workshop",
+  "hintname_of_shop": "Example: Golden Crafts Workshop",
+  "accountname": "Account Owner Name",
+  "thirdname": "Third Name",
+  "email": "Email Address",
+  "email1" : "Example : 6mKQY@example.com",
+  "activetype" : "Type of Business Activity",
+  "select_activity": "Select Activity Type",
+  "activities": {
+    "carpentry": "Carpentry",
+    "plumbing": "Plumbing",
+    "electricity": "Electricity",
+    "painting": "Painting",
+    "blacksmith": "Blacksmithing",
+    "ac": "Air Conditioning"
+  },
+  "search": "Search...",
+  "password": "Password",
+  "hash":"••••••••",
+  "confirm_password": "Confirm Password",
+  "confirm_checkbox": "I agree to the Terms and Conditions and Privacy Policy",
+  "create_account1" : "Create Account",
+  "arrowpath": "assets/images/right-arrow.png",
+  "continue" : "Or continue with",
+  "google" : "Continue with Google",
+  "facebook" : "Continue with Facebook",
+  "have_account" : "Already have an account? ",
+  "login" : "Login",
+  "account_created" : "Account Created Successfully",
   "wershity": "Wershity",
   "sales management and invoice speed": "Sales management and invoice speed",
   "close monitoring of inventory and the store" : "Close monitoring of inventory and the store",
@@ -10,4 +41,7 @@
   "next" :"Next",
   "get started": "Get started",
   "skip": "Skip"
+
+
+
 }

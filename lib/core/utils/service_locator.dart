@@ -39,3 +39,23 @@
 //     () => FavoriteCubit(sl<FavoriteLocalDataSource>()),
 //   );
 // }
+import 'package:get_it/get_it.dart';
+import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
+import 'package:warshity/features/auth/register/data/repos/register_repo_impl.dart';
+import 'package:warshity/features/auth/register/presentation/cubit/auth_cubit.dart';
+
+final getIt = GetIt.instance;
+
+Future<void> setupServiceLocator() async {
+  // Firebase Repository
+  getIt.registerLazySingleton<RegisterRepo>(
+    () => RegisterRepoImpl(),
+  );
+
+  // Auth Cubit
+  getIt.registerFactory<AuthCubit>(
+    () => AuthCubit(
+      getIt<RegisterRepo>(),
+    ),
+  );
+}
