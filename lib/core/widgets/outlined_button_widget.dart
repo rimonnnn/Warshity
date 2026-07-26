@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/contstants/app_radius.dart';
+import 'package:warshity/core/constants/app_radius.dart';
 
 class OutlinedButtonWidget extends StatelessWidget {
   const OutlinedButtonWidget({super.key, required this.buttonText, this.onPressed, this.width, this.height, this.borderRadius, this.iconPath});

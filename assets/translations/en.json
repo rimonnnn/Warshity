@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "create_account": "Create Account",
   "start" : "Start managing your workshop and store in minutes",
   "labelname_of_shop": "Name of Shop / Workshop",
@@ -30,9 +29,9 @@
   "facebook" : "Continue with Facebook",
   "have_account" : "Already have an account? ",
   "login" : "Login",
-  "account_created" : "Account Created Successfully"
-=======
+  "account_created" : "Account Created Successfully",
+
 
   "wershity": "Wershity"
->>>>>>> 1f00a05b33450dc2cd286f83034be770859fe9c8
+
 }
