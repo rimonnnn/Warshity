@@ -1,12 +1,16 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warshity/core/constants/keys.dart';
-import 'package:warshity/core/services/shared_pref_service.dart';
 
 class OnboardingLocalDataSource {
+  OnboardingLocalDataSource(this._prefs);
+
+  final SharedPreferences _prefs;
+
   Future<void> completeOnboarding() async {
-    await SharedPrefService.setBool(PrefKeys.onboardingCompleted, true);
+    await _prefs.setBool(PrefKeys.onboardingCompleted, true);
   }
 
   bool isCompleted() {
-    return SharedPrefService.getBool(PrefKeys.onboardingCompleted);
+    return _prefs.getBool(PrefKeys.onboardingCompleted) ?? false;
   }
 }

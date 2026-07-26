@@ -16,4 +16,7 @@ class AppAssets {
   static const String facebook = "assets/images/SVG.png";
   static const String footer = "assets/images/Icon (18).png";
   static const String email = "assets/images/icons8-email-50.png";
+  static const String onboarding_1 = "assets/images/onboarding_1_1.png";
+  static const String onboarding_2 = "assets/images/onboarding_2_2.png";
+  static const String onboarding_3 = "assets/images/onboarding_3_3.png";
 }
