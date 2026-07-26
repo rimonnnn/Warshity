@@ -1,4 +1,5 @@
 class AppAssets {
+<<<<<<< HEAD
   static const String registerLogo = "assets/images/Icon (10).png";
   static const String translations = 'assets/translations';
   static const String shopname = "assets/images/Icon (11).png";
@@ -13,4 +14,8 @@ class AppAssets {
   static const String facebook = "assets/images/SVG.png";
   static const String footer = "assets/images/Icon (18).png";
   static const String email = "assets/images/icons8-email-50.png";
+=======
+  static const String logo = "assets/images/splash_logo.jpg";
+  static const String translations = "assets/translations";
+>>>>>>> 1f00a05b33450dc2cd286f83034be770859fe9c8
 }

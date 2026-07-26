@@ -1,23 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-import 'package:warshity/features/auth/register/presentation/cubit/auth_cubit.dart';
-import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
+import 'package:warshity/features/auth/login/presentation/screens/login_screen.dart';
+import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
 
 class RouterGeneratorConfig {
   static GoRouter goRouter = GoRouter(
-    initialLocation: AppRoutes.signUpScreen,
+    initialLocation: AppRoutes.splashScreen,
     errorBuilder: (context, state) => const NotFoundScreen(),
+
     routes: [
       GoRoute(
-        path: AppRoutes.signUpScreen,
-        name: AppRoutes.signUpScreen,
-        builder: (context, state) => BlocProvider(
-          create: (_) => getIt<AuthCubit>(),
-          child: const RegisterScreen(),
-        ),
+        path: AppRoutes.splashScreen,
+        name: AppRoutes.splashScreen,
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.onboarding,
+        name: AppRoutes.onboarding,
+        builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.loginScreen,
+        name: AppRoutes.loginScreen,
+        builder: (context, state) => const LoginScreen(),
       ),
     ],
   );
