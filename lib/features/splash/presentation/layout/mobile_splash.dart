@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/constants/app_duration.dart';
+import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+import 'package:warshity/features/onboarding/data/onboarding_local_data_source.dart';
 import 'package:warshity/features/splash/widgets/circel_progress_indecator.dart';
 import 'package:warshity/features/splash/widgets/logo_widget.dart';
 import 'package:warshity/features/splash/widgets/text_widget.dart';
@@ -26,7 +28,7 @@ class _SplashScreenState extends State<MobileSplash>
   void initState() {
     super.initState();
     _initAnimations();
-    _navigateToLogin();
+    _navigateNext();
   }
 
   void _initAnimations() {
@@ -46,12 +48,21 @@ class _SplashScreenState extends State<MobileSplash>
     _animationController.forward();
   }
 
-  void _navigateToLogin() {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        context.pushReplacement(AppRoutes.onboarding);
-      }
-    });
+  void _navigateNext() async {
+    try {
+      await Future.delayed(const Duration(seconds: 3));
+      if (!mounted) return;
+
+      final hasSeenOnboarding = getIt<OnboardingLocalDataSource>()
+          .isCompleted();
+
+      context.pushReplacementNamed(
+        hasSeenOnboarding ? AppRoutes.homeScreen : AppRoutes.onboarding,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Splash navigation error: $e');
+      debugPrint('$stackTrace');
+    }
   }
 
   @override

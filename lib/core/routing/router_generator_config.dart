@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/auth/login/presentation/screens/login_screen.dart';
+import 'package:warshity/features/home/presentation/screens/home_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
 
@@ -25,6 +26,11 @@ class RouterGeneratorConfig {
         path: AppRoutes.loginScreen,
         name: AppRoutes.loginScreen,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.homeScreen,
+        name: AppRoutes.homeScreen,
+        builder: (context, state) => const HomeScreen(),
       ),
     ],
   );

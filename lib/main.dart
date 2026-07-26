@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:warshity/core/services/shared_pref_service.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 
 import 'core/di/injection.dart';
@@ -13,6 +14,8 @@ import 'core/theme/theme_state.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await SharedPrefService.init();
+
   await setupDependencies();
   runApp(
     EasyLocalization(
