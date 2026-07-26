@@ -57,7 +57,7 @@ class _SplashScreenState extends State<MobileSplash>
           .isCompleted();
 
       context.pushReplacementNamed(
-        hasSeenOnboarding ? AppRoutes.loginScreen : AppRoutes.onboarding,
+        hasSeenOnboarding ? AppRoutes.registerScreen : AppRoutes.onboarding,
       );
     } catch (e, stackTrace) {
       debugPrint('Splash navigation error: $e');

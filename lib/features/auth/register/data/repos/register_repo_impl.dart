@@ -2,13 +2,15 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import '../models/user_model.dart';
-import 'register_repo.dart';
+import 'package:warshity/features/auth/register/data/models/user_model.dart';
+import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 
 class RegisterRepoImpl implements RegisterRepo {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  RegisterRepoImpl(this._auth, this._firestore);
+
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
+
   @override
   Future<void> register({
     required UserModel user,
@@ -20,25 +22,20 @@ class RegisterRepoImpl implements RegisterRepo {
         password: password,
       );
 
-try {
-  ("Before sendEmailVerification");
+      log("User Created: ${credential.user?.email}");
 
-  await credential.user!.sendEmailVerification();
+      await credential.user!.sendEmailVerification();
 
-  ("After sendEmailVerification");
-} catch (e, s) {
-  ("Send verification failed: $e");
-  (s);
-}
+      log("Verification Email Sent");
 
-     
       final newUser = user.copyWith(uid: credential.user!.uid);
 
       await _firestore
           .collection('users')
           .doc(credential.user!.uid)
           .set(newUser.toMap());
-      ("4");
+
+      log("User Saved Successfully");
     } on FirebaseAuthException catch (e) {
       log("CODE: ${e.code}");
       log("MESSAGE: ${e.message}");
@@ -48,18 +45,28 @@ try {
 
   @override
   Future<void> sendEmailVerification() async {
-    await _auth.currentUser?.sendEmailVerification();
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        throw Exception('No current user found');
+      }
+      await user.sendEmailVerification();
+      log("Verification Email Sent");
+    } on FirebaseAuthException catch (e) {
+      log("CODE: ${e.code}");
+      log("MESSAGE: ${e.message}");
+      rethrow;
+    }
   }
 
   @override
   Future<void> resendEmailVerification() async {
-    await _auth.currentUser?.sendEmailVerification();
+    await sendEmailVerification();
   }
 
   @override
   Future<bool> isEmailVerified() async {
     await _auth.currentUser?.reload();
-
     return _auth.currentUser?.emailVerified ?? false;
   }
 }

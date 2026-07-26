@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/auth/login/presentation/screens/login_screen.dart';
+import 'package:warshity/features/auth/register/presentation/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
@@ -31,6 +35,17 @@ class RouterGeneratorConfig {
         path: AppRoutes.homeScreen,
         name: AppRoutes.homeScreen,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.registerScreen,
+        name: AppRoutes.registerScreen,
+        builder: (context, state) {
+          return BlocProvider(
+            create: (context) => AuthCubit(getIt()),
+
+            child: const RegisterScreen(),
+          );
+        },
       ),
     ],
   );

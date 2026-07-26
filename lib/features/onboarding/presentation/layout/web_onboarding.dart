@@ -26,7 +26,7 @@ class _WebOnboardingState extends State<WebOnboarding> {
 
   Future<void> _completeOnboardingAndNavigate() async {
     await getIt<OnboardingLocalDataSource>().completeOnboarding();
-    if (mounted) context.pushReplacementNamed(AppRoutes.loginScreen);
+    if (mounted) context.pushReplacementNamed(AppRoutes.registerScreen);
   }
 
   Future<void> _goToNextPage() async {
@@ -80,7 +80,7 @@ class _WebOnboardingState extends State<WebOnboarding> {
                       text: 'skip'.tr(),
                     ),
                   ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 SizedBox(
                   height: 400,
                   child: PageView.builder(
@@ -111,7 +111,7 @@ class _WebOnboardingState extends State<WebOnboarding> {
                   dotWidth: 8,
                   spacing: 6,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: PrimaryButtonWidget(

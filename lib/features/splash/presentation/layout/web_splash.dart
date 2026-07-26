@@ -48,17 +48,19 @@ class _WebSplashState extends State<WebSplash>
   }
 
   void _navigateNext() async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
+    try {
+      await Future.delayed(const Duration(seconds: 3));
+      if (!mounted) return;
 
-    final hasSeenOnboarding = getIt<OnboardingLocalDataSource>().isCompleted();
+      final hasSeenOnboarding = getIt<OnboardingLocalDataSource>()
+          .isCompleted();
 
-    if (hasSeenOnboarding) {
       context.pushReplacementNamed(
-        AppRoutes.loginScreen,
-      ); // أو loginScreen حسب auth state
-    } else {
-      context.pushReplacementNamed(AppRoutes.onboarding);
+        hasSeenOnboarding ? AppRoutes.registerScreen : AppRoutes.onboarding,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Splash navigation error: $e');
+      debugPrint('$stackTrace');
     }
   }
 

@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
@@ -112,7 +111,7 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                     child: Column(
                       crossAxisAlignment: .center,
                       children: [
-                        SizedBox(height: 32.h),
+                        SizedBox(height: 32),
                         Image.asset(
                           AppAssets.registerLogo,
                           width: 64,
@@ -258,40 +257,40 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                         PrimaryButtonWidget(
                           buttonText: "create_account1".tr(),
                           onPress: () {
-                              if (!_formKey.currentState!.validate()) {
-                                return;
-                              }
+                            if (!_formKey.currentState!.validate()) {
+                              return;
+                            }
 
-                              if (!ischecked) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "You must accept the terms and conditions",
-                                    ),
+                            if (!ischecked) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "You must accept the terms and conditions",
                                   ),
-                                );
-                                return;
-                              }
-
-                              final user = UserModel(
-                                uid: '',
-                                shopName: shopNameController.text.trim(),
-                                ownerName: accountNameController.text.trim(),
-                                email: emailController.text.trim(),
-                                activity: selectedActivity!,
+                                ),
                               );
+                              return;
+                            }
 
-                              context.read<AuthCubit>().register(
-                                user: user,
-                                password: passwordController.text.trim(),
-                              );
-                              shopNameController.clear();
-                              accountNameController.clear();
-                              emailController.clear();
-                              passwordController.clear();
-                              confirmPasswordController.clear();
-                              selectedActivity = null;
-                            },
+                            final user = UserModel(
+                              uid: '',
+                              shopName: shopNameController.text.trim(),
+                              ownerName: accountNameController.text.trim(),
+                              email: emailController.text.trim(),
+                              activity: selectedActivity!,
+                            );
+
+                            context.read<AuthCubit>().register(
+                              user: user,
+                              password: passwordController.text.trim(),
+                            );
+                            shopNameController.clear();
+                            accountNameController.clear();
+                            emailController.clear();
+                            passwordController.clear();
+                            confirmPasswordController.clear();
+                            selectedActivity = null;
+                          },
                           suffixicon: true,
                           iconPath: "arrowpath".tr(),
                           borderRadius: AppRadius.sm,
