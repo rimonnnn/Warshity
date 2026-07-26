@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "861319834330",
+    "project_id": "warshity-75dcf",
+    "storage_bucket": "warshity-75dcf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861319834330:android:4399d58d640a5e19d493e3",
+        "android_client_info": {
+          "package_name": "com.example.warshity"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0tgDQ5CkGg8xcufRMCXBorBoecLZOUM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

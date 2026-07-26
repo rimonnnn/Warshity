@@ -11,7 +11,10 @@ class PrimaryButtonWidget extends StatelessWidget {
   final double? width;
   final double? height;
   final double? fontSize;
-
+  final String? iconPath;
+  final bool? prefixicon;
+  final bool? suffixicon;
+final double? buttonspacing; 
   const PrimaryButtonWidget({
     super.key,
     this.onPress,
@@ -22,6 +25,7 @@ class PrimaryButtonWidget extends StatelessWidget {
     this.height,
     this.textColor,
     this.fontSize,
+    this.iconPath, this.prefixicon, this.suffixicon, this.buttonspacing,
   });
 
   @override
@@ -35,12 +39,35 @@ class PrimaryButtonWidget extends StatelessWidget {
         ),
       ),
       onPressed: onPress,
-      child: Text(
-        buttonText ?? "",
-        style: context.text.titleMedium?.copyWith(
-          color: textColor ?? context.colors.onPrimary,
-          fontSize: fontSize ?? 16.sp,
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (prefixicon == true && iconPath != null)
+            Image.asset(
+              iconPath!,
+              width: 24.w,
+              height: 24.h,
+              color: textColor ?? context.colors.onPrimary,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(width: buttonspacing ?? 12.w),
+          Text(
+            buttonText ?? "",
+            style: context.text.titleMedium?.copyWith(
+              color: textColor ?? context.colors.onPrimary,
+              fontSize: fontSize ?? 16.sp,
+            ),
+          ),
+           SizedBox(width: buttonspacing ?? 12.w),
+          if (suffixicon == true && iconPath != null)
+            Image.asset(
+              iconPath!,
+              width: 24.w,
+              height: 24.h,
+              color: textColor ?? context.colors.onPrimary,
+              fit: BoxFit.contain,
+            ),
+        ],
       ),
     );
   }

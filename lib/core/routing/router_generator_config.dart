@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
+import 'package:warshity/features/auth/register/presentation/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 
 class RouterGeneratorConfig {
   static GoRouter goRouter = GoRouter(
-    initialLocation: AppRoutes.splashScreen,
+    initialLocation: AppRoutes.signUpScreen,
     errorBuilder: (context, state) => const NotFoundScreen(),
-
     routes: [
-      // GoRoute(
-      //   path: AppRoutes.splashScreen,
-      //   name: AppRoutes.splashScreen,
-      //   builder: (context, state) => const SplashScreen(),
-      // ),
+      GoRoute(
+        path: AppRoutes.signUpScreen,
+        name: AppRoutes.signUpScreen,
+        builder: (context, state) => BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const RegisterScreen(),
+        ),
+      ),
     ],
   );
 }
