@@ -31,7 +31,8 @@
   "have_account" : "Already have an account? ",
   "login" : "Login",
   "account_created" : "Account Created Successfully",
-  "wershity": "Wershity",
+
+
   "sales management and invoice speed": "Sales management and invoice speed",
   "close monitoring of inventory and the store" : "Close monitoring of inventory and the store",
   "all your adta is safe and secure": "All your adta is safe and secure",
@@ -40,8 +41,13 @@
   "keep working without the internet, and your data will sync automatically later": "Keep working without the internet, and your data will sync automatically later",
   "next" :"Next",
   "get started": "Get started",
-  "skip": "Skip"
+  "skip": "Skip",
 
 
+
+
+
+
+  "wershity": "Wershity"
 
 }

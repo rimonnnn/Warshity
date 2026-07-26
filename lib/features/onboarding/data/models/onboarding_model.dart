@@ -14,7 +14,7 @@ class OnboardingModel {
 
 final List<OnboardingModel> onboardingItems = [
   OnboardingModel(
-    image: AppAssets.onboarding_1,
+    image: AppAssets.onboarding_1_1,
     title: "sales management and invoice speed",
     descreption:
         "issue your cash and credit invoices in just a few seconds easily and without any hassle",

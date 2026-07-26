@@ -1,4 +1,5 @@
 {
+
     "wershity": "ورشتي",
     "sales management and invoice speed": "ادارة المبيعات و سرعة الفواتير",
     "close monitoring of inventory and the store": "متابعة دقيقة للمخزون الورشة",
@@ -8,7 +9,41 @@
     "keep working without the internet, and your data will sync automatically later": "واصل عملك دون إنترنت، وستتم مزامنة بياناتك تلقائيًا لاحقًا",
     "next": "التالي",
     "get started" : "البدأ الأن",
-    "skip": "تخطي"
+    "skip": "تخطي",
 
     
+
+
+  "create_account": "إنشاء حساب",
+  "start": "ابدأ في إدارة ورشتك ومتجرك خلال دقائق",
+  "labelname_of_shop": "اسم الورشة / المتجر",
+  "hintname_of_shop": "مثال: ورشة الحرف الذهبية",
+  "accountname": "اسم صاحب الحساب",
+  "thirdname": "الاسم الثالث",
+  "email": "البريد الإلكتروني",
+  "email1": "مثال: example@gmail.com",
+  "activetype": "نوع النشاط",
+  "select_activity": "اختر نوع النشاط",
+  "activities": {
+    "carpentry": "النجارة",
+    "plumbing": "السباكة",
+    "electricity": "الكهرباء",
+    "painting": "الدهانات",
+    "blacksmith": "الحدادة",
+    "ac": "التكييف"
+  },
+  "search": "بحث...",
+  "password": "كلمة المرور",
+  "hash": "••••••••",
+  "confirm_password": "تأكيد كلمة المرور",
+  "confirm_checkbox": "أوافق على الشروط والأحكام وسياسة الخصوصية",
+  "create_account1": "إنشاء حساب",
+  "arrowpath": "assets/images/right-arrow.png",
+  "continue": "أو المتابعة باستخدام",
+  "google": "المتابعة باستخدام Google",
+  "facebook": "المتابعة باستخدام Facebook",
+  "have_account": "لديك حساب بالفعل؟ ",
+  "login": "تسجيل الدخول",
+  "account_created": "تم إنشاء الحساب بنجاح"
+
 }
