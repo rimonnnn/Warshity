@@ -1,11 +1,34 @@
 {
-    "explore" : "استكشف",
-    "travel": "سفر",
-    "technology": "تكنلوجيا",
-    "business": "أعمال",
-    "entertainment": "ترفيه",
-    "cancel": "الغاء",
-    "searchResults": "نتائج البحث",
-    "no_results": "لا توجد نتائج",
-    "search": "بحث"
+  "create_account": "إنشاء حساب جديد",
+  "start" : "ابدأ في إدارة ورشتك ومحلك في دقائق",
+  "labelname_of_shop": "اسم المحل / الورشة",
+  "hintname_of_shop": "مثال: ورشة الحرف الذهبية",
+  "accountname": "اسم صاحب الحساب",
+  "thirdname": "الاسم الثلاثي",
+  "email": "البريد الالكتروني",
+  "email1" : "مثال : 6mKQY@example.com",
+  "activetype" : "نوع النشاط التجاري",
+  "select_activity": "اختر نوع النشاط"
+  ,
+  "activities": {
+  "carpentry": "نجارة",
+  "plumbing": "سباكة",
+  "electricity": "كهرباء",
+  "painting": "دهانات",
+  "blacksmith": "حدادة",
+  "ac": "تكييف"
+},
+    "search": "ابحث...",
+    "password": "كلمة المرور",
+    "hash":"••••••••",
+    "confirm_password": "تأكيد كلمة المرور",
+    "confirm_checkbox": "أوافق على الشروط والأحكام وسياسة الخصوصية",
+   "create_account1" : "إنشاء الحساب",
+   "arrowpath": "assets/images/Icon (17).png",
+   "continue" : "أو المتابعة باستخدام",
+   "google" : "متابعة باستخدام جوجل",
+   "facebook" : "متابعة باستخدام فيسبوك",
+   "have_account" : "لديك حساب بالفعل؟ ",
+   "login" : "تسجيل الدخول",
+   "account_created" : "تم انشاء الحساب بنجاح"
 }
