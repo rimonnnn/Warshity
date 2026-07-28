@@ -26,7 +26,7 @@ class _WebOnboardingState extends State<WebOnboarding> {
 
   Future<void> _completeOnboardingAndNavigate() async {
     await getIt<OnboardingLocalDataSource>().completeOnboarding();
-    if (mounted) context.pushReplacementNamed(AppRoutes.registerScreen);
+    if (mounted) context.pushReplacementNamed(AppRoutes.loginScreen);
   }
 
   Future<void> _goToNextPage() async {

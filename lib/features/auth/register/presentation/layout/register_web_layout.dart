@@ -14,9 +14,9 @@ import 'package:warshity/core/widgets/outlined_button_widget.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/data/models/user_model.dart';
-import 'package:warshity/features/auth/register/presentation/cubit/auth_cubit.dart';
-import 'package:warshity/features/auth/register/presentation/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/checkbox_widget.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/custom_drobdown.dart';
 
@@ -131,7 +131,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               label: "labelname_of_shop".tr(),
                               hint: "hintname_of_shop".tr(),
                               width: 270,
-                              height: 48,
                               borderRadius: AppRadius.sm,
                               keyboardType: TextInputType.name,
                               controller: shopNameController,
@@ -145,7 +144,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               width: 270,
                               controller: accountNameController,
                               validator: AppValidators.accountName,
-                              height: 48,
                               borderRadius: AppRadius.sm,
                               keyboardType: TextInputType.emailAddress,
                               prefixIcon: AppAssets.person,
@@ -159,7 +157,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               label: "email".tr(),
                               hint: "email1".tr(),
                               width: 270,
-                              height: 48,
                               controller: emailController,
                               validator: AppValidators.email,
                               borderRadius: AppRadius.sm,
@@ -196,7 +193,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               width: 270,
                               controller: passwordController,
                               validator: AppValidators.password,
-                              height: 48,
                               borderRadius: AppRadius.sm,
                               keyboardType: TextInputType.visiblePassword,
                               prefixIcon: AppAssets.shopname,
@@ -222,7 +218,7 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               width: 270,
                               controller: confirmPasswordController,
                               validator: AppValidators.password,
-                              height: 48,
+
                               borderRadius: AppRadius.sm,
                               keyboardType: TextInputType.visiblePassword,
                               obscureText: isvisible1,
