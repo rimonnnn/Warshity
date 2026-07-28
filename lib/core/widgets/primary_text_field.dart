@@ -39,6 +39,8 @@ class CustomTextField extends StatelessWidget {
   final double? width;
   final double? height;
   final double? borderRadius;
+  final double? borderRadius;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -49,11 +51,13 @@ class CustomTextField extends StatelessWidget {
           style: Theme.of(
             context,
           ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: context.text.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         SizedBox(
+          // مفيش height ثابت هنا — الحقل بياخد ارتفاعه الطبيعي
+          // عشان لو ظهرت رسالة خطأ، تتحط تحت من غير overflow
           width: width ?? 330.w,
-          height: height ?? 60.h,
           child: TextFormField(
             controller: controller,
             keyboardType: keyboardType,
@@ -62,6 +66,9 @@ class CustomTextField extends StatelessWidget {
             onChanged: onChanged,
             readOnly: readOnly,
             onTap: onTap,
+            style: context.text.bodyLarge?.copyWith(
+              color: context.colors.onSurface,
+            ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: context.text.bodySmall,
@@ -84,7 +91,29 @@ class CustomTextField extends StatelessWidget {
                 ),
                 borderSide: BorderSide(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
+              hintStyle: context.text.bodyLarge?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+              prefixIcon: prefixIcon != null
+                  ? Image.asset(
+                      prefixIcon!,
+                      width: 24.w,
+                      height: 24.h,
+                      color: context.colors.onSurfaceVariant,
+                    )
+                  : Icon(Icons.email, color: context.colors.onSurfaceVariant),
+              suffixIcon: suffixIcon,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 20.w,
+                vertical: 18.h,
+              ),
+              filled: true,
+              fillColor: context.colors.surface,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(
+                  borderRadius ?? AppRadius.sm,
                 ),
+                borderSide: BorderSide(color: context.colors.onSurfaceVariant),
               ),
 
               focusedBorder: OutlineInputBorder(
@@ -97,6 +126,11 @@ class CustomTextField extends StatelessWidget {
                 ),
               ),
 
+                borderSide: BorderSide(
+                  color: context.colors.primary,
+                  width: 1.5.w,
+                ),
+              ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
@@ -104,11 +138,20 @@ class CustomTextField extends StatelessWidget {
                 borderSide: const BorderSide(color: Colors.red),
               ),
 
+                borderSide: BorderSide(color: context.colors.error),
+              ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
                 ),
                 borderSide: const BorderSide(color: Colors.red),
+                borderSide: BorderSide(
+                  color: context.colors.error,
+                  width: 1.5.w,
+                ),
+              ),
+              errorStyle: context.text.bodySmall?.copyWith(
+                color: context.colors.error,
               ),
             ),
           ),

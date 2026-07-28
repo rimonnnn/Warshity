@@ -9,6 +9,8 @@ import 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   final RegisterRepo registerRepo;
     final AuthRepo authRepo ;
+  final AuthRepo authRepo;
+
   AuthCubit(this.registerRepo, this.authRepo) : super(AuthInitial());
 
   Future<void> register({
@@ -25,6 +27,11 @@ class AuthCubit extends Cubit<AuthState> {
           "Account_created".tr(),
         ),
       );
+    try {
+      await registerRepo.register(user: user, password: password);
+      emit(RegisterSuccess(
+        "Account created successfully. Please verify your email.",
+      ));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -40,6 +47,12 @@ class AuthCubit extends Cubit<AuthState> {
         emit(RegisterSuccess("verify".tr()));
       } else {
         emit(AuthError("notverified".tr()));
+    try {
+      final verified = await registerRepo.isEmailVerified();
+      if (verified) {
+        emit(RegisterSuccess("Email verified successfully"));
+      } else {
+        emit(AuthError("Email is not verified yet"));
       }
     } catch (e) {
       emit(AuthError(e.toString()));
@@ -51,6 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
       await registerRepo.resendEmailVerification();
 
       emit(EmailVerificationSent("verify_email".tr()));
+      emit(EmailVerificationSent("Verification email sent successfully"));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -91,4 +105,14 @@ Future<void> signInWithFacebook() async {
     emit(AuthError(e.toString()));
   }
 }
+}
+  Future<void> sendResetLink(String email) async {
+    emit(AuthLoading());
+    try {
+      await authRepo.sendPasswordResetEmail(email);
+      emit(ForgotPasswordSuccess("Reset link sent to your email"));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
 }

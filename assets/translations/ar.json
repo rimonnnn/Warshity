@@ -10,8 +10,10 @@
     "next": "التالي",
     "get started" : "البدأ الأن",
     "skip": "تخطي",
+    "open the mail app": "فتح تطبيق البريد",
+    "didn't the message reach you?": "ماوصلتلكش الرسالة؟",
 
-    
+    "back to login" :"الرجوع لتسجيل الدخول",
 
 
   "create_account": "إنشاء حساب",
@@ -66,4 +68,17 @@
   "validator_confirm_password_required": "يرجى تأكيد كلمة المرور",
   "validator_password_not_match": "كلمتا المرور غير متطابقتين",
   "validator_terms_required": "يجب الموافقة على الشروط والأحكام"
+  "forgot your password?" : "نسيت كلمة المرور؟",
+  "don't worry, just enter the email you signed up with and we'll send you a link to reset your password": "متقلقش, اكتب البريد الألكتروني اللي سجلت بيه وهنبعتلك لينك تعمل اعادة تعيين لكلمة المرور من خلاله",
+  "send the link": "ارسال الرابط",
+  "remember your password?": "تذكرت كلمة المرور؟",
+  "the link has been sent": "تم ارسال الرابط",
+  "we sent you a link to reset your password on the email:" : "بعتنالك لينك لاعادة تعيين كلمة المرور علي البريد الألكتروني:",
+  "if you can't find the message, check in Spam or Junk" : "لو مش لاقي الرسالة بص في Spam أو Junk",
+  "resend" : "اعادة الأرسال",
+    "reset_link_sent_message": "تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني",
+  "generic_error_message": "حدث خطأ ما، يرجى المحاولة مرة أخرى",
+  "resend_in": "أعد الإرسال خلال",
+  "no_mail_app_found": "لا يوجد تطبيق بريد متاح على هذا الجهاز" 
+
 }
