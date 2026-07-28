@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/services/shared_pref_service.dart';
 import 'package:warshity/core/styling/app_assets.dart';
-
+import 'package:flutter/foundation.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'core/di/injection.dart';
 import 'core/routing/router_generator_config.dart';
 import 'core/theme/app_theme.dart';
@@ -15,16 +16,30 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  if (kIsWeb) {
+    await FacebookAuth.i.webAndDesktopInitialize(
+      appId: '3471398589689215',
+      cookie: true,
+      xfbml: true,
+      version: 'v23.0',
+    );
+  }
+
   await EasyLocalization.ensureInitialized();
   await SharedPrefService.init();
   await setupDependencies();
 
   runApp(
     EasyLocalization(
-      supportedLocales: const [Locale('ar'), Locale('ar')],
+      supportedLocales: const [Locale('en'), Locale('ar')],
       path: AppAssets.translations,
       fallbackLocale: const Locale('ar'),
+      startLocale: const Locale('ar'),
       child: const MyApp(),
     ),
   );

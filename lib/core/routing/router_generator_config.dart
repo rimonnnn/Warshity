@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/auth/login/presentation/screens/login_screen.dart';
-import 'package:warshity/features/auth/register/presentation/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
@@ -29,7 +29,11 @@ class RouterGeneratorConfig {
       GoRoute(
         path: AppRoutes.loginScreen,
         name: AppRoutes.loginScreen,
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) {
+          return BlocProvider(
+            create: (context) => getIt<AuthCubit>(),
+            child: const LoginScreen());
+        },
       ),
       GoRoute(
         path: AppRoutes.homeScreen,
@@ -41,8 +45,7 @@ class RouterGeneratorConfig {
         name: AppRoutes.registerScreen,
         builder: (context, state) {
           return BlocProvider(
-            create: (context) => AuthCubit(getIt()),
-
+            create: (context) => getIt<AuthCubit>(),
             child: const RegisterScreen(),
           );
         },

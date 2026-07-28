@@ -1,6 +1,5 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,16 +10,18 @@ import 'package:warshity/core/helper/app_validators.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
+import 'package:warshity/core/widgets/divider_widget.dart';
+import 'package:warshity/core/widgets/footer_widget.dart';
 import 'package:warshity/core/widgets/outlined_button_widget.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/auth/register/data/models/user_model.dart';
-import 'package:warshity/features/auth/register/presentation/cubit/auth_cubit.dart';
-import 'package:warshity/features/auth/register/presentation/cubit/auth_state.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/checkbox_widget.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/custom_drobdown.dart';
-import 'package:warshity/features/auth/register/presentation/widgets/custom_logo.dart';
+import 'package:warshity/core/widgets/custom_logo.dart';
 
 class RegisterMobileLayout extends StatefulWidget {
   const RegisterMobileLayout({super.key});
@@ -276,39 +277,18 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                             suffixicon: true,
                             iconPath: "arrowpath".tr(),
                             borderRadius: AppRadius.sm,
-                            buttonColor: Theme.of(context).colorScheme.primary,
-                            textColor: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: Theme.of(
-                              context,
-                            ).textTheme.titleLarge?.fontSize,
+                            buttonColor: context.colors.primary,
+                            textColor: context.colors.onPrimary,
+                            fontSize: context.text.titleLarge?.fontSize,
                             height: 56.h,
                             width: 310.w,
                           ),
                           HeightSpace(40.h),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Divider(
-                                  color: context.colors.onSurfaceVariant,
-                                  thickness: 1,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                child: Text(
+                          Dividerwidget(
+                            child: Text(
                                   "continue".tr(),
                                   style: context.text.bodyLarge,
                                 ),
-                              ),
-                              Expanded(
-                                child: Divider(
-                                  color: context.colors.onSurfaceVariant,
-                                  thickness: 1,
-                                ),
-                              ),
-                            ],
                           ),
                           HeightSpace(16.h),
                           OutlinedButtonWidget(
@@ -316,6 +296,9 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                             iconPath: AppAssets.google,
                             width: 310.w,
                             height: 50.h,
+                            onPressed: () {
+                              context.read<AuthCubit>().signInWithGoogle();
+                            },
                           ),
                           HeightSpace(16.h),
                           OutlinedButtonWidget(
@@ -323,54 +306,23 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                             iconPath: AppAssets.facebook,
                             width: 310.w,
                             height: 50.h,
+                            onPressed: () => context.read<AuthCubit>().signInWithFacebook(),
                           ),
                         ],
                       ),
                     ),
                   ),
                   HeightSpace(32.h),
-                  RichText(
-                    text: TextSpan(
-                      text: "have_account".tr(),
-                      style: context.text.bodyLarge,
-                      children: [
-                        TextSpan(
-                          text: "login".tr(),
-                          style: context.text.bodyLarge?.copyWith(
-                            color: context.colors.primary,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => context.pushReplacementNamed(
-                              AppRoutes.loginScreen,
-                            ),
-                        ),
-                      ],
-                    ),
-                  ),
+                 FooterWidget(text1: "have_account", text2: "login",onPress: () {
+                   context.pushNamed(AppRoutes.loginScreen);
+                 },),
                   HeightSpace(24.h),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          color: context.colors.onSurfaceVariant,
-                          thickness: 1,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Image.asset(
+                  Dividerwidget(
+                    child: Image.asset(
                           AppAssets.footer,
                           width: 24,
                           height: 24,
                         ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          color: context.colors.onSurfaceVariant,
-                          thickness: 1,
-                        ),
-                      ),
-                    ],
                   ),
                   HeightSpace(60.h),
                 ],

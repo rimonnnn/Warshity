@@ -44,6 +44,26 @@
   "facebook": "المتابعة باستخدام Facebook",
   "have_account": "لديك حساب بالفعل؟ ",
   "login": "تسجيل الدخول",
-  "account_created": "تم إنشاء الحساب بنجاح"
-
+  "account_created": "تم إنشاء الحساب بنجاح",
+  "welcome" : "أهلاً بك مجدداً",
+  "startlogin" : "قم بتسجيل الدخول لمتابعة أعمال ورشتك"
+  ,
+  "forget" : "نسيت كلمة المرور؟",
+  "Don't_have_account" : "لا يوجد لديك حساب؟",
+  "create_account2" : "انشاء حساب",
+  "remember_me" : "تذكرني على هذا الجهاز",
+  "Account_created" : "تم إنشاء الحساب بنجاح. يُرجى التحقق من بريدك الإلكتروني لتفعيل حسابك.",
+  "verify" : "تم التحقق من البريد الإلكتروني بنجاح.",
+  "notverified" : "البريد الإلكتروني لم يتم التحقق منه بعد",
+  "verify_email" : "تم ارسال بريد التحقق بنجاح",
+  "login_success" : "تم تسجيل الدخول بنجاح",
+  "wrong" : "حدث خطأ",
+  "validator_shop_name_required": "اسم الورشة مطلوب",
+  "validator_account_name_required": "اسم الحساب مطلوب",
+  "validator_email_required": "البريد الإلكتروني مطلوب",
+  "validator_password_required": "كلمة المرور مطلوبة",
+  "validator_password_length": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+  "validator_confirm_password_required": "يرجى تأكيد كلمة المرور",
+  "validator_password_not_match": "كلمتا المرور غير متطابقتين",
+  "validator_terms_required": "يجب الموافقة على الشروط والأحكام"
 }

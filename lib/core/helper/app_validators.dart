@@ -1,31 +1,34 @@
+import 'package:easy_localization/easy_localization.dart';
+
 class AppValidators {
   static String? shopName(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Shop name is required';
+      return 'validator_shop_name_required'.tr();
     }
     return null;
   }
 
   static String? accountName(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Account name is required';
+      return 'validator_account_name_required'.tr();
     }
     return null;
   }
 
   static String? email(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return 'validator_email_required'.tr();
     }
     return null;
   }
+
   static String? password(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return 'validator_password_required'.tr();
     }
 
     if (value.length < 8) {
-      return 'Password must be at least 8 characters';
+      return 'validator_password_length'.tr();
     }
 
     return null;
@@ -36,11 +39,11 @@ class AppValidators {
     String password,
   ) {
     if (value == null || value.isEmpty) {
-      return 'Please confirm password';
+      return 'validator_confirm_password_required'.tr();
     }
 
     if (value != password) {
-      return 'Passwords do not match';
+      return 'validator_password_not_match'.tr();
     }
 
     return null;
@@ -55,7 +58,7 @@ class AppValidators {
 
   static String? terms(bool accepted) {
     if (!accepted) {
-      return 'You must accept the terms and conditions';
+      return 'validator_terms_required'.tr();
     }
     return null;
   }
