@@ -8,6 +8,7 @@ import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/data/auth_repo.dart';
 import 'package:warshity/features/auth/forget_password/presentation/screens/forget_pass_screen.dart';
 import 'package:warshity/features/auth/login/presentation/screens/login_screen.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
@@ -30,10 +31,26 @@ class RouterGeneratorConfig {
         builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
+        path: AppRoutes.loginScreen,
+        name: AppRoutes.loginScreen,
+        builder: (context, state) {
+          return BlocProvider(
+            create: (context) => getIt<AuthCubit>(),
+            child: const LoginScreen());
+        },
+      ),
+      GoRoute(
         path: AppRoutes.homeScreen,
         name: AppRoutes.homeScreen,
         builder: (context, state) => const HomeScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.registerScreen,
+        name: AppRoutes.registerScreen,
+        builder: (context, state) {
+          return BlocProvider(
+            create: (context) => getIt<AuthCubit>(),
+            child: const RegisterScreen(),
 
       // كل شاشات الـ Auth بتتشارك في نفس الـ AuthCubit instance
       ShellRoute(

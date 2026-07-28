@@ -3,13 +3,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 
 class OutlinedButtonWidget extends StatelessWidget {
-  const OutlinedButtonWidget({super.key, required this.buttonText, this.onPressed, this.width, this.height, this.borderRadius, this.iconPath});
-final String buttonText;
-final void Function()? onPressed;
-final double? width;
-final double? height;
-final double? borderRadius;
-final String? iconPath;
+  const OutlinedButtonWidget({
+    super.key,
+    required this.buttonText,
+    this.onPressed,
+    this.width,
+    this.height,
+    this.borderRadius,
+    this.iconPath,
+  });
+  final String buttonText;
+  final void Function()? onPressed;
+  final double? width;
+  final double? height;
+  final double? borderRadius;
+  final String? iconPath;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -23,8 +31,9 @@ final String? iconPath;
             borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.sm),
           ),
         ),
-      
-         child: Row(
+
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (iconPath != null)
               Image.asset(

@@ -12,7 +12,20 @@
           "package_name": "com.example.warshity"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "861319834330-02d4gugp6hfaflp2dl7qnie7oaueaeq3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.warshity",
+            "certificate_hash": "769e36484b222acd8808b63e9897e1f59e03fd11"
+          }
+        },
+        {
+          "client_id": "861319834330-i1nejoiep8dkfrmu4ptl3qcd1kejadj6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB0tgDQ5CkGg8xcufRMCXBorBoecLZOUM8"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "861319834330-i1nejoiep8dkfrmu4ptl3qcd1kejadj6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "861319834330-faffj3mkehe4vaul4bkib2rar7nvpb4g.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.warshity"
+              }
+            }
+          ]
         }
       }
     }

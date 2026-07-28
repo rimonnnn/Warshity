@@ -6,11 +6,13 @@ class CheckboxWidget extends StatelessWidget {
   const CheckboxWidget({
     super.key,
     required this.value,
-    required this.onChanged, this.width,
+    required this.onChanged,
+    this.width, this.text,
   });
   final bool value;
   final void Function(bool?)? onChanged;
   final double? width;
+  final String? text;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -19,7 +21,7 @@ class CheckboxWidget extends StatelessWidget {
         SizedBox(
           width: width ?? 300.w,
           child: Text(
-            "confirm_checkbox".tr(),
+            text ?? "confirm_checkbox".tr(),
 
             style: Theme.of(
               context,

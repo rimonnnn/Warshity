@@ -10,6 +10,12 @@ class RegisterSuccess extends AuthState {
   RegisterSuccess(this.message);
 }
 
+class LoginSuccess extends AuthState {
+  final String message;
+
+  LoginSuccess(this.message);
+}
+
 class EmailVerificationSent extends AuthState {
   final String message;
 
@@ -20,6 +26,7 @@ class AuthError extends AuthState {
   final String message;
 
   AuthError(this.message);
+}
 }
 
 class ForgotPasswordSuccess extends AuthState {

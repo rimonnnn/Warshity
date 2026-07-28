@@ -18,6 +18,7 @@ class CustomTextField extends StatelessWidget {
     this.readOnly = false,
     this.onTap,
     this.width,
+    this.height,
     this.borderRadius,
   });
 
@@ -36,6 +37,8 @@ class CustomTextField extends StatelessWidget {
   final Function(String)? onChanged;
   final VoidCallback? onTap;
   final double? width;
+  final double? height;
+  final double? borderRadius;
   final double? borderRadius;
 
   @override
@@ -45,6 +48,9 @@ class CustomTextField extends StatelessWidget {
       children: [
         Text(
           label,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
           style: context.text.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8.h),
@@ -65,6 +71,26 @@ class CustomTextField extends StatelessWidget {
             ),
             decoration: InputDecoration(
               hintText: hint,
+              hintStyle: context.text.bodySmall,
+              prefixIcon: prefixIcon != null
+                  ? Image.asset(prefixIcon ?? '', width: 24, height: 24)
+                  : Icon(Icons.email),
+              suffixIcon: suffixIcon,
+
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 18,
+              ),
+
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surface,
+
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(
+                  borderRadius ?? AppRadius.sm,
+                ),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
               hintStyle: context.text.bodyLarge?.copyWith(
                 color: context.colors.onSurfaceVariant,
               ),
@@ -89,10 +115,17 @@ class CustomTextField extends StatelessWidget {
                 ),
                 borderSide: BorderSide(color: context.colors.onSurfaceVariant),
               ),
+
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
                 ),
+                borderSide: const BorderSide(
+                  color: Color(0xffC67A3D),
+                  width: 1.5,
+                ),
+              ),
+
                 borderSide: BorderSide(
                   color: context.colors.primary,
                   width: 1.5.w,
@@ -102,12 +135,16 @@ class CustomTextField extends StatelessWidget {
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
                 ),
+                borderSide: const BorderSide(color: Colors.red),
+              ),
+
                 borderSide: BorderSide(color: context.colors.error),
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
                 ),
+                borderSide: const BorderSide(color: Colors.red),
                 borderSide: BorderSide(
                   color: context.colors.error,
                   width: 1.5.w,

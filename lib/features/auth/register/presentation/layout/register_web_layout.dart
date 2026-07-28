@@ -1,6 +1,5 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +9,8 @@ import 'package:warshity/core/helper/app_validators.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
+import 'package:warshity/core/widgets/divider_widget.dart';
+import 'package:warshity/core/widgets/footer_widget.dart';
 import 'package:warshity/core/widgets/outlined_button_widget.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
@@ -17,6 +18,8 @@ import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/data/models/user_model.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/checkbox_widget.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/custom_drobdown.dart';
 
@@ -298,31 +301,10 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                           buttonspacing: 0,
                         ),
                         HeightSpace(24),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Divider(
-                                color: context.colors.onSurfaceVariant,
-                                thickness: 1,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: Text(
+                       Dividerwidget(child: Text(
                                 "continue".tr(),
                                 style: context.text.bodyLarge,
-                              ),
-                            ),
-                            Expanded(
-                              child: Divider(
-                                color: context.colors.onSurfaceVariant,
-                                thickness: 1,
-                              ),
-                            ),
-                          ],
-                        ),
+                              ),),
                         HeightSpace(24),
                         Row(
                           children: [
@@ -331,62 +313,38 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               iconPath: AppAssets.google,
                               width: 270,
                               height: 48,
+                              onPressed: () {
+                                context.read<AuthCubit>().signInWithGoogle();
+                              },
                             ),
                             Spacer(),
                             OutlinedButtonWidget(
                               buttonText: "facebook".tr(),
                               iconPath: AppAssets.facebook,
                               width: 270,
+                              onPressed: () {
+                                context.read<AuthCubit>().signInWithFacebook();
+                              },
                               height: 48,
                             ),
                           ],
                         ),
                         HeightSpace(24),
-                        RichText(
-                          text: TextSpan(
-                            text: "have_account".tr(),
-                            style: context.text.bodyLarge,
-                            children: [
-                              TextSpan(
-                                text: "login".tr(),
-                                style: context.text.bodyLarge?.copyWith(
-                                  color: context.colors.primary,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () => context.pushReplacementNamed(
-                                    AppRoutes.loginScreen,
-                                  ),
-                              ),
-                            ],
-                          ),
+                        FooterWidget(
+                          text1: "have_account",
+                          text2: "login",
+                          onPress: () {
+                            context.pushNamed(AppRoutes.loginScreen);
+                          },
                         ),
                         HeightSpace(16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Divider(
-                                color: context.colors.onSurfaceVariant,
-                                thickness: 1,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: Image.asset(
+                       Dividerwidget(
+                        child: Image.asset(
                                 AppAssets.footer,
                                 width: 24,
                                 height: 24,
                               ),
-                            ),
-                            Expanded(
-                              child: Divider(
-                                color: context.colors.onSurfaceVariant,
-                                thickness: 1,
-                              ),
-                            ),
-                          ],
-                        ),
+                       )
                       ],
                     ),
                   ),
