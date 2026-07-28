@@ -18,8 +18,6 @@ import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/data/models/user_model.dart';
-import 'package:warshity/features/auth/cubit/auth_cubit.dart';
-import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/checkbox_widget.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/custom_drobdown.dart';
 

@@ -67,7 +67,7 @@
   "validator_password_length": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
   "validator_confirm_password_required": "يرجى تأكيد كلمة المرور",
   "validator_password_not_match": "كلمتا المرور غير متطابقتين",
-  "validator_terms_required": "يجب الموافقة على الشروط والأحكام"
+  "validator_terms_required": "يجب الموافقة على الشروط والأحكام",
   "forgot your password?" : "نسيت كلمة المرور؟",
   "don't worry, just enter the email you signed up with and we'll send you a link to reset your password": "متقلقش, اكتب البريد الألكتروني اللي سجلت بيه وهنبعتلك لينك تعمل اعادة تعيين لكلمة المرور من خلاله",
   "send the link": "ارسال الرابط",

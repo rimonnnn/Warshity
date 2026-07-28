@@ -2,13 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/features/auth/data/auth_repo.dart';
-import '../register/data/models/user_model.dart';
-import '../register/data/repos/register_repo.dart';
+import 'package:warshity/features/auth/register/data/models/user_model.dart';
+import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
+
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final RegisterRepo registerRepo;
-    final AuthRepo authRepo ;
   final AuthRepo authRepo;
 
   AuthCubit(this.registerRepo, this.authRepo) : super(AuthInitial());
@@ -20,18 +20,16 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
 
     try {
-      await registerRepo.register(user: user, password: password);
+      await registerRepo.register(
+        user: user,
+        password: password,
+      );
 
       emit(
         RegisterSuccess(
           "Account_created".tr(),
         ),
       );
-    try {
-      await registerRepo.register(user: user, password: password);
-      emit(RegisterSuccess(
-        "Account created successfully. Please verify your email.",
-      ));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -47,12 +45,6 @@ class AuthCubit extends Cubit<AuthState> {
         emit(RegisterSuccess("verify".tr()));
       } else {
         emit(AuthError("notverified".tr()));
-    try {
-      final verified = await registerRepo.isEmailVerified();
-      if (verified) {
-        emit(RegisterSuccess("Email verified successfully"));
-      } else {
-        emit(AuthError("Email is not verified yet"));
       }
     } catch (e) {
       emit(AuthError(e.toString()));
@@ -63,54 +55,75 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       await registerRepo.resendEmailVerification();
 
-      emit(EmailVerificationSent("verify_email".tr()));
-      emit(EmailVerificationSent("Verification email sent successfully"));
+      emit(
+        EmailVerificationSent(
+          "verify_email".tr(),
+        ),
+      );
     } catch (e) {
       emit(AuthError(e.toString()));
     }
   }
 
-  Future<void> login({required String email, required String password}) async {
+  Future<void> login({
+    required String email,
+    required String password,
+  }) async {
     emit(AuthLoading());
 
     try {
-      await authRepo.login(email: email, password: password);
+      await authRepo.login(
+        email: email,
+        password: password,
+      );
 
       emit(LoginSuccess("login_success".tr()));
     } on FirebaseAuthException catch (e) {
       emit(AuthError(e.message ?? "wrong".tr()));
+    } catch (e) {
+      emit(AuthError(e.toString()));
     }
   }
+
   Future<void> signInWithGoogle() async {
-  emit(AuthLoading());
+    emit(AuthLoading());
 
-  try {
-    await authRepo.signInWithGoogle();
-    emit(LoginSuccess("login_success".tr()));
-  } on FirebaseAuthException catch (e) {
-    emit(AuthError(e.message ?? 'Google Sign-In failed'));
-  } catch (e) {
-    emit(AuthError(e.toString()));
-  }
-}
-Future<void> signInWithFacebook() async {
-  emit(AuthLoading());
+    try {
+      await authRepo.signInWithGoogle();
 
-  try {
-    await authRepo.signInWithFacebook();
-    emit(LoginSuccess("login_success".tr()));
-  } on FirebaseAuthException catch (e) {
-    emit(AuthError(e.message ?? 'Facebook sign in failed'));
-  } catch (e) {
-    emit(AuthError(e.toString()));
+      emit(LoginSuccess("login_success".tr()));
+    } on FirebaseAuthException catch (e) {
+      emit(AuthError(e.message ?? "Google Sign-In failed"));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
-}
-}
+
+  Future<void> signInWithFacebook() async {
+    emit(AuthLoading());
+
+    try {
+      await authRepo.signInWithFacebook();
+
+      emit(LoginSuccess("login_success".tr()));
+    } on FirebaseAuthException catch (e) {
+      emit(AuthError(e.message ?? "Facebook Sign-In failed"));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
   Future<void> sendResetLink(String email) async {
     emit(AuthLoading());
+
     try {
       await authRepo.sendPasswordResetEmail(email);
-      emit(ForgotPasswordSuccess("Reset link sent to your email"));
+
+      emit(
+        ForgotPasswordSuccess(
+          "Reset link sent to your email",
+        ),
+      );
     } catch (e) {
       emit(AuthError(e.toString()));
     }

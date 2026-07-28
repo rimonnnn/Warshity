@@ -78,7 +78,6 @@ class _LoginWebLayoutState extends State<LoginWebLayout> {
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 415, vertical: 80),
                   width: 610,
-                  height: 800,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppRadius.md),
                     color: context.colors.surfaceContainerLow,
@@ -120,6 +119,7 @@ class _LoginWebLayoutState extends State<LoginWebLayout> {
                               prefixIcon: AppAssets.password,
                               controller: passwordController,
                               validator: AppValidators.password,
+                              
                               obscureText: isPasswordVisible,
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -141,7 +141,9 @@ class _LoginWebLayoutState extends State<LoginWebLayout> {
                                   ? Alignment.centerRight
                                   : Alignment.centerLeft,
                               child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  context.pushNamed(AppRoutes.forgetPassScreen);
+                                },
                                 child: Text(
                                   "forget".tr(),
                                   style: context.text.bodyLarge?.copyWith(

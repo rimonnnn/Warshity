@@ -96,7 +96,6 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                     key: _formKey,
                     child: Container(
                       width: 358.w,
-                      height: 590.h,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(AppRadius.md),
                         color: context.colors.surfaceContainerLow,
@@ -143,7 +142,9 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                                   ? Alignment.centerRight
                                   : Alignment.centerLeft,
                               child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  context.pushNamed(AppRoutes.forgetPassScreen);
+                                },
                                 child: Text(
                                   "forget".tr(),
                                   style: context.text.bodyLarge,
