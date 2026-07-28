@@ -42,12 +42,25 @@
   "next" :"Next",
   "get started": "Get started",
   "skip": "Skip",
+  "the link has been sent": "The link has been sent",
+  "we sent you a link to reset your password on the email:" : "We sent you a link to reset your password on the email:",
+  "if you can't find the message, check in Spam or Junk": "If you can't find the message, check in Spam or Junk",
+  "open the mail app" : "Open the mail app",
+
+  "didn't the message reach you?": "Didn't the message reach you?",
+  "back to login": "Back to login",
 
 
 
-
-
-
-  "wershity": "Wershity"
+  "wershity": "Wershity",
+  "forgot your password?" : "Forgot your password?",
+  "don't worry, just enter the email you signed up with and we'll send you a link to reset your password": "Don't worry, just enter the email you signed up with and we'll send you a link to reset your password.",
+  "send the link": "Send the link",
+  "remember your password?": "Remember your password?",
+  "resend" : "Resend",
+   "reset_link_sent_message": "A reset link has been sent to your email",
+  "generic_error_message": "Something went wrong. Please try again",
+  "resend_in": "Resend in",
+  "no_mail_app_found" : "No mail app found on this device"
 
 }

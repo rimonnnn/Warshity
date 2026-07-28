@@ -56,7 +56,7 @@ class _WebSplashState extends State<WebSplash>
           .isCompleted();
 
       context.pushReplacementNamed(
-        hasSeenOnboarding ? AppRoutes.registerScreen : AppRoutes.onboarding,
+        hasSeenOnboarding ? AppRoutes.loginScreen : AppRoutes.onboarding,
       );
     } catch (e, stackTrace) {
       debugPrint('Splash navigation error: $e');

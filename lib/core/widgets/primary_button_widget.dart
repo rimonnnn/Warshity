@@ -14,7 +14,9 @@ class PrimaryButtonWidget extends StatelessWidget {
   final String? iconPath;
   final bool? prefixicon;
   final bool? suffixicon;
-final double? buttonspacing; 
+  final double? buttonspacing;
+  final bool isLoading;
+
   const PrimaryButtonWidget({
     super.key,
     this.onPress,
@@ -25,7 +27,11 @@ final double? buttonspacing;
     this.height,
     this.textColor,
     this.fontSize,
-    this.iconPath, this.prefixicon, this.suffixicon, this.buttonspacing,
+    this.iconPath,
+    this.prefixicon,
+    this.suffixicon,
+    this.buttonspacing,
+    this.isLoading = false,
   });
 
   @override
@@ -38,37 +44,48 @@ final double? buttonspacing;
           borderRadius: BorderRadius.circular(borderRadius ?? 8.r),
         ),
       ),
-      onPressed: onPress,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (prefixicon == true && iconPath != null)
-            Image.asset(
-              iconPath!,
-              width: 24.w,
-              height: 24.h,
-              color: textColor ?? context.colors.onPrimary,
-              fit: BoxFit.contain,
+      onPressed: isLoading ? null : onPress,
+      child: isLoading
+          ? SizedBox(
+              width: 22.w,
+              height: 22.w,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5.w,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  textColor ?? context.colors.onPrimary,
+                ),
+              ),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (prefixicon == true && iconPath != null)
+                  Image.asset(
+                    iconPath!,
+                    width: 24.w,
+                    height: 24.h,
+                    color: textColor ?? context.colors.onPrimary,
+                    fit: BoxFit.cover,
+                  ),
+                SizedBox(width: buttonspacing ?? 12.w),
+                Text(
+                  buttonText ?? "",
+                  style: context.text.titleMedium?.copyWith(
+                    color: textColor ?? context.colors.onPrimary,
+                    fontSize: fontSize ?? 16.sp,
+                  ),
+                ),
+                SizedBox(width: buttonspacing ?? 12.w),
+                if (suffixicon == true && iconPath != null)
+                  Image.asset(
+                    iconPath!,
+                    width: 24.w,
+                    height: 24.h,
+                    color: textColor ?? context.colors.onPrimary,
+                    fit: BoxFit.contain,
+                  ),
+              ],
             ),
-            SizedBox(width: buttonspacing ?? 12.w),
-          Text(
-            buttonText ?? "",
-            style: context.text.titleMedium?.copyWith(
-              color: textColor ?? context.colors.onPrimary,
-              fontSize: fontSize ?? 16.sp,
-            ),
-          ),
-           SizedBox(width: buttonspacing ?? 12.w),
-          if (suffixicon == true && iconPath != null)
-            Image.asset(
-              iconPath!,
-              width: 24.w,
-              height: 24.h,
-              color: textColor ?? context.colors.onPrimary,
-              fit: BoxFit.contain,
-            ),
-        ],
-      ),
     );
   }
 }
