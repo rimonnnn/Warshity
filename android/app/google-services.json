@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "861319834330-3obrjng6frm4thh1nml9836eph7miaqs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.warshity",
+            "certificate_hash": "87d36ff4dc21264a71bf3cef8aef58b3ffe0dc7a"
+          }
+        },
+        {
           "client_id": "861319834330-i1nejoiep8dkfrmu4ptl3qcd1kejadj6.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -30,20 +30,14 @@ class LoginMobileLayout extends StatefulWidget {
 class _LoginMobileLayoutState extends State<LoginMobileLayout> {
   bool isvisible = true;
   final _formKey = GlobalKey<FormState>();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  @override
-  void initState() {
-    super.initState();
-    emailController = TextEditingController();
-    passwordController = TextEditingController();
-  }
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   void dispose() {
-    super.dispose();
     emailController.dispose();
     passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -56,7 +50,7 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
             if (state is AuthError) {
               showAnimatedSnackDialog(
                 context,
-                message: state.message,
+                message: state.message.tr(),
                 type: AnimatedSnackBarType.error,
               );
             }
@@ -64,164 +58,192 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
             if (state is LoginSuccess) {
               showAnimatedSnackDialog(
                 context,
-                message: state.message,
+                message: state.message.tr(),
                 type: AnimatedSnackBarType.success,
               );
+              context.pushReplacementNamed(AppRoutes.homeScreen);
             }
           },
           builder: (context, state) {
-            if (state is AuthLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+            final isLoading = state is AuthLoading;
+
+            // الشاشة تفضل ظاهرة دايمًا؛ الـ loading يتحصر في الزرار نفسه
             return SingleChildScrollView(
-              child: Column(
-                children: [
-                  HeightSpace(30.h),
-                  CustomLogo(
-                    width: 50.w,
-                    height: 52.h,
-                    borderRadius: AppRadius.circular,
-                    logoPath: AppAssets.loginicon,
-                  ),
-                  HeightSpace(16.h),
-                  Text("welcome".tr(), style: context.text.headlineLarge),
-                  HeightSpace(8.h),
-                  Text(
-                    "startlogin".tr(),
-                    style: context.text.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  HeightSpace(32.h),
-                  Form(
-                    key: _formKey,
-                    child: Container(
-                      width: 358.w,
-                      height: 590.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        color: context.colors.surfaceContainerLow,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(24.sp),
-                        child: Column(
-                          children: [
-                            CustomTextField(
-                              label: "email".tr(),
-                              hint: "email1".tr(),
-                              borderRadius: AppRadius.sm,
-                              controller: emailController,
-                              validator: AppValidators.email,
-                              keyboardType: TextInputType.emailAddress,
-                            ),
-                            HeightSpace(18.h),
-                            CustomTextField(
-                              label: "password".tr(),
-                              hint: "hash".tr(),
-                              borderRadius: AppRadius.sm,
-                              keyboardType: TextInputType.visiblePassword,
-                              prefixIcon: AppAssets.password,
-                              obscureText: isvisible,
-                              controller: passwordController,
-                              validator: AppValidators.password,
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isvisible = !isvisible;
-                                  });
-                                },
-                                icon: Icon(
-                                  isvisible
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: context.colors.primary,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    HeightSpace(30),
+                    CustomLogo(
+                      width: 50.w,
+                      height: 52.h,
+                      borderRadius: AppRadius.circular,
+                      logoPath: AppAssets.loginicon,
+                    ),
+                    HeightSpace(16.h),
+                    Text("welcome".tr(), style: context.text.headlineLarge),
+                    HeightSpace(8.h),
+                    Text(
+                      "startlogin".tr(),
+                      style: context.text.bodyLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    HeightSpace(32),
+                    Form(
+                      key: _formKey,
+                      child: Container(
+                        width: 358.w,
+                        height: 620.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          color: context.colors.surfaceContainerLow,
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(24.sp),
+                          child: Column(
+                            children: [
+                              CustomTextField(
+                                label: "email".tr(),
+                                hint: "email1".tr(),
+                                borderRadius: AppRadius.sm,
+                                controller: emailController,
+                                validator: AppValidators.email,
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                              HeightSpace(18.h),
+                              CustomTextField(
+                                label: "password".tr(),
+                                hint: "hash".tr(),
+                                borderRadius: AppRadius.sm,
+                                keyboardType: TextInputType.visiblePassword,
+                                prefixIcon: AppAssets.password,
+                                obscureText: isvisible,
+                                controller: passwordController,
+                                validator: AppValidators.password,
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isvisible = !isvisible;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    isvisible
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: context.colors.primary,
+                                  ),
                                 ),
                               ),
-                            ),
-                            HeightSpace(10.h),
-                            Align(
-                              alignment: context.locale.languageCode == "ar"
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: TextButton(
-                                onPressed: () {},
+                              HeightSpace(10.h),
+                              Align(
+                                alignment: context.locale.languageCode == "ar"
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: TextButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          context.pushNamed(
+                                            AppRoutes.forgetPassScreen,
+                                          );
+                                        },
+                                  child: Text(
+                                    "forget".tr(),
+                                    style: context.text.bodyLarge,
+                                  ),
+                                ),
+                              ),
+                              HeightSpace(20.h),
+                              PrimaryButtonWidget(
+                                borderRadius: AppRadius.sm,
+                                buttonColor: context.colors.primary,
+                                textColor: context.colors.onPrimary,
+                                fontSize: context.text.titleLarge?.fontSize,
+                                height: 56.h,
+                                width: 310.w,
+                                buttonText: "login".tr(),
+                                isLoading: isLoading,
+                                onPress: isLoading
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          context.read<AuthCubit>().login(
+                                            email: emailController.text.trim(),
+                                            password: passwordController.text
+                                                .trim(),
+                                          );
+                                        }
+                                      },
+                              ),
+                              HeightSpace(32),
+                              Dividerwidget(
                                 child: Text(
-                                  "forget".tr(),
+                                  "continue".tr(),
                                   style: context.text.bodyLarge,
                                 ),
                               ),
-                            ),
-                            HeightSpace(20.h),
-                            PrimaryButtonWidget(
-                              borderRadius: AppRadius.sm,
-                              buttonColor: context.colors.primary,
-                              textColor: context.colors.onPrimary,
-                              fontSize: context.text.titleLarge?.fontSize,
-                              height: 56.h,
-                              width: 310.w,
-                              buttonText: "login".tr(),
-                              onPress: () {
-                                if (_formKey.currentState!.validate()) {
-                                  context.read<AuthCubit>().login(
-                                    email: emailController.text.trim(),
-                                    password: passwordController.text.trim(),
-                                  );
-                                }
-                              },
-                            ),
-                            HeightSpace(32.h),
-                            Dividerwidget(
-                              child: Text(
-                                "continue".tr(),
-                                style: context.text.bodyLarge,
+                              HeightSpace(16),
+                              Row(
+                                children: [
+                                  OutlinedButtonWidget(
+                                    iconPath: AppAssets.google,
+                                    iconWidth: 35.w,
+                                    iconHeight: 35.h,
+                                    width: 130.w,
+                                    height: 48.h,
+                                    onPressed: isLoading
+                                        ? null
+                                        : () {
+                                            context
+                                                .read<AuthCubit>()
+                                                .signInWithGoogle();
+                                          },
+                                  ),
+                                  const Spacer(),
+                                  OutlinedButtonWidget(
+                                    iconPath: AppAssets.facebook,
+                                    iconWidth: 35.w,
+                                    iconHeight: 35.h,
+                                    width: 130.w,
+                                    height: 48.h,
+                                    onPressed: isLoading
+                                        ? null
+                                        : () {
+                                            context
+                                                .read<AuthCubit>()
+                                                .signInWithFacebook();
+                                          },
+                                  ),
+                                ],
                               ),
-                            ),
-                            HeightSpace(16.h),
-                            Row(
-                              children: [
-                                OutlinedButtonWidget(
-                                  buttonText: "",
-                                  iconPath: AppAssets.google,
-                                  width: 130,
-                                  height: 48,
-                                  onPressed: () {
-                                    context
-                                        .read<AuthCubit>()
-                                        .signInWithGoogle();
-                                  },
-                                ),
-                                Spacer(),
-                                OutlinedButtonWidget(
-                                  buttonText: "",
-                                  iconPath: AppAssets.facebook,
-                                  width: 130,
-                                  height: 48,
-                                  onPressed: () {
-                                    context
-                                        .read<AuthCubit>()
-                                        .signInWithFacebook();
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  HeightSpace(10.h),
-                  FooterWidget(
-                    text1: "Don't_have_account",
-                    text2: "create_account2",
-                    onPress: () {
-                      context.pushNamed(AppRoutes.registerScreen);
-                    },
-                  ),
-                  HeightSpace(24.h),
-                  Dividerwidget(
-                    child: Image.asset(AppAssets.footer, width: 24, height: 24),
-                  ),
-                  HeightSpace(60.h),
-                ],
+                    HeightSpace(10.h),
+                    FooterWidget(
+                      text1: "Don't_have_account",
+                      text2: "create_account2",
+                      onPress: isLoading
+                          ? null
+                          : () {
+                              context.pushNamed(AppRoutes.registerScreen);
+                            },
+                    ),
+                    HeightSpace(24),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 22.sp),
+                      child: Dividerwidget(
+                        child: Image.asset(
+                          AppAssets.footer,
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
+                    ),
+                    HeightSpace(60),
+                  ],
+                ),
               ),
             );
           },

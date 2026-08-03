@@ -12,8 +12,8 @@ class AppAssets {
   static const String confirmPassword = "assets/images/Icon (16).png";
   static const String arrow = "assets/images/Icon (17).png";
   static const String arrow2 = "assets/images/right-arrow.png";
-  static const String google = "assets/images/google.svg.png";
-  static const String facebook = "assets/images/SVG.png";
+  static const String google = "assets/images/google.png";
+  static const String facebook = "assets/images/facebook.png";
   static const String footer = "assets/images/Icon (18).png";
   static const String email = "assets/images/icons8-email-50.png";
   static const String onboarding_1 = "assets/images/onboarding_1_1.png";

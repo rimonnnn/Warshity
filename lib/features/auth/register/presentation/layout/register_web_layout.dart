@@ -18,8 +18,6 @@ import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/data/models/user_model.dart';
-import 'package:warshity/features/auth/cubit/auth_cubit.dart';
-import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/checkbox_widget.dart';
 import 'package:warshity/features/auth/register/presentation/widgets/custom_drobdown.dart';
 
@@ -301,10 +299,12 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                           buttonspacing: 0,
                         ),
                         HeightSpace(24),
-                       Dividerwidget(child: Text(
-                                "continue".tr(),
-                                style: context.text.bodyLarge,
-                              ),),
+                        Dividerwidget(
+                          child: Text(
+                            "continue".tr(),
+                            style: context.text.bodyLarge,
+                          ),
+                        ),
                         HeightSpace(24),
                         Row(
                           children: [
@@ -338,13 +338,13 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                           },
                         ),
                         HeightSpace(16),
-                       Dividerwidget(
-                        child: Image.asset(
-                                AppAssets.footer,
-                                width: 24,
-                                height: 24,
-                              ),
-                       )
+                        Dividerwidget(
+                          child: Image.asset(
+                            AppAssets.footer,
+                            width: 24,
+                            height: 24,
+                          ),
+                        ),
                       ],
                     ),
                   ),

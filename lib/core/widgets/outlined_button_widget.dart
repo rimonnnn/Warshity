@@ -5,19 +5,25 @@ import 'package:warshity/core/constants/app_radius.dart';
 class OutlinedButtonWidget extends StatelessWidget {
   const OutlinedButtonWidget({
     super.key,
-    required this.buttonText,
+    this.buttonText,
     this.onPressed,
     this.width,
     this.height,
     this.borderRadius,
     this.iconPath,
+    this.icon,
+    this.iconWidth,
+    this.iconHeight,
   });
-  final String buttonText;
+  final String? buttonText;
   final void Function()? onPressed;
   final double? width;
   final double? height;
+  final double? iconWidth;
+  final double? iconHeight;
   final double? borderRadius;
   final String? iconPath;
+  final Widget? icon;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -35,15 +41,16 @@ class OutlinedButtonWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (iconPath != null)
-              Image.asset(
-                iconPath!,
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-              ),
-            SizedBox(width: 8),
-            Text(buttonText, style: Theme.of(context).textTheme.labelLarge),
+            Text(
+              buttonText ?? "",
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            SizedBox(width: 4),
+            Image.asset(
+              iconPath ?? "",
+              width: iconWidth ?? 24,
+              height: iconHeight ?? 24,
+            ),
           ],
         ),
       ),

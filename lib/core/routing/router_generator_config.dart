@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,7 +9,6 @@ import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/data/auth_repo.dart';
 import 'package:warshity/features/auth/forget_password/presentation/screens/forget_pass_screen.dart';
 import 'package:warshity/features/auth/login/presentation/screens/login_screen.dart';
-import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
@@ -17,8 +17,25 @@ import 'package:warshity/features/splash/presentation/screens/splash_screen.dart
 
 class RouterGeneratorConfig {
   static GoRouter goRouter = GoRouter(
-    initialLocation: AppRoutes.splashScreen,
+    initialLocation: kIsWeb ? AppRoutes.loginScreen : AppRoutes.splashScreen,
     errorBuilder: (context, state) => const NotFoundScreen(),
+
+    redirect: (context, state) {
+      final isLoggedIn = getIt<AuthRepo>().currentUser != null;
+      final isGoingToAuthScreen =
+          state.matchedLocation == AppRoutes.loginScreen ||
+          state.matchedLocation == AppRoutes.registerScreen ||
+          state.matchedLocation == AppRoutes.forgetPassScreen ||
+          state.matchedLocation == AppRoutes.accessPassScreen;
+
+      // لو متسجل دخول بالفعل وبيحاول يروح لصفحة auth (زي login)
+      // نوديه على home بدل ما نعرضله اللوجين تاني
+      if (isLoggedIn && isGoingToAuthScreen) {
+        return AppRoutes.homeScreen;
+      }
+
+      return null; // من غير تحويل، كمل عادي
+    },
     routes: [
       GoRoute(
         path: AppRoutes.splashScreen,
@@ -30,27 +47,12 @@ class RouterGeneratorConfig {
         name: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.loginScreen,
-        name: AppRoutes.loginScreen,
-        builder: (context, state) {
-          return BlocProvider(
-            create: (context) => getIt<AuthCubit>(),
-            child: const LoginScreen());
-        },
-      ),
+
       GoRoute(
         path: AppRoutes.homeScreen,
         name: AppRoutes.homeScreen,
         builder: (context, state) => const HomeScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.registerScreen,
-        name: AppRoutes.registerScreen,
-        builder: (context, state) {
-          return BlocProvider(
-            create: (context) => getIt<AuthCubit>(),
-            child: const RegisterScreen(),
 
       // كل شاشات الـ Auth بتتشارك في نفس الـ AuthCubit instance
       ShellRoute(
