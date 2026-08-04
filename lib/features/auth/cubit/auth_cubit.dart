@@ -15,6 +15,7 @@ class AuthCubit extends Cubit<AuthState> {
   final RegisterRepo registerRepo;
   final AuthRepo authRepo;
 
+
   Future<void> register({
     required UserModel user,
     required String password,
@@ -107,6 +108,7 @@ class AuthCubit extends Cubit<AuthState> {
       _handleError(e);
     }
   }
+
 
   void _handleError(Object error) {
     if (error is FirebaseAuthException) {

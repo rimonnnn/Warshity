@@ -79,6 +79,9 @@
    "reset_link_sent_message": "A reset link has been sent to your email",
   "generic_error_message": "Something went wrong. Please try again",
   "resend_in": "Resend in",
-  "no_mail_app_found" : "No mail app found on this device"
+  "no_mail_app_found" : "No mail app found on this device",
+  "home": "Home",
+  "invoices": "Invoices",
+  "settings": "Settings"
 
 }

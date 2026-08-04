@@ -12,6 +12,7 @@ import 'package:warshity/features/auth/login/presentation/screens/login_screen.d
 import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
+import 'package:warshity/features/main/presentation/screens/main_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
 
@@ -31,7 +32,7 @@ class RouterGeneratorConfig {
       // لو متسجل دخول بالفعل وبيحاول يروح لصفحة auth (زي login)
       // نوديه على home بدل ما نعرضله اللوجين تاني
       if (isLoggedIn && isGoingToAuthScreen) {
-        return AppRoutes.homeScreen;
+        return AppRoutes.mainScreen;
       }
 
       return null; // من غير تحويل، كمل عادي
@@ -52,6 +53,11 @@ class RouterGeneratorConfig {
         path: AppRoutes.homeScreen,
         name: AppRoutes.homeScreen,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.mainScreen,
+        name: AppRoutes.mainScreen,
+        builder: (context, state) => const MainScreen(),
       ),
 
       // كل شاشات الـ Auth بتتشارك في نفس الـ AuthCubit instance

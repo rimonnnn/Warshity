@@ -61,7 +61,7 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                 message: state.message.tr(),
                 type: AnimatedSnackBarType.success,
               );
-              context.pushReplacementNamed(AppRoutes.homeScreen);
+              context.pushReplacementNamed(AppRoutes.mainScreen);
             }
           },
           builder: (context, state) {

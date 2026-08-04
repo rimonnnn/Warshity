@@ -69,7 +69,7 @@ class _LoginWebLayoutState extends State<LoginWebLayout> {
                 message: state.message.tr(),
                 type: AnimatedSnackBarType.success,
               );
-              context.pushReplacementNamed(AppRoutes.homeScreen);
+              context.pushReplacementNamed(AppRoutes.mainScreen);
             }
           },
           builder: (context, state) {

@@ -66,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen>
       // نوديه على home على طول، من غير ما نعرضله شاشة اللوجين تاني
       final currentUser = getIt<AuthRepo>().currentUser;
       if (currentUser != null) {
-        context.pushReplacementNamed(AppRoutes.homeScreen);
+        context.pushReplacementNamed(AppRoutes.mainScreen);
       } else {
         context.pushReplacementNamed(AppRoutes.loginScreen);
       }
