@@ -20,6 +20,7 @@ class CardWidget extends StatelessWidget {
     this.iconSize,
     this.value,
   });
+
   final double? width;
   final double? height;
   final Color? color;
@@ -31,48 +32,83 @@ class CardWidget extends StatelessWidget {
   final double? heightspace;
   final double? iconSize;
   final String? value;
+
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: width ?? 200.w,
-        height: height ?? 90.h,
-        decoration: BoxDecoration(
-          color: color ?? context.colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.md),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(padding ?? 16.sp),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    title ?? "total_clients".tr(),
-                    style: context.text.bodyMedium,
-                  ),
-                  Spacer(),
-                  Icon(
-                    icon ?? Icons.people,
-                    size: iconSize ?? 16.sp,
-                    color: context.colors.onSurfaceVariant,
-                  ),
-                ],
-              ),
-              HeightSpace(heightspace ?? 12.h),
-              Text(
-                value ?? "0",
-                style: context.text.titleLarge?.copyWith(
-                  color: context.colors.onSurface,
-                ),
-              ),
-            ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isMobile = constraints.maxWidth < 220;
+
+        return InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(
+            borderRadius ?? AppRadius.md,
           ),
-        ),
-      ),
+          child: Container(
+            width: width,
+            height: height,
+            decoration: BoxDecoration(
+              color: color ?? context.colors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(
+                borderRadius ?? AppRadius.md,
+              ),
+            ),
+            padding: EdgeInsets.all(
+              padding ?? (isMobile ? 12.sp : 16.sp),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title ?? "total_clients".tr(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: isMobile
+                            ? context.text.bodySmall
+                            : context.text.bodyMedium,
+                      ),
+                    ),
+
+                    SizedBox(width: 8.w),
+
+                    Icon(
+                      icon ?? Icons.people,
+                      size: iconSize ?? (isMobile ? 18.sp : 20.sp),
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ],
+                ),
+
+                HeightSpace(heightspace ?? 12.h),
+
+                Expanded(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        value ?? "0",
+                        maxLines: 2,
+                        style: (isMobile
+                                ? context.text.headlineSmall
+                                : context.text.headlineMedium)
+                            ?.copyWith(
+                          color: context.colors.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

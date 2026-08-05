@@ -13,7 +13,10 @@ class RecentOperationCard extends StatelessWidget {
     this.onTap,
     this.backgroundColor,
     this.avatarSize,
-    this.widthbetween, this.horzontalPadding, this.verticalPadding, this.borderradius,
+    this.widthbetween,
+    this.horzontalPadding,
+    this.verticalPadding,
+    this.borderradius,
   });
 
   final String customerName;
@@ -28,6 +31,7 @@ class RecentOperationCard extends StatelessWidget {
   final double? horzontalPadding;
   final double? verticalPadding;
   final double? borderradius;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -35,50 +39,70 @@ class RecentOperationCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: horzontalPadding ?? 16.w, vertical: verticalPadding ?? 14.h),
+        padding: EdgeInsets.symmetric(
+          horizontal: horzontalPadding ?? 16.w,
+          vertical: verticalPadding ?? 14.h,
+        ),
         decoration: BoxDecoration(
           color: backgroundColor ?? context.colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular( borderradius ?? AppRadius.lg),
-          border: Border.all(color: context.colors.outlineVariant),
+          borderRadius: BorderRadius.circular(
+            borderradius ?? AppRadius.lg,
+          ),
+          border: Border.all(
+            color: context.colors.outlineVariant,
+          ),
         ),
         child: Row(
           children: [
             CircleAvatar(
               radius: 22.r,
               backgroundColor: const Color(0xffD8F0A7),
-              child:
-                  avatar ??
+              child: avatar ??
                   Icon(
                     Icons.person_outline,
                     color: const Color(0xff5B7F22),
                     size: avatarSize ?? 22.sp,
                   ),
             ),
-            SizedBox(width: widthbetween ?? 10.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  customerName,
-                  style: context.text.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
 
-                Text(
-                  time,
-                  style: context.text.bodySmall?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+            SizedBox(width: widthbetween ?? 12.w),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    customerName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
+
+                  SizedBox(height: 4.h),
+
+                  Text(
+                    time,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.bodySmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
 
-            const Spacer(),
-            Text(
-              price,
-              style: context.text.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+            SizedBox(width: 12.w),
+
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                price,
+                style: context.text.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],

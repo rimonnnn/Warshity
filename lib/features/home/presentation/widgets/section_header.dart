@@ -34,42 +34,48 @@ class SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: padding ?? EdgeInsets.symmetric(horizontal: 4.w),
-      child:Row(
-  children: [
-    Text(
-      title,
-      style: titleStyle ??
-          context.text.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: titleStyle ??
+                  context.text.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
           ),
-    ),
 
-    if (trailing != null) ...[
-      SizedBox(width: 8.w),
-      trailing!,
-    ],
+          if (trailing != null) ...[
+            SizedBox(width: 8.w),
+            trailing!,
+          ],
 
-    const Spacer(),
+          if (leading != null) ...[
+            SizedBox(width: 8.w),
+            leading!,
+          ],
 
-    if (leading != null) ...[
-      leading!,
-      SizedBox(width: 8.w),
-    ],
-
-    if (showAction && actionText != null)
-      GestureDetector(
-        onTap: onActionPressed,
-        child: Text(
-          actionText!,
-          style: actionStyle ??
-              context.text.bodyMedium?.copyWith(
-                color: context.colors.primary,
-                fontWeight: FontWeight.w600,
+          if (showAction && actionText != null) ...[
+            SizedBox(width: 12.w),
+            GestureDetector(
+              onTap: onActionPressed,
+              child: Text(
+                actionText!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: actionStyle ??
+                    context.text.bodyMedium?.copyWith(
+                      color: context.colors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
-        ),
+            ),
+          ],
+        ],
       ),
-  ],
-)
     );
   }
 }
