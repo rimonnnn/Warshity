@@ -165,6 +165,29 @@
   "price_650": "EGP 650",
   "price_820": "EGP 820",
   "price_1250": "EGP 1,250",
-  "price_2300": "EGP 2,300"
+  "price_2300": "EGP 2,300",
+   "settings1": "Settings",
+
+  "store_information": "Store Information",
+  "store_name": "Store Name",
+  "phone": "Phone Number",
+  "address": "Address",
+
+  "sync_connection": "Sync & Connection",
+  "last_sync": "Last Sync",
+  "auto_sync": "Auto Sync",
+  "auto_sync_desc": "Automatically sync when internet is available",
+  "sync_now": "Sync Now",
+
+  "security": "Security",
+  "change_password": "Change Password",
+  "printer_settings": "Thermal Printer Settings",
+  "language": "Language",
+
+  "logout": "Logout",
+  "theme" : "Theme",
+  "city" : "Cairo - Egypt",
+  "times" : "2 minutes ago",
+  "version" : "Version 2.4.0"
 
 }
