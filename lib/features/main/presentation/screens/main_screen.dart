@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:warshity/core/widgets/app_responsive.dart';
-import 'package:warshity/features/home/presentation/screens/home_screen.dart';
+import 'package:warshity/features/home/presentation/layout/mobile_home.dart';
+import 'package:warshity/features/home/presentation/layout/web_home.dart';
 import 'package:warshity/features/invoices/presentation/layout/invoice_mobile.dart';
 import 'package:warshity/features/invoices/presentation/layout/invoice_web.dart';
 import 'package:warshity/features/main/presentation/layout/main_mobile.dart';
 import 'package:warshity/features/main/presentation/layout/main_web.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
-
+import 'package:warshity/features/settings/presentation/layout/mobile_settings.dart';
+import 'package:warshity/features/settings/presentation/layout/web_settings.dart';
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
@@ -17,7 +19,7 @@ class MainScreen extends StatelessWidget {
       icon: Icons.home_outlined,
       selectedIcon: Icons.home,
       labelKey: 'home', // مفتاح خام، من غير .tr() هنا
-      screen: const HomeScreen(),
+      screen: const MobileHome(),
     ),
     MainNavItem(
       icon: Icons.receipt_long_outlined,
@@ -41,7 +43,7 @@ class MainScreen extends StatelessWidget {
       icon: Icons.settings_outlined,
       selectedIcon: Icons.settings,
       labelKey: 'settings',
-      screen: const Center(child: Text('Settings')), // TODO: استبدلها
+      screen: MobileSettingsScreen()
     ),
   ];
 
@@ -51,7 +53,7 @@ class MainScreen extends StatelessWidget {
       icon: Icons.home_outlined,
       selectedIcon: Icons.home,
       labelKey: 'home',
-      screen: const HomeScreen(),
+      screen: WebHome(),
     ),
     MainNavItem(
       icon: Icons.receipt_long_outlined,
@@ -75,7 +77,7 @@ class MainScreen extends StatelessWidget {
       icon: Icons.settings_outlined,
       selectedIcon: Icons.settings,
       labelKey: 'settings',
-      screen: const Center(child: Text('Settings')), // TODO: استبدلها
+      screen: WebSettingsScreen(), // TODO: استبدلها
     ),
   ];
 
