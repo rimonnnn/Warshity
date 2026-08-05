@@ -24,56 +24,86 @@ class ContainerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth > 900;
+        final isDesktop = constraints.maxWidth >= 900;
+        final isArabic = context.locale.languageCode == "ar";
+
+        final imageSize = isDesktop ? 120.0 : 70.0;
+        final horizontalPadding = isDesktop ? 40.0 : 20.0;
 
         return Container(
           width: width ?? double.infinity,
           height: height ?? (isDesktop ? 220 : 150),
-          padding:
-              padding ??
-              EdgeInsets.symmetric(
-                horizontal: isDesktop ? 40 : 24,
-                vertical: isDesktop ? 32 : 24,
-              ),
           decoration: BoxDecoration(
             color: color ?? context.colors.primary,
             borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.md),
           ),
-          child: Row(
-            textDirection: .rtl,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Stack(
             children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "welcome_actor".tr(),
-                      textAlign: TextAlign.end,
-                      style: context.text.headlineMedium?.copyWith(
-                        color: context.colors.onPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "welcome_message".tr(),
-                      textAlign: TextAlign.end,
-                      style: context.text.bodyLarge?.copyWith(
-                        color: context.colors.onPrimary,
-                      ),
-                    ),
-                  ],
+              /// الصورة
+              Positioned(
+                left: isArabic ? horizontalPadding : null,
+                right: isArabic ? null : horizontalPadding,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: Image.asset(
+                    AppAssets.homeicon,
+                    width: imageSize,
+                    height: imageSize,
+                    fit: BoxFit.contain,
+                    color: context.colors.onPrimary,
+                  ),
                 ),
               ),
 
-              const SizedBox(width: 24),
+              /// النص
+              Positioned.fill(
+                child: Padding(
+                  padding: isArabic
+                      ? EdgeInsets.only(
+                          left: horizontalPadding + imageSize + 20,
+                          right: horizontalPadding,
+                        )
+                      : EdgeInsets.only(
+                          left: horizontalPadding,
+                          right: horizontalPadding + imageSize + 20,
+                        ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
-              Image.asset(
-                AppAssets.homeicon,
-                width: isDesktop ? 120 : 90,
-                height: isDesktop ? 120 : 90,
-                color: context.colors.onPrimary,
+                    children: [
+                      Text(
+                        "welcome_actor".tr(),
+                        textAlign: TextAlign.start,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            (isDesktop
+                                    ? context.text.headlineMedium
+                                    : context.text.headlineSmall)
+                                ?.copyWith(
+                                  color: context.colors.onPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+
+                      SizedBox(height: isDesktop ? 10 : 6),
+
+                      Text(
+                        "welcome_message".tr(),
+                        textAlign: TextAlign.start,
+                        maxLines: isArabic ? 2 : 3,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            (isDesktop
+                                    ? context.text.bodyLarge
+                                    : context.text.bodyMedium)
+                                ?.copyWith(color: context.colors.onPrimary),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
