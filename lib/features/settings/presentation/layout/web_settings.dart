@@ -178,7 +178,7 @@ class _WebSettingsScreenState extends State<WebSettingsScreen> {
                 HeightSpace(32.h),
 
                 Align(
-                  alignment: .bottomEnd,
+                  alignment: Alignment.bottomLeft,
                   child: LogoutButton(
                     title: "logout".tr(),
                     onPressed: () {},
