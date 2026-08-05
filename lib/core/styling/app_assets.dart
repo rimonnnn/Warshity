@@ -22,5 +22,8 @@ class AppAssets {
   static const String loginicon = "assets/images/Icon (19).png";
   static const String lockedEemail = "assets/images/mail_locked.png";
   static const String sucsessEemail = "assets/images/mail_sucsess.png";
+
   static const String homeicon = "assets/images/homeicon.png";
+
+  static const String searchIcon = "assets/images/search_icon.png";
 }

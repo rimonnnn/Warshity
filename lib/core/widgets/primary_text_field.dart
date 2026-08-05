@@ -6,7 +6,7 @@ import 'package:warshity/core/extensions/context_extension.dart';
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
-    required this.label,
+    this.label,
     required this.hint,
     this.controller,
     this.prefixIcon,
@@ -22,7 +22,7 @@ class CustomTextField extends StatelessWidget {
     this.borderRadius,
   });
 
-  final String label;
+  final String? label;
   final String hint;
 
   final TextEditingController? controller;
@@ -47,7 +47,7 @@ class CustomTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          label ?? "",
           style: context.text.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
@@ -69,6 +69,7 @@ class CustomTextField extends StatelessWidget {
               hintText: hint,
               hintStyle: context.text.bodyLarge?.copyWith(
                 color: context.colors.onSurfaceVariant,
+                fontWeight: FontWeight.normal,
               ),
               prefixIcon: prefixIcon != null
                   ? Padding(
