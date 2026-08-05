@@ -12,6 +12,7 @@ import 'package:warshity/features/auth/login/presentation/screens/login_screen.d
 import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
+import 'package:warshity/features/invoices/presentation/screens/invoice_screen.dart';
 import 'package:warshity/features/main/presentation/screens/main_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
@@ -58,6 +59,11 @@ class RouterGeneratorConfig {
         path: AppRoutes.mainScreen,
         name: AppRoutes.mainScreen,
         builder: (context, state) => const MainScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.invoiceScreen,
+        name: AppRoutes.invoiceScreen,
+        builder: (context, state) => const InvoiceScreen(),
       ),
 
       // كل شاشات الـ Auth بتتشارك في نفس الـ AuthCubit instance

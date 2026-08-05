@@ -8,4 +8,5 @@ class AppRoutes {
 
   static const String mainScreen = "/main_screen";
   static const String homeScreen = "/home";
+  static const String invoiceScreen = "/invoiceScreen";
 }

@@ -1,7 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:warshity/core/widgets/app_responsive.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
+import 'package:warshity/features/invoices/presentation/layout/invoice_mobile.dart';
+import 'package:warshity/features/invoices/presentation/layout/invoice_web.dart';
 import 'package:warshity/features/main/presentation/layout/main_mobile.dart';
 import 'package:warshity/features/main/presentation/layout/main_web.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
@@ -9,25 +10,71 @@ import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
-  // قايمة الـ tabs معرّفة مرة واحدة هنا، وبتتمرر لكل من الموبايل والويب
-  // عشان لو ضفت/شلت تاب، تعدّل مكان واحد بس
-  static final List<MainNavItem> _navItems = [
+  // نسخة الموبايل: كل تاب بياخد الـ layout بتاعه المخصص للموبايل مباشرة
+  // من غير أي AppResponsive جوه أي تاب — القرار اتاخد هنا مرة واحدة بس
+  static final List<MainNavItem> _mobileNavItems = [
     MainNavItem(
       icon: Icons.home_outlined,
       selectedIcon: Icons.home,
-      labelKey: 'home'.tr(),
+      labelKey: 'home', // مفتاح خام، من غير .tr() هنا
       screen: const HomeScreen(),
     ),
     MainNavItem(
       icon: Icons.receipt_long_outlined,
       selectedIcon: Icons.receipt_long,
-      labelKey: 'invoices'.tr(),
-      screen: const Center(child: Text('Invoices')), // TODO: استبدلها
+      labelKey: 'invoices',
+      screen: const InvoiceMobile(),
+    ),
+    MainNavItem(
+      icon: Icons.inventory_2_outlined,
+      selectedIcon: Icons.inventory_2,
+      labelKey: 'products',
+      screen: const Center(child: Text('Products')), // TODO: استبدلها
+    ),
+    MainNavItem(
+      icon: Icons.people_outline,
+      selectedIcon: Icons.people,
+      labelKey: 'clients',
+      screen: const Center(child: Text('Clients')), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.settings_outlined,
       selectedIcon: Icons.settings,
-      labelKey: 'settings'.tr(),
+      labelKey: 'settings',
+      screen: const Center(child: Text('Settings')), // TODO: استبدلها
+    ),
+  ];
+
+  // نسخة الويب: نفس التابات، بس كل واحد بياخد الـ layout بتاعه المخصص للويب
+  static final List<MainNavItem> _webNavItems = [
+    MainNavItem(
+      icon: Icons.home_outlined,
+      selectedIcon: Icons.home,
+      labelKey: 'home',
+      screen: const HomeScreen(),
+    ),
+    MainNavItem(
+      icon: Icons.receipt_long_outlined,
+      selectedIcon: Icons.receipt_long,
+      labelKey: 'invoices',
+      screen: const InvoiceWeb(),
+    ),
+    MainNavItem(
+      icon: Icons.inventory_2_outlined,
+      selectedIcon: Icons.inventory_2,
+      labelKey: 'products',
+      screen: const Center(child: Text('Products')), // TODO: استبدلها
+    ),
+    MainNavItem(
+      icon: Icons.people_outline,
+      selectedIcon: Icons.people,
+      labelKey: 'clients',
+      screen: const Center(child: Text('Clients')), // TODO: استبدلها
+    ),
+    MainNavItem(
+      icon: Icons.settings_outlined,
+      selectedIcon: Icons.settings,
+      labelKey: 'settings',
       screen: const Center(child: Text('Settings')), // TODO: استبدلها
     ),
   ];
@@ -35,8 +82,8 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppResponsive(
-      mobile: MainMobile(navItems: _navItems),
-      desktop: MainWeb(navItems: _navItems),
+      mobile: MainMobile(navItems: _mobileNavItems),
+      desktop: MainWeb(navItems: _webNavItems),
     );
   }
 }

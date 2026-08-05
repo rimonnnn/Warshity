@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
@@ -39,7 +40,7 @@ class _MainMobileState extends State<MainMobile> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
             child: GNav(
               selectedIndex: _currentIndex,
               onTabChange: (index) {
@@ -47,9 +48,9 @@ class _MainMobileState extends State<MainMobile> {
               },
               rippleColor: context.colors.primary.withValues(alpha: 0.1),
               hoverColor: context.colors.primary.withValues(alpha: 0.05),
-              gap: 8,
+              gap: 2,
               activeColor: context.colors.primary,
-              iconSize: 22,
+              iconSize: 22.sp,
               tabBackgroundColor: context.colors.primary.withValues(alpha: 0.1),
               color: context.colors.onSurfaceVariant,
               textStyle: context.text.labelMedium?.copyWith(
