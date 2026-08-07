@@ -10,4 +10,6 @@ class AppRoutes {
   static const String homeScreen = "/home";
   static const String invoiceScreen = "/invoiceScreen";
   static const String addproductScreen = "/addproductScreen";
+  static const String addclientScreen = "/addclientScreen";
+
 }

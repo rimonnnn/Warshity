@@ -240,5 +240,18 @@
 
   "customer_ahmed": "Ahmed Mahmoud",
   "customer_mohamed": "Mohamed Ali",
-  "search_client" : "Search by customer name or phone number..."
+  "search_client" : "Search by customer name or phone number...",
+   "add_customer": "Add Customer",
+  "customer_name_hint": "Enter customer name",
+  "phone_number": "Phone Number",
+  "phone_hint": "01xxxxxxxxx",
+  "address_hint": "Enter address",
+  "opening_balance": "Opening Balance",
+  "balance_type": "Balance Type",
+  "credit": "Credit",
+  "debit": "Debit",
+  "notes": "Notes",
+  "notes_hint": "Write any notes...",
+  "save_customer": "Save Customer",
+  "customer_name1" : "Customer Name"
 }
