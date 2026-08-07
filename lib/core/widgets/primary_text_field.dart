@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
     required this.hint,
     this.controller,
     this.prefixIcon,
+    this.prefixIconData,
     this.suffixIcon,
     this.keyboardType,
     this.obscureText = false,
@@ -27,6 +28,7 @@ class CustomTextField extends StatelessWidget {
 
   final TextEditingController? controller;
   final String? prefixIcon;
+  final IconData? prefixIconData;
   final IconButton? suffixIcon;
 
   final TextInputType? keyboardType;
@@ -81,7 +83,12 @@ class CustomTextField extends StatelessWidget {
                         color: context.colors.onSurfaceVariant,
                       ),
                     )
-                  : Icon(Icons.email, color: context.colors.onSurfaceVariant),
+                  : prefixIconData != null
+                      ? Icon(
+                          prefixIconData,
+                          color: context.colors.onSurfaceVariant,
+                        )
+                      : null,
               suffixIcon: suffixIcon,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 20,

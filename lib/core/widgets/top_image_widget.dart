@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
-import 'package:warshity/core/styling/app_assets.dart';
 
 class TopImageWidget extends StatelessWidget {
   final double? width;

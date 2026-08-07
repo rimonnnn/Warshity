@@ -188,6 +188,36 @@
   "theme" : "Theme",
   "city" : "Cairo - Egypt",
   "times" : "2 minutes ago",
-  "version" : "Version 2.4.0"
+  "version" : "Version 2.4.0",
+  "add_client": "Add Client",
+  "client_name": "Client Name",
+  "client_name_hint": "Enter the client's name",
+  
+  "phone_hint": "Enter the client's phone number",
+  "address_hint": "Enter the client's address",
+  "cancel": "Cancel",
+  "save": "Save",
+  "glue": "Glue",
+  "accessories": "Accessories",
+  "rivets": "Rivets",
+  "other": "Other",
+  "product_name": "Product Name",
+  "product_name_hint": "Enter the product's name",
+  "product_price": "Product Price",
+  "price_hint": "Enter the product's price",
+  "category": "Category",
+  "select_category": "Select a category",
+  "add_new_product": "Add New Product",
+  "search_products": "Search for products...",
+  "search_clients": "Search for clients...",
+  "enter_discount": "Enter Discount",
+
+
+  "cart": "Cart",
+  "create_invoice": "Create Invoice",
+  "invoice_summary": "Invoice Summary",
+  "subtotal": "Subtotal",
+  "discount": "Discount",
+  "final_total": "Final Total"
 
 }

@@ -191,6 +191,37 @@
   "theme" : "المظهر",
   "city" : "القاهرة - مصر",
   "times" : "منذ دقيقتين",
-  "version" : "النسخة 2.4.0"
+  "version" : "النسخة 2.4.0",
+   "add_client": "إضافة عميل",
+  "client_name": "اسم العميل",
+  "client_name_hint": "أدخل اسم العميل",
+
+  "phone_hint": "أدخل رقم هاتف العميل",
+  "address_hint": "أدخل عنوان العميل",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+
+  "glue": "غراء",
+  "accessories": "إكسسوارات",
+  "rivets": "مسامير",
+  "other": "أخرى",
+
+  "product_name": "اسم المنتج",
+  "product_name_hint": "أدخل اسم المنتج",
+  "product_price": "سعر المنتج",
+  "price_hint": "أدخل سعر المنتج",
+  "category": "الفئة",
+  "select_category": "اختر فئة",
+  "add_new_product": "إضافة منتج جديد",
+  "search_products": "بحث عن المنتجات...",
+  "search_clients": "بحث عن العملاء...",
+  "enter_discount": "أدخل الخصم",
+
+  "cart": "سلة المشتريات",
+  "create_invoice": "إنشاء فاتورة",
+  "invoice_summary": "ملخص الفاتورة",
+  "subtotal": "الإجمالي الفرعي",
+  "discount": "الخصم",
+  "final_total": "الإجمالي النهائي"
 }
 
