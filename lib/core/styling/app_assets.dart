@@ -26,4 +26,9 @@ class AppAssets {
   static const String homeicon = "assets/images/homeicon.png";
 
   static const String searchIcon = "assets/images/search_icon.png";
+  static const product1 = "assets/images/product1.png";
+  static const product2 = "assets/images/product2.png";
+  static const product3 = "assets/images/product3.png";
+
+
 }

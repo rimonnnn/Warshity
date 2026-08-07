@@ -188,6 +188,27 @@
   "theme" : "Theme",
   "city" : "Cairo - Egypt",
   "times" : "2 minutes ago",
-  "version" : "Version 2.4.0"
+  "version" : "Version 2.4.0",
+  "search_product": "Search by product or barcode...",
+"woods": "Wood",
+"accessories": "Accessories",
+"paints": "Paints",
+"quantity": "Quantity",
+  "product_code": "Product Code",
+  "end_of_products": "End of Products List"
 
+,
+  "product_wood_swedish": "Swedish Muski Wood",
+  "product_stainless_hinge": "Stainless Hinge",
+  "product_lacquer_paint": "Lacquer Paint",
+
+  "price_320": "EGP 320",
+  "price_40": "EGP 40",
+  "price_550": "EGP 550",
+
+  "quantity_45_meter": "45 m",
+  "quantity_120_piece": "120 pcs",
+  "quantity_18_can": "18 cans",
+  "showing_items": "Showing {0}-{1} of {2} products",
+  "add_product": "Add Product"
 }
