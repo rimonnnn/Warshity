@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/Cleints/data/customer_model.dart';
@@ -75,7 +77,9 @@ class _WebCustomersState extends State<WebCustomers> {
                     const Spacer(),
 
                     FilledButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.pushNamed(AppRoutes.addclientScreen);
+                      },
                       icon: const Icon(Icons.person_add_alt_1),
                       label: Text("new_customer".tr()),
                     ),

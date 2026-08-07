@@ -241,7 +241,20 @@
 
   "customer_ahmed": "أحمد محمود",
   "customer_mohamed": "محمد علي",
-  "search_client" : "ابحث باسم العميل أو رقم الهاتف..."
+  "search_client" : "ابحث باسم العميل أو رقم الهاتف...",
+   "add_customer": "إضافة عميل جديد",
+  "customer_name_hint": "أدخل اسم العميل",
+  "phone_number": "رقم الهاتف",
+  "phone_hint": "01xxxxxxxxx",
+  "address_hint": "أدخل العنوان",
+  "opening_balance": "الرصيد الافتتاحي",
+  "balance_type": "نوع الرصيد",
+  "credit": "دائن",
+  "debit": "مدين",
+  "notes": "ملاحظات",
+  "notes_hint": "اكتب أي ملاحظات...",
+  "save_customer": "حفظ العميل",
+  "customer_name1" : "اسم العميل"
 }
 
 

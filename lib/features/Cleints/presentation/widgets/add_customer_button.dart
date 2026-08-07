@@ -12,6 +12,7 @@ class AddCustomerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
+      heroTag: null,
       onPressed: onPressed,
       icon: const Icon(Icons.person_add_alt_1),
       label: Text(
