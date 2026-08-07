@@ -191,6 +191,27 @@
   "theme" : "المظهر",
   "city" : "القاهرة - مصر",
   "times" : "منذ دقيقتين",
-  "version" : "النسخة 2.4.0"
+  "version" : "النسخة 2.4.0",
+  "search_product": "ابحث عن منتج أو رمز الباركود...",
+"woods": "أخشاب",
+"accessories": "إكسسوارات",
+"paints": "دهانات",
+  "product_code": "رمز المنتج",
+  "end_of_products": "نهاية قائمة المنتجات"
+  ,
+  "product_wood_swedish": "خشب موسكي سويدي",
+  "product_stainless_hinge": "مفصلة استانلس",
+  "product_lacquer_paint": "دهان لاكيه",
+
+  "price_320": "320 ج.م",
+  "price_40": "40 ج.م",
+  "price_550": "550 ج.م",
+
+  "quantity_45_meter": "45 متر",
+  "quantity_120_piece": "120 قطعة",
+  "quantity_18_can": "18 عبوة",
+  "showing_items": "عرض {0}-{1} من أصل {2} منتج",
+  "add_product": "اضافة منتج"
 }
+
 
