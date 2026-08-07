@@ -1,7 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_filter_chips.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_list.dart';
@@ -44,7 +46,7 @@ class InvoiceMobile extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // context.pushNamed(AppRouts.addInvoice);
+          context.pushNamed(AppRoutes.addInvoicesScreen);
         },
         backgroundColor: context.colors.onPrimary,
         child: Icon(Icons.add, color: context.colors.primary),

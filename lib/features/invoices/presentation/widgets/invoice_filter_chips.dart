@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/constants/app_padding.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 
 class InvoiceFilterChips extends StatelessWidget {
   const InvoiceFilterChips({super.key});
@@ -41,7 +41,7 @@ class InvoiceFilterChips extends StatelessWidget {
                     : context.colors.onSurfaceVariant,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
-              backgroundColor: context.colors.surface,
+              backgroundColor: context.colors.surfaceContainerLow,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.r),
                 side: BorderSide(color: context.colors.outlineVariant),

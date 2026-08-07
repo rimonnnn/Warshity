@@ -34,10 +34,7 @@ class AppValidators {
     return null;
   }
 
-  static String? confirmPassword(
-    String? value,
-    String password,
-  ) {
+  static String? confirmPassword(String? value, String password) {
     if (value == null || value.isEmpty) {
       return 'validator_confirm_password_required'.tr();
     }
@@ -60,6 +57,57 @@ class AppValidators {
     if (!accepted) {
       return 'validator_terms_required'.tr();
     }
+    return null;
+  }
+
+  static String? clientName(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'validator_client_name_required'.tr();
+    }
+    return null;
+  }
+
+  static String? phone(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'validator_phone_required'.tr();
+    }
+
+    final phoneRegex = RegExp(r'^01[0125][0-9]{8}$');
+
+    if (!phoneRegex.hasMatch(value.trim())) {
+      return 'validator_phone_invalid'.tr();
+    }
+
+    return null;
+  }
+
+  static String? price(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'validator_price_required'.tr();
+    }
+
+    final price = double.tryParse(value.trim());
+
+    if (price == null) {
+      return 'validator_price_invalid'.tr();
+    }
+
+    if (price <= 0) {
+      return 'validator_price_greater_than_zero'.tr();
+    }
+
+    return null;
+  }
+
+  static String? address(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'validator_address_required'.tr();
+    }
+
+    if (value.trim().length < 5) {
+      return 'validator_address_too_short'.tr();
+    }
+
     return null;
   }
 }

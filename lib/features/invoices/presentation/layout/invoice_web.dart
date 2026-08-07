@@ -1,11 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_filter_chips.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_list.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_search_bar.dart';
-import 'package:warshity/features/invoices/presentation/widgets/invoice_statistics_section.dart';
-import 'package:warshity/features/invoices/presentation/widgets/invoices_statistics_section_on_web.dart';
 
 class InvoiceWeb extends StatelessWidget {
   const InvoiceWeb({super.key});
@@ -19,7 +19,7 @@ class InvoiceWeb extends StatelessWidget {
       child: Container(
         color: context.colors.surface,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 24 ),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -35,11 +35,11 @@ class InvoiceWeb extends StatelessWidget {
                       ),
                     ),
                   ),
-                 
+
                   IntrinsicWidth(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // context.pushNamed(AppRoutes.addInvoice);
+                        context.pushNamed(AppRoutes.addInvoicesScreen);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.colors.primary,
@@ -64,22 +64,18 @@ class InvoiceWeb extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 16,),
-               InvoiceSearchBar(),
-            SizedBox(height: 24,),
+              SizedBox(height: 16),
+              InvoiceSearchBar(),
+              SizedBox(height: 24),
               InvoiceFilterChips(),
-            
 
               const SizedBox(height: 24),
-             
-                 Expanded(child: InvoiceList()),
-                
-            ]
-              ),
-            
+
+              Expanded(child: InvoiceList()),
+            ],
           ),
         ),
-      );
-    
+      ),
+    );
   }
 }
