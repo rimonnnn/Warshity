@@ -4,10 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-
-import 'package:warshity/features/add_invoices/presentation/screens/add_invoice.dart';
 import 'package:warshity/features/AddClient/presentation/screens/addclient_screen.dart';
-import 'package:warshity/features/AddProduct/presentation/screens/addproduct_screen.dart';
+import 'package:warshity/features/add_invoices/presentation/screens/add_invoice.dart';
 import 'package:warshity/features/auth/access_password/presentation/screens/access_pass_screen.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/data/auth_repo.dart';
@@ -70,17 +68,14 @@ class RouterGeneratorConfig {
         builder: (context, state) => const InvoiceScreen(),
       ),
       GoRoute(
-
         path: AppRoutes.addInvoicesScreen,
         name: AppRoutes.addInvoicesScreen,
         builder: (context, state) => const AddInvoice(),
-   
       ),
-       GoRoute(
+      GoRoute(
         path: AppRoutes.addclientScreen,
         name: AppRoutes.addclientScreen,
         builder: (context, state) => const AddclientScreen(),
-
       ),
 
       // كل شاشات الـ Auth بتتشارك في نفس الـ AuthCubit instance
