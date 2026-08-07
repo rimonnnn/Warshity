@@ -211,7 +211,24 @@
   "quantity_120_piece": "120 قطعة",
   "quantity_18_can": "18 عبوة",
   "showing_items": "عرض {0}-{1} من أصل {2} منتج",
-  "add_product": "اضافة منتج"
+  "add_product": "اضافة منتج",
+  "add_product1": "إضافة منتج جديد",
+  "product_image": "صورة المنتج",
+  "upload_product_image": "إضافة صورة المنتج",
+  "product_name": "اسم المنتج",
+  "product_name_hint": "مثال: كرسي خشب زان",
+  "category": "التصنيف",
+  "select_category": "اختر التصنيف",
+  "product_code1": "كود المنتج",
+  "product_code_hint": "SKU-0000",
+  "selling_price": "سعر البيع (ج.م)",
+  "purchase_price": "سعر الشراء",
+  "quantity1": "الكمية الحالية",
+  "unit1": "وحدة القياس",
+  "piece": "قطعة",
+  "meter": "متر",
+  "kg": "كجم",
+  "save_product": "حفظ المنتج"
 }
 
 
