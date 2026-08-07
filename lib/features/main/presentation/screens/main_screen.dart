@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:warshity/core/widgets/app_responsive.dart';
+import 'package:warshity/features/Cleints/presentation/layout/mobile_client.dart';
+import 'package:warshity/features/Cleints/presentation/layout/web_client.dart';
 import 'package:warshity/features/home/presentation/layout/mobile_home.dart';
 import 'package:warshity/features/home/presentation/layout/web_home.dart';
 import 'package:warshity/features/invoices/presentation/layout/invoice_mobile.dart';
@@ -7,6 +9,8 @@ import 'package:warshity/features/invoices/presentation/layout/invoice_web.dart'
 import 'package:warshity/features/main/presentation/layout/main_mobile.dart';
 import 'package:warshity/features/main/presentation/layout/main_web.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
+import 'package:warshity/features/products/presentation/layout/mobile_product.dart';
+import 'package:warshity/features/products/presentation/layout/web_product.dart';
 import 'package:warshity/features/settings/presentation/layout/mobile_settings.dart';
 import 'package:warshity/features/settings/presentation/layout/web_settings.dart';
 class MainScreen extends StatelessWidget {
@@ -31,13 +35,13 @@ class MainScreen extends StatelessWidget {
       icon: Icons.inventory_2_outlined,
       selectedIcon: Icons.inventory_2,
       labelKey: 'products',
-      screen: const Center(child: Text('Products')), // TODO: استبدلها
+      screen: MobileProduct(), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.people_outline,
       selectedIcon: Icons.people,
       labelKey: 'clients',
-      screen: const Center(child: Text('Clients')), // TODO: استبدلها
+      screen: MobileClient(), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.settings_outlined,
@@ -65,13 +69,13 @@ class MainScreen extends StatelessWidget {
       icon: Icons.inventory_2_outlined,
       selectedIcon: Icons.inventory_2,
       labelKey: 'products',
-      screen: const Center(child: Text('Products')), // TODO: استبدلها
+      screen: WebProduct(), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.people_outline,
       selectedIcon: Icons.people,
       labelKey: 'clients',
-      screen: const Center(child: Text('Clients')), // TODO: استبدلها
+      screen: WebCustomers(), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.settings_outlined,
