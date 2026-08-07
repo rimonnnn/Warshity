@@ -228,7 +228,20 @@
   "piece": "قطعة",
   "meter": "متر",
   "kg": "كجم",
-  "save_product": "حفظ المنتج"
+  "save_product": "حفظ المنتج",
+   "customer_debt": "عليه مديونية: {0}",
+  "customer_balance": "الحساب متزن: {0}",
+  "details": "التفاصيل",
+  "new_customer": "عميل جديد",
+   "delivery_orders": "طلبات التوصيل المنتظرة",
+  "waiting_customers": "{0} عملاء بانتظار الاستلام",
+   "customers": "العملاء",
+  "debt": "مديونية",
+  "balanced": "حساب متزن",
+
+  "customer_ahmed": "أحمد محمود",
+  "customer_mohamed": "محمد علي",
+  "search_client" : "ابحث باسم العميل أو رقم الهاتف..."
 }
 
 
