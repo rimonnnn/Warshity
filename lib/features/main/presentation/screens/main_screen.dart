@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:warshity/core/widgets/app_responsive.dart';
+import 'package:warshity/features/Cleints/presentation/layout/mobile_client.dart';
+import 'package:warshity/features/Cleints/presentation/layout/web_client.dart';
 import 'package:warshity/features/home/presentation/layout/mobile_home.dart';
 import 'package:warshity/features/home/presentation/layout/web_home.dart';
 import 'package:warshity/features/invoices/presentation/layout/invoice_mobile.dart';
@@ -39,7 +41,7 @@ class MainScreen extends StatelessWidget {
       icon: Icons.people_outline,
       selectedIcon: Icons.people,
       labelKey: 'clients',
-      screen: const Center(child: Text('Clients')), // TODO: استبدلها
+      screen: MobileClient(), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.settings_outlined,
@@ -73,7 +75,7 @@ class MainScreen extends StatelessWidget {
       icon: Icons.people_outline,
       selectedIcon: Icons.people,
       labelKey: 'clients',
-      screen: const Center(child: Text('Clients')), // TODO: استبدلها
+      screen: WebCustomers(), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.settings_outlined,

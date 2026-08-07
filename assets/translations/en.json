@@ -227,5 +227,18 @@
   "piece": "Piece",
   "meter": "Meter",
   "kg": "Kg",
-  "save_product": "Save Product"
+  "save_product": "Save Product",
+   "customer_debt": "Debt: {0}",
+  "customer_balance": "Balanced: {0}",
+  "details": "Details",
+  "new_customer": "New Customer",
+  "delivery_orders": "Pending Delivery Orders",
+  "waiting_customers": "{0} customers waiting for delivery",
+  "customers": "Customers",
+  "debt": "Debt",
+  "balanced": "Balanced",
+
+  "customer_ahmed": "Ahmed Mahmoud",
+  "customer_mohamed": "Mohamed Ali",
+  "search_client" : "Search by customer name or phone number..."
 }
