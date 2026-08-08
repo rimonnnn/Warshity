@@ -11,6 +11,7 @@ import 'package:warshity/features/Cleints/presentation/widgets/customer_filter_t
 import 'package:warshity/features/Cleints/presentation/widgets/customer_list.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_map_card.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/delivery_orders_card.dart';
+import 'package:warshity/features/ClientDetails/data/invoice_model.dart';
 import 'package:warshity/features/products/presentation/widgets/product_search_widget.dart';
 
 class MobileClient extends StatefulWidget {
@@ -37,28 +38,83 @@ class _MobileCustomersState extends State<MobileClient> {
       "balanced".tr(),
     ];
   }
+final customers = [
+  CustomerModel(
+    name: "customer_ahmed".tr(),
+    phone: "01012345678",
+    balance: "1,400 ${"pound".tr()}",
+    hasDebt: true,
 
-  final customers = [
-    CustomerModel(
-      name: "customer_ahmed".tr(),
-      phone: "01012345678",
-      balance: "1,400 ج.م",
-      hasDebt: true,
-      avatar: Icon(
-        Icons.person,
-        size: 48.sp,
-      )
+    avatar: Icon(
+      Icons.person,
+      size: 48.sp,
     ),
-    CustomerModel(
-      name: "customer_mohamed".tr(),
-      phone: "01098765432",
-      balance: "0 ج.م",
-      hasDebt: false,
-      avatar: Icon(
-        Icons.person,
-        size: 48.sp,)
+
+    invoices: [
+      InvoiceModel(
+        invoiceNumber: "INV-001",
+        customerName: "customer_ahmed".tr(),
+        date: "12 ${"month3".tr()} 2024",
+        paymentMethod: "unpaid".tr(),
+        itemCount: 3,
+        totalPrice: "450 ${"pound".tr()}",
+      ),
+      InvoiceModel(
+        invoiceNumber: "INV-002",
+        customerName: "customer_ahmed".tr(),
+        date: "05 ${"month3".tr()} 2024",
+        paymentMethod: "paid".tr(),
+        itemCount: 2,
+        totalPrice: "950 ${"pound".tr()}",
+      ),
+      InvoiceModel(
+        invoiceNumber: "INV-003",
+        customerName: "customer_ahmed".tr(),
+        date: "28 ${"month2".tr()} 2024",
+        paymentMethod: "unpaid".tr(),
+        itemCount: 4,
+        totalPrice: "950 ${"pound".tr()}",
+      ),
+    ],
+
+    totalPurchases: "12,500 ${"pound".tr()}",
+    orderCount: "24",
+  ),
+
+  CustomerModel(
+    name: "customer_mohamed".tr(),
+    phone: "01098765432",
+    balance: "0 ${"pound".tr()}",
+    hasDebt: false,
+
+    avatar: Icon(
+      Icons.person,
+      size: 48.sp,
     ),
-  ];
+
+    invoices: [
+      InvoiceModel(
+        invoiceNumber: "INV-004",
+        customerName: "customer_mohamed".tr(),
+        date: "20 ${"month3".tr()} 2024",
+        paymentMethod: "paid".tr(),
+        itemCount: 5,
+        totalPrice: "1,200 ${"pound".tr()}",
+      ),
+      InvoiceModel(
+        invoiceNumber: "INV-005",
+        customerName: "customer_mohamed".tr(),
+        date: "10 ${"month3".tr()} 2024",
+        paymentMethod: "paid".tr(),
+        itemCount: 2,
+        totalPrice: "750 ${"pound".tr()}",
+      ),
+    ],
+
+    totalPurchases: "8,500 ${"pound".tr()}",
+    orderCount: "15",
+  ),
+];
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +157,12 @@ class _MobileCustomersState extends State<MobileClient> {
 
               CustomerList(
                 customers: customers,
+                onTap: (index) {
+                  context.pushNamed(
+                    AppRoutes.customerdetailsScreen,
+                    extra: customers[index],
+                  );
+                },
               ),
 
               HeightSpace(24.h),

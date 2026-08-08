@@ -277,5 +277,19 @@
   "notes": "Notes",
   "notes_hint": "Write any notes...",
   "save_customer": "Save Customer",
-  "customer_name1" : "Customer Name"
+  "customer_name1" : "Customer Name",
+   "current_debt": "Current Total Debt",
+  "pay_debt": "Pay Debt",
+  "customer_details": "Customer Details",
+
+  "recent_invoices": "Recent Invoice History",
+  "show_all": "Show All",
+
+  "total_purchases": "Total Purchases",
+  "order_count": "Order Count",
+  "orders": "Orders",
+
+  "pound" : "EGP",
+  "month2" : "February",
+  "month3" : "March"
 }
