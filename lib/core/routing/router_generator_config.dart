@@ -6,6 +6,8 @@ import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/AddClient/presentation/screens/addclient_screen.dart';
 import 'package:warshity/features/AddProduct/presentation/screens/addproduct_screen.dart';
+import 'package:warshity/features/Cleints/data/customer_model.dart';
+import 'package:warshity/features/ClientDetails/presentation/screens/customerdetails_screen.dart';
 import 'package:warshity/features/add_invoices/presentation/screens/add_invoice.dart';
 import 'package:warshity/features/auth/access_password/presentation/screens/access_pass_screen.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
@@ -83,6 +85,17 @@ class RouterGeneratorConfig {
         name: AppRoutes.addproductScreen,
         builder: (context, state) => const AddproductScreen(),
       ),
+      GoRoute(
+  path: AppRoutes.customerdetailsScreen,
+  name: AppRoutes.customerdetailsScreen,
+  builder: (context, state) {
+    final customer = state.extra as CustomerModel;
+
+    return CustomerdetailsScreen(
+      customer: customer,
+    );
+  },
+),
 
       // كل شاشات الـ Auth بتتشارك في نفس الـ AuthCubit instance
       ShellRoute(
