@@ -277,5 +277,19 @@
   "notes": "Notes",
   "notes_hint": "Write any notes...",
   "save_customer": "Save Customer",
-  "customer_name1" : "Customer Name"
+  "customer_name1" : "Customer Name",
+
+  "catagory": "Catagory",
+  "amount":"Amount",
+  "the_price": "Price",
+  "the_wood": "Wood",
+  "invoice_numer": "Invoice Number",
+  "date": "Date",
+  "net_invoice": "Net Invoice",
+  "the_paid": "Paid",
+  "share_pdf": "Share PDF",
+  "thank_you_for_your_business" : "Thank You for your business",
+  "bussnis_name": "Bussnis Name",
+  "check_invoice": "Check Invoice"
+ 
 }

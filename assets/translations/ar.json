@@ -279,7 +279,19 @@
   "notes": "ملاحظات",
   "notes_hint": "اكتب أي ملاحظات...",
   "save_customer": "حفظ العميل",
-  "customer_name1" : "اسم العميل"
+  "customer_name1" : "اسم العميل",
+  "catagory": "الفئة",
+"amount": "الكمية",
+"the_price": "السعر",
+"the_wood": "الخشب",
+"invoice_numer": "رقم الفاتورة",
+"date": "التاريخ",
+"net_invoice": "صافي الفاتورة",
+"the_paid": "المدفوع",
+"share_pdf": "مشاركة PDF",
+"thank_you_for_your_business": "شكرًا لتعاملك معنا",
+"bussnis_name": "اسم النشاط التجاري",
+"check_invoice": "مراجعة الفاتورة"
 }
 
 

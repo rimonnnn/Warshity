@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/helper/app_validators.dart';
+import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/add_client_dialog.dart';
@@ -98,7 +100,12 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                 HeightSpace(16),
 
                 // Bottom Button
-                CreateInvoiceButton(onPressed: () {}, fontSize: 20.sp),
+                CreateInvoiceButton(
+                  onPressed: () {
+                    context.pushNamed(AppRoutes.checkInvoiceScreen);
+                  },
+                  fontSize: 20.sp,
+                ),
                 HeightSpace(24),
               ],
             ),

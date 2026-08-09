@@ -12,6 +12,9 @@ class PrimaryButtonWidget extends StatelessWidget {
   final double? height;
   final double? fontSize;
   final String? iconPath;
+  final IconData? iconData;
+  final double? iconSize;
+  final Color? iconeColor;
   final bool? prefixicon;
   final bool? suffixicon;
   final double? buttonspacing;
@@ -28,6 +31,9 @@ class PrimaryButtonWidget extends StatelessWidget {
     this.textColor,
     this.fontSize,
     this.iconPath,
+    this.iconData,
+    this.iconeColor,
+    this.iconSize,
     this.prefixicon,
     this.suffixicon,
     this.buttonspacing,
@@ -57,7 +63,7 @@ class PrimaryButtonWidget extends StatelessWidget {
               ),
             )
           : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 if (prefixicon == true && iconPath != null)
                   Image.asset(
@@ -66,8 +72,13 @@ class PrimaryButtonWidget extends StatelessWidget {
                     height: 24.h,
                     color: textColor ?? context.colors.onPrimary,
                     fit: BoxFit.cover,
+                  )
+                else if (iconData != null)
+                  Icon(
+                    iconData,
+                    color: iconeColor ?? context.colors.onSurfaceVariant,
+                    size: iconSize ?? 20,
                   ),
-                SizedBox(width: buttonspacing ?? 12.w),
                 Text(
                   buttonText ?? "",
                   style: context.text.titleMedium?.copyWith(
