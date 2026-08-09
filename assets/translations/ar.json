@@ -280,6 +280,7 @@
   "notes_hint": "اكتب أي ملاحظات...",
   "save_customer": "حفظ العميل",
   "customer_name1" : "اسم العميل",
+
   "catagory": "الفئة",
 "amount": "الكمية",
 "the_price": "السعر",
@@ -291,7 +292,24 @@
 "share_pdf": "مشاركة PDF",
 "thank_you_for_your_business": "شكرًا لتعاملك معنا",
 "bussnis_name": "اسم النشاط التجاري",
-"check_invoice": "مراجعة الفاتورة"
+"check_invoice": "مراجعة الفاتورة",
+
+  "current_debt": "إجمالي المديونية الحالية",
+  "pay_debt": "سداد دفعة من الدين",
+  "customer_details": "تفاصيل العميل",
+
+  "recent_invoices": "سجل الفواتير الأخيرة",
+  "show_all": "عرض الكل",
+
+
+ "pound" : "ج.م",
+  "total_purchases": "إجمالي المشتريات",
+  "order_count": "عدد الطلبات",
+  "orders": "طلب",
+
+  "month2" : "فبراير",
+  "month3" : "مارس"
+
 }
 
 

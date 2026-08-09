@@ -290,6 +290,20 @@
   "share_pdf": "Share PDF",
   "thank_you_for_your_business" : "Thank You for your business",
   "bussnis_name": "Bussnis Name",
-  "check_invoice": "Check Invoice"
- 
+  "check_invoice": "Check Invoice",
+
+   "current_debt": "Current Total Debt",
+  "pay_debt": "Pay Debt",
+  "customer_details": "Customer Details",
+
+  "recent_invoices": "Recent Invoice History",
+  "show_all": "Show All",
+
+  "total_purchases": "Total Purchases",
+  "order_count": "Order Count",
+  "orders": "Orders",
+
+  "pound" : "EGP",
+  "month2" : "February",
+  "month3" : "March"
 }
