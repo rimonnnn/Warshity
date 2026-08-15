@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 
 class CustomerNotesField extends StatelessWidget {
-  const CustomerNotesField({
-    super.key,
-    this.controller,
-  });
+  const CustomerNotesField({super.key, this.controller});
 
   final TextEditingController? controller;
 
@@ -17,7 +14,7 @@ class CustomerNotesField extends StatelessWidget {
       label: "notes".tr(),
       hint: "notes_hint".tr(),
       width: double.infinity,
-      height: 120,
+      height: 57,
     );
   }
 }

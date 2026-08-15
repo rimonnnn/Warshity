@@ -110,4 +110,21 @@ class AppValidators {
 
     return null;
   }
+  static String? amount(String? value) {
+  if (value == null || value.trim().isEmpty) {
+    return 'amount_required'.tr();
+  }
+
+  final amount = num.tryParse(value.trim());
+
+  if (amount == null) {
+    return 'invalid_amount'.tr();
+  }
+
+  if (amount < 0) {
+    return 'amount_cannot_be_negative'.tr();
+  }
+
+  return null;
+}
 }

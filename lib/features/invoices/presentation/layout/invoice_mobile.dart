@@ -48,8 +48,9 @@ class InvoiceMobile extends StatelessWidget {
         onPressed: () {
           context.pushNamed(AppRoutes.addInvoicesScreen);
         },
-        backgroundColor: context.colors.onPrimary,
-        child: Icon(Icons.add, color: context.colors.primary),
+        backgroundColor: context.colors.primaryContainer,
+        foregroundColor: context.colors.onPrimaryContainer,
+        child: Icon(Icons.add, size: 28.sp),
       ),
     );
   }

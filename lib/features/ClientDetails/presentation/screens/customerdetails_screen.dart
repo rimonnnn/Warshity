@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:warshity/core/widgets/app_responsive.dart';
-import 'package:warshity/features/Cleints/data/customer_model.dart';
+import 'package:warshity/features/Cleints/data/model/customer_model.dart';
 import 'package:warshity/features/ClientDetails/presentation/layout/mobile_customer_details.dart';
 import 'package:warshity/features/ClientDetails/presentation/layout/web_customer_details.dart';
 

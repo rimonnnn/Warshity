@@ -8,19 +8,24 @@ class CustomerHeaderCard extends StatelessWidget {
     super.key,
     required this.name,
     required this.phone,
-    this.avatar, this.padding, this.height, this.width, this.height1, this.width1,
+    this.address,
+    this.avatar,
+    this.padding,
+    this.height,
+    this.width,
+    this.height1,
+    this.width1,
   });
 
   final String name;
   final String phone;
+  final String? address;
   final Widget? avatar;
   final double? padding;
   final double? height;
   final double? width;
   final double? height1;
   final double? width1;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +63,12 @@ class CustomerHeaderCard extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 4.h),
+                Text(
+                  address ?? "",
+                  style: context.text.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
 
                 Text(
                   phone,
@@ -73,7 +83,7 @@ class CustomerHeaderCard extends StatelessWidget {
           SizedBox(width: 16.w),
 
           Container(
-            width:width1 ?? 48.w,
+            width: width1 ?? 48.w,
             height: height1 ?? 48.h,
             decoration: BoxDecoration(
               color: context.colors.primaryContainer,

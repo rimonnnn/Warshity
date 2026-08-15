@@ -8,86 +8,86 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get lightTheme => ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.light,
+        useMaterial3: true,
+        brightness: Brightness.light,
 
-    colorScheme: lightColorScheme,
+        colorScheme: lightColorScheme,
 
-    textTheme: AppTextTheme.lightTextTheme,
+        textTheme: AppTextTheme.lightTextTheme,
 
-    scaffoldBackgroundColor: lightColorScheme.surface,
+        scaffoldBackgroundColor: lightColorScheme.surface,
 
-    canvasColor: lightColorScheme.surface,
+        canvasColor: lightColorScheme.surface,
 
-    dividerColor: lightColorScheme.outlineVariant,
+        dividerColor: lightColorScheme.outlineVariant,
 
-    appBarTheme: _lightAppBarTheme,
+        appBarTheme: _lightAppBarTheme,
 
-    elevatedButtonTheme: _elevatedButtonTheme(lightColorScheme),
+        elevatedButtonTheme: _elevatedButtonTheme(lightColorScheme),
 
-    outlinedButtonTheme: _outlinedButtonTheme(lightColorScheme),
+        outlinedButtonTheme: _outlinedButtonTheme(lightColorScheme),
 
-    inputDecorationTheme: _lightInputDecoration,
+        inputDecorationTheme: _lightInputDecoration,
 
-    cardTheme: _lightCardTheme,
+        cardTheme: _lightCardTheme,
 
-    dialogTheme: _lightDialogTheme,
+        dialogTheme: _lightDialogTheme,
 
-    snackBarTheme: _lightSnackBarTheme,
+        snackBarTheme: _lightSnackBarTheme,
 
-    checkboxTheme: _checkboxTheme(lightColorScheme),
+        checkboxTheme: _checkboxTheme(lightColorScheme),
 
-    switchTheme: _switchTheme(lightColorScheme),
+        switchTheme: _switchTheme(lightColorScheme),
 
-    extensions: const [
-      AppThemeExtension(
-        success: Color(0xFF4CAF50),
-        warning: Color(0xFFFF9800),
-        info: Color(0xFF2196F3),
-      ),
-    ],
-  );
+        extensions: const [
+          AppThemeExtension(
+            success: Color(0xFF16A34A),
+            warning: Color(0xFFF59E0B),
+            info: Color(0xFF0EA5E9),
+          ),
+        ],
+      );
 
   static ThemeData get darkTheme => ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
+        useMaterial3: true,
+        brightness: Brightness.dark,
 
-    colorScheme: darkColorScheme,
+        colorScheme: darkColorScheme,
 
-    textTheme: AppTextTheme.darkTextTheme,
+        textTheme: AppTextTheme.darkTextTheme,
 
-    scaffoldBackgroundColor: darkColorScheme.surface,
+        scaffoldBackgroundColor: darkColorScheme.surface,
 
-    canvasColor: darkColorScheme.surface,
+        canvasColor: darkColorScheme.surface,
 
-    dividerColor: darkColorScheme.outlineVariant,
+        dividerColor: darkColorScheme.outlineVariant,
 
-    appBarTheme: _darkAppBarTheme,
+        appBarTheme: _darkAppBarTheme,
 
-    elevatedButtonTheme: _elevatedButtonTheme(darkColorScheme),
+        elevatedButtonTheme: _elevatedButtonTheme(darkColorScheme),
 
-    outlinedButtonTheme: _outlinedButtonTheme(darkColorScheme),
+        outlinedButtonTheme: _outlinedButtonTheme(darkColorScheme),
 
-    inputDecorationTheme: _darkInputDecoration,
+        inputDecorationTheme: _darkInputDecoration,
 
-    cardTheme: _darkCardTheme,
+        cardTheme: _darkCardTheme,
 
-    dialogTheme: _darkDialogTheme,
+        dialogTheme: _darkDialogTheme,
 
-    snackBarTheme: _darkSnackBarTheme,
+        snackBarTheme: _darkSnackBarTheme,
 
-    checkboxTheme: _checkboxTheme(darkColorScheme),
+        checkboxTheme: _checkboxTheme(darkColorScheme),
 
-    switchTheme: _switchTheme(darkColorScheme),
+        switchTheme: _switchTheme(darkColorScheme),
 
-    extensions: const [
-  AppThemeExtension(
-    success: Color(0xFF81C784),
-    warning: Color(0xFFFFB74D),
-    info: Color(0xFF64B5F6),
-  ),
-],
-  );
+        extensions: const [
+          AppThemeExtension(
+            success: Color(0xFF22C55E),
+            warning: Color(0xFFFBBF24),
+            info: Color(0xFF38BDF8),
+          ),
+        ],
+      );
 
   // ---------------- APP BAR ----------------
 
@@ -95,7 +95,7 @@ class AppTheme {
     elevation: 0,
     centerTitle: false,
     backgroundColor: Colors.transparent,
-    foregroundColor: Color(0xff231916),
+    foregroundColor: Color(0xFF0F172A),
     surfaceTintColor: Colors.transparent,
   );
 
@@ -103,7 +103,7 @@ class AppTheme {
     elevation: 0,
     centerTitle: false,
     backgroundColor: Colors.transparent,
-    foregroundColor: Color(0xffF1DFD8),
+    foregroundColor: Color(0xFFF1F5F9),
     surfaceTintColor: Colors.transparent,
   );
 
@@ -112,18 +112,22 @@ class AppTheme {
   static const _lightCardTheme = CardThemeData(
     elevation: 0,
     margin: EdgeInsets.zero,
-    color: Color(0xffffffff),
+    color: Color(0xFFFFFFFF),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
+      borderRadius: BorderRadius.all(
+        Radius.circular(12),
+      ),
     ),
   );
 
   static const _darkCardTheme = CardThemeData(
     elevation: 0,
     margin: EdgeInsets.zero,
-    color: Color(0xff3E322E),
+    color: Color(0xFF1E293B),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
+      borderRadius: BorderRadius.all(
+        Radius.circular(12),
+      ),
     ),
   );
 
@@ -131,17 +135,25 @@ class AppTheme {
 
   static final _lightInputDecoration = InputDecorationTheme(
     filled: true,
-    fillColor: Colors.white,
+    fillColor: lightColorScheme.surfaceContainerLowest,
 
     border: _border(lightColorScheme.outlineVariant),
 
     enabledBorder: _border(lightColorScheme.outlineVariant),
 
-    focusedBorder: _border(lightColorScheme.primary, width: 2),
+    focusedBorder: _border(
+      lightColorScheme.primary,
+      width: 2,
+    ),
 
-    errorBorder: _border(lightColorScheme.error),
+    errorBorder: _border(
+      lightColorScheme.error,
+    ),
 
-    focusedErrorBorder: _border(lightColorScheme.error, width: 2),
+    focusedErrorBorder: _border(
+      lightColorScheme.error,
+      width: 2,
+    ),
   );
 
   static final _darkInputDecoration = InputDecorationTheme(
@@ -152,16 +164,26 @@ class AppTheme {
 
     enabledBorder: _border(darkColorScheme.outlineVariant),
 
-    focusedBorder: _border(darkColorScheme.primary, width: 2),
+    focusedBorder: _border(
+      darkColorScheme.primary,
+      width: 2,
+    ),
 
-    errorBorder: _border(darkColorScheme.error),
+    errorBorder: _border(
+      darkColorScheme.error,
+    ),
 
-    focusedErrorBorder: _border(darkColorScheme.error, width: 2),
+    focusedErrorBorder: _border(
+      darkColorScheme.error,
+      width: 2,
+    ),
   );
 
   // ---------------- BUTTON ----------------
 
-  static ElevatedButtonThemeData _elevatedButtonTheme(ColorScheme scheme) {
+  static ElevatedButtonThemeData _elevatedButtonTheme(
+    ColorScheme scheme,
+  ) {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 0,
@@ -170,55 +192,79 @@ class AppTheme {
 
         foregroundColor: scheme.onPrimary,
 
-        minimumSize: const Size(double.infinity, 52),
+        minimumSize: const Size(
+          double.infinity,
+          52,
+        ),
 
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
 
-  static OutlinedButtonThemeData _outlinedButtonTheme(ColorScheme scheme) {
+  static OutlinedButtonThemeData _outlinedButtonTheme(
+    ColorScheme scheme,
+  ) {
     return OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: scheme.primary,
 
-        side: BorderSide(color: scheme.primary),
+        side: BorderSide(
+          color: scheme.primary,
+        ),
 
-        minimumSize: const Size(double.infinity, 52),
+        minimumSize: const Size(
+          double.infinity,
+          52,
+        ),
 
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
 
   // ---------------- CHECKBOX ----------------
 
-  static CheckboxThemeData _checkboxTheme(ColorScheme scheme) {
+  static CheckboxThemeData _checkboxTheme(
+    ColorScheme scheme,
+  ) {
     return CheckboxThemeData(
-      fillColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) {
-          return scheme.primary;
-        }
+      fillColor: WidgetStateProperty.resolveWith(
+        (states) {
+          if (states.contains(WidgetState.selected)) {
+            return scheme.primary;
+          }
 
-        return Colors.transparent;
-      }),
+          return Colors.transparent;
+        },
+      ),
     );
   }
 
   // ---------------- SWITCH ----------------
 
-  static SwitchThemeData _switchTheme(ColorScheme scheme) {
-    return SwitchThemeData(thumbColor: WidgetStatePropertyAll(scheme.primary));
+  static SwitchThemeData _switchTheme(
+    ColorScheme scheme,
+  ) {
+    return SwitchThemeData(
+      thumbColor: WidgetStatePropertyAll(
+        scheme.primary,
+      ),
+    );
   }
 
   // ---------------- DIALOG ----------------
 
   static const _lightDialogTheme = DialogThemeData(
-    backgroundColor: Colors.white,
+    backgroundColor: Color(0xFFFFFFFF),
   );
 
   static const _darkDialogTheme = DialogThemeData(
-    backgroundColor: Color(0xff322823),
+    backgroundColor: Color(0xFF1E293B),
   );
 
   // ---------------- SNACKBAR ----------------
@@ -233,10 +279,16 @@ class AppTheme {
 
   // ---------------- BORDER ----------------
 
-  static OutlineInputBorder _border(Color color, {double width = 1}) {
+  static OutlineInputBorder _border(
+    Color color, {
+    double width = 1,
+  }) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(color: color, width: width),
+      borderSide: BorderSide(
+        color: color,
+        width: width,
+      ),
     );
   }
 }

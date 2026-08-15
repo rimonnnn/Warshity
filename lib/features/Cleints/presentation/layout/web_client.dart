@@ -1,10 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
+import 'package:warshity/core/widgets/loading_widget.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/features/Cleints/data/customer_model.dart';
+import 'package:warshity/features/Cleints/data/model/customer_model.dart';
+import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_filter_tabs.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_list.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_map_card.dart';
@@ -33,74 +36,75 @@ class _WebCustomersState extends State<WebCustomers> {
     filters = ["all".tr(), "debt".tr(), "balanced".tr()];
   }
 
-  final customers = [
-  CustomerModel(
-    name: "customer_ahmed".tr(),
-    phone: "01012345678",
-    balance: "1,400 ${"pound".tr()}",
-    hasDebt: true,
+  // final customers = [
+  //   CustomerModel(
+  //     name: "customer_ahmed".tr(),
+  //     phone: "01012345678",
+  //     balance: "1,400 ${"pound".tr()}".toString(),
+  //     hasDebt: true,
+  //     address: '',
 
-    invoices: [
-      InvoiceModel(
-        invoiceNumber: "INV-001",
-        customerName: "customer_ahmed".tr(),
-        date: "12 ${"month3".tr()} 2024",
-        paymentMethod: "unpaid".tr(),
-        itemCount: 3,
-        totalPrice: "450 ${"pound".tr()}",
-      ),
-      InvoiceModel(
-        invoiceNumber: "INV-002",
-        customerName: "customer_ahmed".tr(),
-        date: "05 ${"month3".tr()} 2024",
-        paymentMethod: "paid".tr(),
-        itemCount: 2,
-        totalPrice: "950 ${"pound".tr()}",
-      ),
-      InvoiceModel(
-        invoiceNumber: "INV-003",
-        customerName: "customer_ahmed".tr(),
-        date: "28 ${"month2".tr()} 2024",
-        paymentMethod: "unpaid".tr(),
-        itemCount: 4,
-        totalPrice: "950 ${"pound".tr()}",
-      ),
-    ],
+  //     invoices: [
+  //       InvoiceModel(
+  //         invoiceNumber: "INV-001",
+  //         customerName: "customer_ahmed".tr(),
+  //         date: "12 ${"month3".tr()} 2024",
+  //         paymentMethod: "unpaid".tr(),
+  //         itemCount: 3,
+  //         totalPrice: "450 ${"pound".tr()}",
+  //       ),
+  //       InvoiceModel(
+  //         invoiceNumber: "INV-002",
+  //         customerName: "customer_ahmed".tr(),
+  //         date: "05 ${"month3".tr()} 2024",
+  //         paymentMethod: "paid".tr(),
+  //         itemCount: 2,
+  //         totalPrice: "950 ${"pound".tr()}",
+  //       ),
+  //       InvoiceModel(
+  //         invoiceNumber: "INV-003",
+  //         customerName: "customer_ahmed".tr(),
+  //         date: "28 ${"month2".tr()} 2024",
+  //         paymentMethod: "unpaid".tr(),
+  //         itemCount: 4,
+  //         totalPrice: "950 ${"pound".tr()}",
+  //       ),
+  //     ],
 
-    totalPurchases: "12,500 ${"pound".tr()}",
-    orderCount: "24",
-  ),
+  //     totalPurchases: 12500,
+  //     orderCount: 24,
+  //   ),
 
-  CustomerModel(
-    name: "customer_mohamed".tr(),
-    phone: "01098765432",
-    balance: "0 ${"pound".tr()}",
-    hasDebt: false,
+  //   CustomerModel(
+  //     name: "customer_mohamed".tr(),
+  //     phone: "01098765432",
+  //     balance: "0 ${"pound".tr()}",
+  //     hasDebt: false,
+  //     address: '',
 
-    invoices: [
-      InvoiceModel(
-        invoiceNumber: "INV-004",
-        customerName: "customer_mohamed".tr(),
-        date: "20 ${"month3".tr()} 2024",
-        paymentMethod: "paid".tr(),
-        itemCount: 5,
-        totalPrice: "1,200 ${"pound".tr()}",
-      ),
-      InvoiceModel(
-        invoiceNumber: "INV-005",
-        customerName: "customer_mohamed".tr(),
-        date: "10 ${"month3".tr()} 2024",
-        paymentMethod: "paid".tr(),
-        itemCount: 2,
-        totalPrice: "750 ${"pound".tr()}",
-      ),
-    ],
+  //     invoices: [
+  //       InvoiceModel(
+  //         invoiceNumber: "INV-004",
+  //         customerName: "customer_mohamed".tr(),
+  //         date: "20 ${"month3".tr()} 2024",
+  //         paymentMethod: "paid".tr(),
+  //         itemCount: 5,
+  //         totalPrice: "1,200 ${"pound".tr()}",
+  //       ),
+  //       InvoiceModel(
+  //         invoiceNumber: "INV-005",
+  //         customerName: "customer_mohamed".tr(),
+  //         date: "10 ${"month3".tr()} 2024",
+  //         paymentMethod: "paid".tr(),
+  //         itemCount: 2,
+  //         totalPrice: "750 ${"pound".tr()}",
+  //       ),
+  //     ],
 
-    totalPurchases: "8,500 ${"pound".tr()}",
-    orderCount: "15",
-  ),
-];
-
+  //     totalPurchases: 8500,
+  //     orderCount: 15, 
+  //   ),
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -161,15 +165,29 @@ class _WebCustomersState extends State<WebCustomers> {
 
                           HeightSpace(20),
 
-                          CustomerList(customers: customers, padding1: 16,
-                          onTap: (index) {
-                            context.pushNamed(AppRoutes.customerdetailsScreen
-                            ,
-                            extra: customers[index],
-                            
-                            );
-                          },
-                          
+                          BlocBuilder<ClientsCubit, ClientsState>(
+                            builder: (BuildContext context, state) {
+                              if (state is ClientsLoading) {
+                                return LoadingWidget(
+                                  message: "Loading Clients...".tr(),
+                                );
+                              }
+                              if (state is ClientsLoaded) {
+                                return CustomerList(
+                                  customers: state.clients,
+                                  onTap: (index) {
+                                    context.pushNamed(
+                                      AppRoutes.customerdetailsScreen,
+                                      extra: state.clients[index],
+                                    );
+                                  },
+                                );
+                              }
+                              if (state is ClientsError) {
+                                return Center(child: Text(state.message));
+                              }
+                              return const SizedBox();
+                            },
                           ),
                         ],
                       ),
