@@ -4,14 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 
 class CustomerBalanceType extends StatelessWidget {
-  const CustomerBalanceType({
-    super.key,
-    required this.value,
-    required this.onChanged,
-  });
+  const CustomerBalanceType({super.key, required this.value, this.onChanged});
 
   final bool value;
-  final ValueChanged<bool> onChanged;
+  final ValueChanged<bool>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +16,7 @@ class CustomerBalanceType extends StatelessWidget {
       children: [
         Text(
           "balance_type".tr(),
-          style: context.text.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: context.text.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
 
         SizedBox(height: 8.h),
@@ -33,7 +27,7 @@ class CustomerBalanceType extends StatelessWidget {
               child: RadioListTile<bool>(
                 value: false,
                 groupValue: value,
-                onChanged: (v) => onChanged(v!),
+                onChanged: onChanged == null ? null : (v) => onChanged!(v!),
                 title: Text("credit".tr()),
                 contentPadding: EdgeInsets.zero,
               ),
@@ -42,8 +36,16 @@ class CustomerBalanceType extends StatelessWidget {
             Expanded(
               child: RadioListTile<bool>(
                 value: true,
+                // ignore: deprecated_member_use
                 groupValue: value,
-                onChanged: (v) => onChanged(v!),
+                // ignore: deprecated_member_use
+                onChanged: onChanged == null
+                    ? null
+                    : (v) {
+                        if (v != null) {
+                          onChanged!(v);
+                        }
+                      },
                 title: Text("debit".tr()),
                 contentPadding: EdgeInsets.zero,
               ),

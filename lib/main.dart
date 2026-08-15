@@ -11,8 +11,8 @@ import 'package:warshity/core/styling/app_assets.dart';
 import 'core/di/injection.dart';
 import 'core/routing/router_generator_config.dart';
 import 'core/theme/app_theme.dart';
-import 'core/theme/theme_cubit.dart';
-import 'core/theme/theme_state.dart';
+import 'core/theme/cubit/theme_cubit.dart';
+import 'core/theme/cubit/theme_state.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {

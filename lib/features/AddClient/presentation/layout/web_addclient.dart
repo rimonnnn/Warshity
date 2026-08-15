@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/features/AddClient/presentation/widgets/customer_balance_type.dart';
-import 'package:warshity/features/AddClient/presentation/widgets/customer_notes_field.dart';
+import 'package:warshity/core/widgets/customer_balance_type.dart';
+import 'package:warshity/core/widgets/customer_notes_field.dart';
 import 'package:warshity/features/AddClient/presentation/widgets/save_customer_button.dart';
 
 class AddCustomerWeb extends StatefulWidget {

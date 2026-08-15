@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
-import 'package:warshity/core/theme/theme_cubit.dart';
+import 'package:warshity/core/theme/cubit/theme_cubit.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/settings/presentation/widgets/custom_switch_tile.dart';
 import 'package:warshity/features/settings/presentation/widgets/info_item.dart';

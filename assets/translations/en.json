@@ -305,5 +305,7 @@
 
   "pound" : "EGP",
   "month2" : "February",
-  "month3" : "March"
+  "month3" : "March",
+  "debt_amount": "Debt Amount",
+  "debt_amount_hint": "Enter the debt amount"
 }
