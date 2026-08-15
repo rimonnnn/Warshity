@@ -19,7 +19,7 @@ class TextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      textKey.tr(),
+      textKey,
       textAlign: textAlign,
       style: (style ?? context.text.headlineLarge)?.copyWith(
         color: color ?? context.colors.primary,

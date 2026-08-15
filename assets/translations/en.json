@@ -307,5 +307,7 @@
   "month2" : "February",
   "month3" : "March",
   "debt_amount": "Debt Amount",
-  "debt_amount_hint": "Enter the debt amount"
+  "debt_amount_hint": "Enter the debt amount",
+  "masiter": "Masiter",
+  "your_buddiness_under_controle": "Your Business. Under Control"
 }

@@ -310,7 +310,9 @@
   "month2" : "فبراير",
   "month3" : "مارس",
   "debt_amount": "مبلغ المديونية",
-  "debt_amount_hint": "أدخل مبلغ المديونية"
+  "debt_amount_hint": "أدخل مبلغ المديونية",
+  "masiter": "مسيطر",
+  "your_buddiness_under_controle": "شغلك تحت السيطرة."
 
 }
 

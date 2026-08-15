@@ -5,16 +5,16 @@ description: "A new Flutter project."
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 flutter_native_splash:
-  color: "#FFF8F6"
-  image: assets/images/splash_logo.jpg
+  color: "#F8FAFC"
+  image: assets/images/latest_logo.png
 
-  color_dark: "#231916"
+  color_dark: "#0F172A"
 
   android_12:
-    image: assets/images/splash_logo.jpg
-    icon_background_color: "#FFF8F6"
+    image: assets/images/latest_logo.png
+    icon_background_color: "#F8FAFC"
 
-    icon_background_color_dark: "#231916"
+    icon_background_color_dark: "#0F172A"
 
   web: false
 

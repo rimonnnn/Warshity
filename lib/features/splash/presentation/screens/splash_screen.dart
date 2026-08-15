@@ -1,7 +1,7 @@
 // lib/features/splash/presentation/screens/splash_screen.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warshity/core/constants/app_duration.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
@@ -21,32 +21,87 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
+  late AnimationController _controller;
+
+  // Logo: scale + fade (0.0 -> 0.5 of the timeline)
+  late Animation<double> _logoFade;
+  late Animation<double> _logoScale;
+
+  // Title text: fade + slide up (0.3 -> 0.7)
+  late Animation<double> _titleFade;
+  late Animation<Offset> _titleSlide;
+
+  // Subtitle text: fade + slide up (0.45 -> 0.85), starts slightly after title
+  late Animation<double> _subtitleFade;
+  late Animation<Offset> _subtitleSlide;
+
+  // Loading indicator: fade in last (0.7 -> 1.0)
+  late Animation<double> _loadingFade;
 
   @override
   void initState() {
     super.initState();
     _initAnimations();
+    _controller.forward();
     _navigateNext();
   }
 
   void _initAnimations() {
-    _animationController = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: AppDuration.slow,
+      duration: const Duration(milliseconds: 1400),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    _logoFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
+      ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
+    _logoScale = Tween<double>(begin: 0.7, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOutBack),
+      ),
     );
 
-    _animationController.forward();
+    _titleFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.3, 0.7, curve: Curves.easeIn),
+      ),
+    );
+
+    _titleSlide = Tween<Offset>(begin: const Offset(0, 0.4), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.3, 0.7, curve: Curves.easeOutCubic),
+          ),
+        );
+
+    _subtitleFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.45, 0.85, curve: Curves.easeIn),
+      ),
+    );
+
+    _subtitleSlide =
+        Tween<Offset>(begin: const Offset(0, 0.4), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.45, 0.85, curve: Curves.easeOutCubic),
+          ),
+        );
+
+    _loadingFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.7, 1.0, curve: Curves.easeIn),
+      ),
+    );
   }
 
   void _navigateNext() async {
@@ -78,7 +133,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -88,23 +143,43 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: context.colors.surface,
       body: Center(
         child: AnimatedBuilder(
-          animation: _animationController,
+          animation: _controller,
           builder: (context, child) {
-            return FadeTransition(
-              opacity: _fadeAnimation,
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    LogoWidget(),
-                    HeightSpace(43),
-                    TextWidget(textKey: 'wershity'),
-                    HeightSpace(200),
-                    _buildLoadingIndicator(context),
-                  ],
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FadeTransition(
+                  opacity: _logoFade,
+                  child: ScaleTransition(
+                    scale: _logoScale,
+                    child: LogoWidget(),
+                  ),
                 ),
-              ),
+                HeightSpace(43),
+                FadeTransition(
+                  opacity: _titleFade,
+                  child: SlideTransition(
+                    position: _titleSlide,
+                    child: TextWidget(textKey: 'masiter'.tr()),
+                  ),
+                ),
+                HeightSpace(16),
+                FadeTransition(
+                  opacity: _subtitleFade,
+                  child: SlideTransition(
+                    position: _subtitleSlide,
+                    child: TextWidget(
+                      textKey: 'your_buddiness_under_controle'.tr(),
+                      style: context.text.bodyLarge,
+                    ),
+                  ),
+                ),
+                HeightSpace(200),
+                FadeTransition(
+                  opacity: _loadingFade,
+                  child: _buildLoadingIndicator(context),
+                ),
+              ],
             );
           },
         ),
