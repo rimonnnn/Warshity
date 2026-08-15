@@ -6,13 +6,11 @@ import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/widgets/loading_widget.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/features/Cleints/data/model/customer_model.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_filter_tabs.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_list.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_map_card.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/delivery_orders_card.dart';
-import 'package:warshity/features/ClientDetails/data/invoice_model.dart';
 import 'package:warshity/features/products/presentation/widgets/product_search_widget.dart';
 
 class WebCustomers extends StatefulWidget {
@@ -102,7 +100,7 @@ class _WebCustomersState extends State<WebCustomers> {
   //     ],
 
   //     totalPurchases: 8500,
-  //     orderCount: 15, 
+  //     orderCount: 15,
   //   ),
   // ];
 

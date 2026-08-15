@@ -1,3 +1,4 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/helper/app_validators.dart';
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/customer_balance_type.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
@@ -63,15 +65,19 @@ class _AddClientDialogState extends State<AddClientDialog> {
         if (state is AddClientSuccess) {
           Navigator.of(context).pop();
 
-          ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text('Client added successfully'.tr())),
+          showAnimatedSnackDialog(
+            context,
+            message: "client_added_successfully".tr(),
+            type: AnimatedSnackBarType.success,
           );
         }
 
         if (state is AddClientError) {
-          ScaffoldMessenger.of(
+          showAnimatedSnackDialog(
             context,
-          ).showSnackBar(SnackBar(content: Text("somthing_error")));
+            message: "something_error".tr(),
+            type: AnimatedSnackBarType.error,
+          );
         }
       },
 
@@ -170,9 +176,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
                             fontSize: 16.sp,
                             iconSize: 20.sp,
                             buttonColor: context.colors.error,
-                            buttonText: isLoading
-                                ? ''.tr()
-                                : 'cancel'.tr(),
+                            buttonText: isLoading ? ''.tr() : 'cancel'.tr(),
                             borderRadius: AppRadius.sm,
                             onPress: isLoading ? null : () => context.pop(),
                           ),
@@ -186,9 +190,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
                             iconSize: 20.sp,
                             iconeColor: context.colors.primaryContainer,
                             fontSize: 16.sp,
-                            buttonText: isLoading
-                                ? ''.tr()
-                                : 'save'.tr(),
+                            buttonText: isLoading ? ''.tr() : 'save'.tr(),
                             borderRadius: AppRadius.sm,
                             onPress: isLoading ? null : _onSave,
                           ),

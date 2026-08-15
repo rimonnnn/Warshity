@@ -331,7 +331,8 @@
   "amount_required": "المبلغ مطلوب.",
   "invalid_amount": "يرجى إدخال مبلغ صحيح.",
   "amount_cannot_be_negative": "لا يمكن أن يكون المبلغ سالبًا.",
-  "something_error": "حدث خطأ ما، يرجى المحاولة مرة أخرى."
+  "something_error": "حدث خطأ ما، يرجى المحاولة مرة أخرى.",
+  "client_added_successfully": "تمت إضافة العميل بنجاح."
 
 }
 
