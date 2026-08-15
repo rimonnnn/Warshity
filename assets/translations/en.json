@@ -309,5 +309,25 @@
   "debt_amount": "Debt Amount",
   "debt_amount_hint": "Enter the debt amount",
   "masiter": "Masiter",
-  "your_buddiness_under_controle": "Your Business. Under Control"
+  "your_buddiness_under_controle": "Your Business. Under Control",
+  "not_debit": "Not debit",
+
+
+
+  "validator_client_name_required": "Client name is required.",
+
+  "validator_phone_required": "Phone number is required.",
+  "validator_phone_invalid": "Please enter a valid Egyptian phone number.",
+
+  "validator_price_required": "Price is required.",
+  "validator_price_invalid": "Please enter a valid price.",
+  "validator_price_greater_than_zero": "Price must be greater than zero.",
+
+  "validator_address_required": "Address is required.",
+  "validator_address_too_short": "Address is too short.",
+
+  "amount_required": "Amount is required.",
+  "invalid_amount": "Please enter a valid amount.",
+  "amount_cannot_be_negative": "Amount cannot be negative.",
+  "something_error": "Something went wrong. Please try again."
 }

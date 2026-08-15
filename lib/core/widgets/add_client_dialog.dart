@@ -29,7 +29,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
   final TextEditingController balanceController = TextEditingController();
 
   bool hasDebt = false;
-  bool isLoading = false;
+
   @override
   void dispose() {
     nameController.dispose();
@@ -64,14 +64,14 @@ class _AddClientDialogState extends State<AddClientDialog> {
           Navigator.of(context).pop();
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Client added successfully')),
+             SnackBar(content: Text('Client added successfully'.tr())),
           );
         }
 
         if (state is AddClientError) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          ).showSnackBar(SnackBar(content: Text("somthing_error")));
         }
       },
 
@@ -146,16 +146,19 @@ class _AddClientDialogState extends State<AddClientDialog> {
                     ),
 
                     HeightSpace(16),
-                    CustomTextField(
-                      label: 'debt_amount'.tr(),
-                      hint: 'debt_amount_hint'.tr(),
-                      controller: balanceController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      prefixIconData: Icons.payments_outlined,
-                      validator: AppValidators.amount,
-                    ),
+
+                    hasDebt == true
+                        ? CustomTextField(
+                            label: 'debt_amount'.tr(),
+                            hint: 'debt_amount_hint'.tr(),
+                            controller: balanceController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            prefixIconData: Icons.payments_outlined,
+                            validator: AppValidators.amount,
+                          )
+                        : SizedBox.shrink(),
                     HeightSpace(16),
 
                     Row(
@@ -168,7 +171,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
                             iconSize: 20.sp,
                             buttonColor: context.colors.error,
                             buttonText: isLoading
-                                ? 'loading'.tr()
+                                ? ''.tr()
                                 : 'cancel'.tr(),
                             borderRadius: AppRadius.sm,
                             onPress: isLoading ? null : () => context.pop(),
@@ -184,7 +187,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
                             iconeColor: context.colors.primaryContainer,
                             fontSize: 16.sp,
                             buttonText: isLoading
-                                ? 'loading'.tr()
+                                ? ''.tr()
                                 : 'save'.tr(),
                             borderRadius: AppRadius.sm,
                             onPress: isLoading ? null : _onSave,

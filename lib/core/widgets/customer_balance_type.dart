@@ -28,7 +28,7 @@ class CustomerBalanceType extends StatelessWidget {
                 value: false,
                 groupValue: value,
                 onChanged: onChanged == null ? null : (v) => onChanged!(v!),
-                title: Text("credit".tr()),
+                title: Text("not_debit".tr()),
                 contentPadding: EdgeInsets.zero,
               ),
             ),

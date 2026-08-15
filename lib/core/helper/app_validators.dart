@@ -104,27 +104,28 @@ class AppValidators {
       return 'validator_address_required'.tr();
     }
 
-    if (value.trim().length < 5) {
+    if (value.trim().length < 3) {
       return 'validator_address_too_short'.tr();
     }
 
     return null;
   }
+
   static String? amount(String? value) {
-  if (value == null || value.trim().isEmpty) {
-    return 'amount_required'.tr();
+    if (value == null || value.trim().isEmpty) {
+      return 'amount_required'.tr();
+    }
+
+    final amount = num.tryParse(value.trim());
+
+    if (amount == null) {
+      return 'invalid_amount'.tr();
+    }
+
+    if (amount < 0) {
+      return 'amount_cannot_be_negative'.tr();
+    }
+
+    return null;
   }
-
-  final amount = num.tryParse(value.trim());
-
-  if (amount == null) {
-    return 'invalid_amount'.tr();
-  }
-
-  if (amount < 0) {
-    return 'amount_cannot_be_negative'.tr();
-  }
-
-  return null;
-}
 }

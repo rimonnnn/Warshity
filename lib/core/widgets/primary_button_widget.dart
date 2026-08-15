@@ -53,8 +53,8 @@ class PrimaryButtonWidget extends StatelessWidget {
       onPressed: isLoading ? null : onPress,
       child: isLoading
           ? SizedBox(
-              width: 22.w,
-              height: 22.w,
+              width: 16.w,
+              height: 16.w,
               child: CircularProgressIndicator(
                 strokeWidth: 2.5.w,
                 valueColor: AlwaysStoppedAnimation<Color>(

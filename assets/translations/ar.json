@@ -312,7 +312,26 @@
   "debt_amount": "مبلغ المديونية",
   "debt_amount_hint": "أدخل مبلغ المديونية",
   "masiter": "مسيطر",
-  "your_buddiness_under_controle": "شغلك تحت السيطرة."
+  "your_buddiness_under_controle": "شغلك تحت السيطرة.",
+  "not_debit": "غير مدين",
+  
+
+  "validator_client_name_required": "اسم العميل مطلوب.",
+
+  "validator_phone_required": "رقم الهاتف مطلوب.",
+  "validator_phone_invalid": "يرجى إدخال رقم هاتف مصري صحيح.",
+
+  "validator_price_required": "السعر مطلوب.",
+  "validator_price_invalid": "يرجى إدخال سعر صحيح.",
+  "validator_price_greater_than_zero": "يجب أن يكون السعر أكبر من صفر.",
+
+  "validator_address_required": "العنوان مطلوب.",
+  "validator_address_too_short": "العنوان قصير جدًا.",
+
+  "amount_required": "المبلغ مطلوب.",
+  "invalid_amount": "يرجى إدخال مبلغ صحيح.",
+  "amount_cannot_be_negative": "لا يمكن أن يكون المبلغ سالبًا.",
+  "something_error": "حدث خطأ ما، يرجى المحاولة مرة أخرى."
 
 }
 
