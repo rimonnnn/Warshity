@@ -27,7 +27,8 @@ class MobileProduct extends StatefulWidget {
 }
 
 class _MobileProductsState extends State<MobileProduct> {
-  final TextEditingController searchController = TextEditingController();
+  final TextEditingController searchController =
+      TextEditingController();
 
   // 0 = All
   // 1+ = Firebase Categories
@@ -41,101 +42,172 @@ class _MobileProductsState extends State<MobileProduct> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<CategoriesCubit>(
-          create: (_) => getIt<CategoriesCubit>()..watchCategories(),
-        ),
-      ],
+    return BlocProvider<CategoriesCubit>(
+      create: (_) =>
+          getIt<CategoriesCubit>()..watchCategories(),
 
       child: Builder(
         builder: (context) {
-          return Scaffold(
-            appBar: AppBar(title: Text('products'.tr()), centerTitle: true),
+          // ========================================================
+          // مهم جدًا:
+          // الـ context ده تحت CategoriesCubit
+          // ========================================================
 
-            // ==========================================================
+          final categoriesCubit =
+              context.read<CategoriesCubit>();
+
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                'products'.tr(),
+              ),
+              centerTitle: true,
+            ),
+
+            // ========================================================
             // ADD PRODUCT
-            // ==========================================================
-            floatingActionButton: FloatingAddProductButton(
+            // ========================================================
+
+            floatingActionButton:
+                FloatingAddProductButton(
               onPressed: () {
                 showDialog(
                   context: context,
                   barrierDismissible: true,
+
                   builder: (_) {
                     return MultiBlocProvider(
                       providers: [
-                        // نفس CategoriesCubit بتاع صفحة Products
+                        // نفس CategoriesCubit بتاع الصفحة
                         BlocProvider.value(
-                          value: context.read<CategoriesCubit>(),
+                          value: categoriesCubit,
                         ),
 
                         // Cubit خاص بالـ Add Product
-                        BlocProvider(create: (_) => getIt<AddProductCubit>()),
+                        BlocProvider(
+                          create: (_) =>
+                              getIt<AddProductCubit>(),
+                        ),
                       ],
-                      child: const AddProductDialog(),
+
+                      child:
+                          const AddProductDialog(),
                     );
                   },
                 );
               },
             ),
 
+            // ========================================================
+            // BODY
+            // ========================================================
+
             body: Padding(
               padding: EdgeInsets.all(16.w),
 
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
 
                 children: [
-                  // ====================================================
+                  // ==================================================
                   // SEARCH
-                  // ====================================================
-                  ProductSearchWidget(controller: searchController),
+                  // ==================================================
+
+                  ProductSearchWidget(
+                    controller:
+                        searchController,
+                  ),
 
                   HeightSpace(16.h),
 
-                  // ====================================================
+                  // ==================================================
                   // CATEGORIES
-                  // ====================================================
-                  BlocBuilder<CategoriesCubit, CategoriesState>(
-                    builder: (context, categoryState) {
-                      if (categoryState is CategoriesLoading) {
+                  // ==================================================
+
+                  BlocBuilder<
+                      CategoriesCubit,
+                      CategoriesState>(
+                    builder:
+                        (context, categoryState) {
+                      // ----------------------------------------------
+                      // Loading
+                      // ----------------------------------------------
+
+                      if (categoryState
+                          is CategoriesLoading) {
                         return SizedBox(
                           height: 40.h,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
+
+                          child:
+                              const Center(
+                            child:
+                                CircularProgressIndicator(),
                           ),
                         );
                       }
 
-                      if (categoryState is CategoriesLoaded) {
-                        final categories = categoryState.categories;
+                      // ----------------------------------------------
+                      // Loaded
+                      // ----------------------------------------------
+
+                      if (categoryState
+                          is CategoriesLoaded) {
+                        final categories =
+                            categoryState
+                                .categories;
 
                         final categoryNames = [
                           'all'.tr(),
-                          ...categories.map((category) => category.name),
+
+                          ...categories.map(
+                            (category) =>
+                                category.name,
+                          ),
                         ];
 
-                        if (selectedCategory >= categoryNames.length) {
+                        // لو category اتحذفت
+                        // أو القائمة اتغيرت
+
+                        if (selectedCategory >=
+                            categoryNames
+                                .length) {
                           selectedCategory = 0;
                         }
 
                         return ProductCategoryTabs(
-                          categories: categoryNames,
+                          categories:
+                              categoryNames,
 
-                          selectedIndex: selectedCategory,
+                          selectedIndex:
+                              selectedCategory,
 
-                          onSelected: (index) {
+                          onSelected:
+                              (index) {
                             setState(() {
-                              selectedCategory = index;
+                              selectedCategory =
+                                  index;
                             });
                           },
                         );
                       }
 
-                      if (categoryState is CategoriesError) {
+                      // ----------------------------------------------
+                      // Error
+                      // ----------------------------------------------
+
+                      if (categoryState
+                          is CategoriesError) {
                         return SizedBox(
                           height: 40.h,
-                          child: Center(child: Text(categoryState.message)),
+
+                          child:
+                              Center(
+                            child: Text(
+                              categoryState
+                                  .message,
+                            ),
+                          ),
                         );
                       }
 
@@ -145,78 +217,115 @@ class _MobileProductsState extends State<MobileProduct> {
 
                   HeightSpace(20.h),
 
-                  // ====================================================
+                  // ==================================================
                   // PRODUCTS
-                  // ====================================================
-                  Expanded(
-                    child: BlocBuilder<ProductsCubit, ProductsState>(
-                      builder: (context, state) {
-                        // ---------------- Loading ----------------
+                  // ==================================================
 
-                        if (state is ProductsLoading) {
+                  Expanded(
+                    child: BlocBuilder<
+                        ProductsCubit,
+                        ProductsState>(
+                      builder:
+                          (context, state) {
+                        // --------------------------------------------
+                        // Loading
+                        // --------------------------------------------
+
+                        if (state
+                            is ProductsLoading) {
                           return const Center(
-                            child: CircularProgressIndicator(),
+                            child:
+                                CircularProgressIndicator(),
                           );
                         }
 
-                        // ---------------- Success ----------------
+                        // --------------------------------------------
+                        // Success
+                        // --------------------------------------------
 
-                        if (state is ProductsSuccess) {
-                          var products = state.products;
+                        if (state
+                            is ProductsSuccess) {
+                          var products =
+                              state.products;
 
-                          // ==========================================
+                          // ------------------------------------------
                           // FILTER BY CATEGORY
-                          // ==========================================
+                          // ------------------------------------------
 
-                          if (selectedCategory != 0) {
-                            final categoryState = context
-                                .read<CategoriesCubit>()
-                                .state;
+                          if (selectedCategory !=
+                              0) {
+                            final currentCategoryState =
+                                categoriesCubit
+                                    .state;
 
-                            if (categoryState is CategoriesLoaded) {
-                              final categories = categoryState.categories;
+                            if (currentCategoryState
+                                is CategoriesLoaded) {
+                              final categories =
+                                  currentCategoryState
+                                      .categories;
 
-                              final categoryIndex = selectedCategory - 1;
+                              final categoryIndex =
+                                  selectedCategory -
+                                      1;
 
-                              if (categoryIndex >= 0 &&
-                                  categoryIndex < categories.length) {
+                              if (categoryIndex >=
+                                      0 &&
+                                  categoryIndex <
+                                      categories
+                                          .length) {
                                 final selectedCategoryName =
-                                    categories[categoryIndex].name;
+                                    categories[
+                                            categoryIndex]
+                                        .name;
 
-                                products = products
-                                    .where(
-                                      (product) =>
-                                          product.category ==
-                                          selectedCategoryName,
-                                    )
-                                    .toList();
+                                products =
+                                    products
+                                        .where(
+                                          (product) =>
+                                              product
+                                                  .category ==
+                                              selectedCategoryName,
+                                        )
+                                        .toList();
                               }
                             }
                           }
 
-                          // ==========================================
-                          // EMPTY
-                          // ==========================================
+                          // ------------------------------------------
+                          // Empty
+                          // ------------------------------------------
 
                           if (products.isEmpty) {
                             return const EmptyProductsWidget();
                           }
 
-                          // ==========================================
-                          // LIST
-                          // ==========================================
+                          // ------------------------------------------
+                          // Product List
+                          // ------------------------------------------
 
                           return SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
+                            physics:
+                                const BouncingScrollPhysics(),
 
-                            child: ProductList(products: products),
+                            child:
+                                ProductList(
+                              products:
+                                  products,
+                            ),
                           );
                         }
 
-                        // ---------------- Error ----------------
+                        // --------------------------------------------
+                        // Error
+                        // --------------------------------------------
 
-                        if (state is ProductsError) {
-                          return Center(child: Text(state.message));
+                        if (state
+                            is ProductsError) {
+                          return Center(
+                            child: Text(
+                              state.message,
+                            ),
+                          );
                         }
 
                         return const EmptyProductsWidget();

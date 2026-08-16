@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:warshity/core/constants/app_radius.dart';
@@ -18,11 +18,22 @@ class AddProductDialog extends StatefulWidget {
   const AddProductDialog({super.key});
 
   @override
-  State<AddProductDialog> createState() => _AddProductDialogState();
+  State<AddProductDialog> createState() =>
+      _AddProductDialogState();
 }
 
-class _AddProductDialogState extends State<AddProductDialog> {
-  final _formKey = GlobalKey<FormState>();
+class _AddProductDialogState
+    extends State<AddProductDialog> {
+  // ============================================================
+  // FORM
+  // ============================================================
+
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>();
+
+  // ============================================================
+  // CONTROLLERS
+  // ============================================================
 
   final TextEditingController nameController =
       TextEditingController();
@@ -36,21 +47,45 @@ class _AddProductDialogState extends State<AddProductDialog> {
   final TextEditingController quantityController =
       TextEditingController();
 
-  final ImagePicker _imagePicker = ImagePicker();
+  final TextEditingController categoryController =
+      TextEditingController();
+
+  // ============================================================
+  // IMAGE
+  // ============================================================
+
+  final ImagePicker _imagePicker =
+      ImagePicker();
 
   File? selectedImage;
 
+  // ============================================================
+  // CATEGORY
+  // ============================================================
+
   String? selectedCategory;
 
-  String selectedUnit = 'Piece';
+  bool showAddCategory = false;
+
+  bool isAddingCategory = false;
+
+  // ============================================================
+  // PRODUCT
+  // ============================================================
+
+  String selectedUnit = 'Piece'.tr();
 
   bool isSaving = false;
 
   final List<String> units = [
-    'Piece',
-    'Meter',
-    'Kg',
+    'Piece'.tr(),
+    'Meter'.tr(),
+    'Kg'.tr(),
   ];
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
 
   @override
   void dispose() {
@@ -58,182 +93,9 @@ class _AddProductDialogState extends State<AddProductDialog> {
     barcodeController.dispose();
     priceController.dispose();
     quantityController.dispose();
+    categoryController.dispose();
 
     super.dispose();
-  }
-
-  // ============================================================
-  // ADD CATEGORY
-  // ============================================================
-
-  Future<void> _showAddCategoryDialog() async {
-    final TextEditingController controller =
-        TextEditingController();
-
-    // نفس CategoriesCubit الموجود في صفحة Products
-    final categoriesCubit =
-        context.read<CategoriesCubit>();
-
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        bool isAdding = false;
-
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text(
-                'Add New Category',
-              ),
-
-              content: TextField(
-                controller: controller,
-                autofocus: true,
-                enabled: !isAdding,
-                textCapitalization:
-                    TextCapitalization.words,
-
-                decoration: const InputDecoration(
-                  labelText: 'Category Name',
-                  hintText: 'Example: Electrical',
-                ),
-              ),
-
-              actions: [
-                // ==================================================
-                // CANCEL
-                // ==================================================
-
-                TextButton(
-                  onPressed: isAdding
-                      ? null
-                      : () {
-                          Navigator.pop(
-                            dialogContext,
-                          );
-                        },
-                  child: const Text(
-                    'Cancel',
-                  ),
-                ),
-
-                // ==================================================
-                // ADD
-                // ==================================================
-
-                ElevatedButton(
-                  onPressed: isAdding
-                      ? null
-                      : () async {
-                          final name =
-                              controller.text.trim();
-
-                          // ---------------- Validation ----------------
-
-                          if (name.isEmpty) {
-                            ScaffoldMessenger.of(
-                              dialogContext,
-                            ).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Category name is required',
-                                ),
-                              ),
-                            );
-
-                            return;
-                          }
-
-                          // ---------------- Loading ----------------
-
-                          setDialogState(() {
-                            isAdding = true;
-                          });
-
-                          try {
-                            await categoriesCubit
-                                .addCategory(name);
-
-                            if (!context.mounted) {
-                              return;
-                            }
-
-                            // ==========================================
-                            // Check Cubit State
-                            // ==========================================
-
-                            final currentState =
-                                categoriesCubit.state;
-
-                            if (currentState
-                                is AddCategoryError) {
-                              setDialogState(() {
-                                isAdding = false;
-                              });
-
-                              ScaffoldMessenger.of(
-                                dialogContext,
-                              ).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    currentState.message,
-                                  ),
-                                ),
-                              );
-
-                              return;
-                            }
-
-                            // ==========================================
-                            // SUCCESS
-                            // ==========================================
-
-                            Navigator.pop(
-                              dialogContext,
-                            );
-                          } catch (e) {
-                            setDialogState(() {
-                              isAdding = false;
-                            });
-
-                            if (!dialogContext.mounted) {
-                              return;
-                            }
-
-                            ScaffoldMessenger.of(
-                              dialogContext,
-                            ).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  e.toString(),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-
-                  child: isAdding
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child:
-                              CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text(
-                          'Add',
-                        ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    controller.dispose();
   }
 
   // ============================================================
@@ -248,7 +110,13 @@ class _AddProductDialogState extends State<AddProductDialog> {
         imageQuality: 80,
       );
 
-      if (image == null) return;
+      if (image == null) {
+        return;
+      }
+
+      if (!mounted) {
+        return;
+      }
 
       setState(() {
         selectedImage = File(image.path);
@@ -256,6 +124,104 @@ class _AddProductDialogState extends State<AddProductDialog> {
     } catch (e) {
       debugPrint(
         'Image Picker Error: $e',
+      );
+    }
+  }
+
+  // ============================================================
+  // ADD CATEGORY
+  // ============================================================
+
+  Future<void> _addCategory() async {
+    final String name =
+        categoryController.text.trim();
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Category name is required'.tr(),
+          ),
+        ),
+      );
+
+      return;
+    }
+
+    if (isAddingCategory) {
+      return;
+    }
+
+    setState(() {
+      isAddingCategory = true;
+    });
+
+    try {
+      final CategoriesCubit categoriesCubit =
+          context.read<CategoriesCubit>();
+
+      await categoriesCubit.addCategory(name);
+
+      if (!mounted) {
+        return;
+      }
+
+      final CategoriesState currentState =
+          categoriesCubit.state;
+
+      // ==========================================================
+      // ERROR
+      // ==========================================================
+
+      if (currentState is AddCategoryError) {
+        setState(() {
+          isAddingCategory = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              currentState.message,
+            ),
+          ),
+        );
+
+        return;
+      }
+
+      // ==========================================================
+      // SUCCESS
+      // ==========================================================
+
+      setState(() {
+        selectedCategory = name;
+        showAddCategory = false;
+        isAddingCategory = false;
+        categoryController.clear();
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Category added successfully'.tr(),
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        isAddingCategory = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+          ),
+        ),
       );
     }
   }
@@ -271,10 +237,20 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
     if (selectedCategory == null ||
         selectedCategory!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Please select a category'.tr(),
+          ),
+        ),
+      );
+
       return;
     }
 
-    if (isSaving) return;
+    if (isSaving) {
+      return;
+    }
 
     setState(() {
       isSaving = true;
@@ -304,11 +280,11 @@ class _AddProductDialogState extends State<AddProductDialog> {
       );
 
       debugPrint(
-        'Barcode: $barcode',
+        'Product Code: $barcode',
       );
 
       debugPrint(
-        'Price: $price',
+        'Selling Price: $price',
       );
 
       debugPrint(
@@ -328,16 +304,16 @@ class _AddProductDialogState extends State<AddProductDialog> {
       );
 
       // ==========================================================
-      // AddProductCubit هنربطه بعدين
+      // هنا اربط AddProductCubit بتاعك
       // ==========================================================
 
       await Future.delayed(
-        const Duration(
-          seconds: 1,
-        ),
+        const Duration(seconds: 1),
       );
 
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       Navigator.of(context).pop();
     } catch (e) {
@@ -345,11 +321,21 @@ class _AddProductDialogState extends State<AddProductDialog> {
         'Save Product Error: $e',
       );
 
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       setState(() {
         isSaving = false;
       });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+          ),
+        ),
+      );
     }
   }
 
@@ -366,23 +352,19 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
       prefixIcon: Icon(icon),
 
-      contentPadding:
-          EdgeInsets.symmetric(
+      contentPadding: EdgeInsets.symmetric(
         horizontal: 14.w,
         vertical: 14.h,
       ),
 
       border: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
+        borderRadius: BorderRadius.circular(
           AppRadius.sm,
         ),
       ),
 
-      enabledBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(
           AppRadius.sm,
         ),
         borderSide: BorderSide(
@@ -390,10 +372,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
         ),
       ),
 
-      focusedBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(
           AppRadius.sm,
         ),
         borderSide: BorderSide(
@@ -411,8 +391,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
   Widget _label(String text) {
     return Text(
       text,
-      style:
-          context.text.titleMedium?.copyWith(
+      style: context.text.titleMedium?.copyWith(
         fontWeight: FontWeight.bold,
       ),
     );
@@ -425,20 +404,16 @@ class _AddProductDialogState extends State<AddProductDialog> {
   @override
   Widget build(BuildContext context) {
     final double dialogWidth =
-        MediaQuery.of(context).size.width *
-            0.90;
+        MediaQuery.of(context).size.width * 0.90;
 
     return Dialog(
-      insetPadding:
-          EdgeInsets.symmetric(
+      insetPadding: EdgeInsets.symmetric(
         horizontal: 14.w,
         vertical: 24.h,
       ),
 
-      shape:
-          RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.circular(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
           AppRadius.lg,
         ),
       ),
@@ -450,9 +425,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
         constraints: BoxConstraints(
           maxWidth: 500.w,
           maxHeight:
-              MediaQuery.of(context)
-                      .size
-                      .height *
+              MediaQuery.of(context).size.height *
                   0.90,
         ),
 
@@ -462,13 +435,11 @@ class _AddProductDialogState extends State<AddProductDialog> {
           child: Form(
             key: _formKey,
 
-            child:
-                SingleChildScrollView(
+            child: SingleChildScrollView(
               physics:
                   const BouncingScrollPhysics(),
 
-              padding:
-                  EdgeInsets.all(24.w),
+              padding: EdgeInsets.all(24.w),
 
               child: Column(
                 crossAxisAlignment:
@@ -480,7 +451,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   // ==================================================
 
                   Text(
-                    'Add New Product',
+                    'Add New Product'.tr(),
                     style: context
                         .text
                         .headlineSmall
@@ -493,11 +464,11 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   HeightSpace(20.h),
 
                   // ==================================================
-                  // PRODUCT IMAGE
+                  // IMAGE
                   // ==================================================
 
                   _label(
-                    'Product Image',
+                    'Product Image'.tr(),
                   ),
 
                   HeightSpace(10.h),
@@ -508,23 +479,18 @@ class _AddProductDialogState extends State<AddProductDialog> {
                         : _pickImage,
 
                     child: Container(
-                      width:
-                          double.infinity,
-
+                      width: double.infinity,
                       height: 150.h,
 
                       decoration:
                           BoxDecoration(
-                        border:
-                            Border.all(
+                        border: Border.all(
                           color: context
                               .colors
                               .outline,
                         ),
-
                         borderRadius:
-                            BorderRadius
-                                .circular(
+                            BorderRadius.circular(
                           AppRadius.md,
                         ),
                       ),
@@ -532,61 +498,56 @@ class _AddProductDialogState extends State<AddProductDialog> {
                       clipBehavior:
                           Clip.antiAlias,
 
-                      child:
-                          selectedImage !=
-                                  null
-                              ? Image.file(
-                                  selectedImage!,
-                                  width:
-                                      double.infinity,
-                                  height:
-                                      double.infinity,
-                                  fit: BoxFit
-                                      .cover,
-                                )
-                              : Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  children: [
-                                    Icon(
-                                      Icons
-                                          .add_photo_alternate_outlined,
-                                      size:
-                                          48.sp,
-                                      color: context
-                                          .colors
-                                          .primary,
-                                    ),
+                      child: selectedImage !=
+                              null
+                          ? Image.file(
+                              selectedImage!,
+                              fit: BoxFit.cover,
+                            )
+                          : Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .center,
 
-                                    HeightSpace(
-                                      8.h,
-                                    ),
-
-                                    Text(
-                                      'Upload Product Image',
-                                      style: context
-                                          .text
-                                          .titleMedium
-                                          ?.copyWith(
-                                        fontWeight:
-                                            FontWeight
-                                                .w600,
-                                      ),
-                                    ),
-
-                                    HeightSpace(
-                                      4.h,
-                                    ),
-
-                                    Text(
-                                      'PNG, JPG',
-                                      style: context
-                                          .text
-                                          .bodyMedium,
-                                    ),
-                                  ],
+                              children: [
+                                Icon(
+                                  Icons
+                                      .add_photo_alternate_outlined,
+                                  size: 48.sp,
+                                  color: context
+                                      .colors
+                                      .primary,
                                 ),
+
+                                HeightSpace(
+                                  8.h,
+                                ),
+
+                                Text(
+                                  'Upload Product Image'
+                                      .tr(),
+                                  style: context
+                                      .text
+                                      .titleMedium
+                                      ?.copyWith(
+                                    fontWeight:
+                                        FontWeight
+                                            .w600,
+                                  ),
+                                ),
+
+                                HeightSpace(
+                                  4.h,
+                                ),
+
+                                Text(
+                                  'PNG, JPG'.tr(),
+                                  style: context
+                                      .text
+                                      .bodyMedium,
+                                ),
+                              ],
+                            ),
                     ),
                   ),
 
@@ -597,7 +558,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   // ==================================================
 
                   _label(
-                    'Product Name',
+                    'Product Name'.tr(),
                   ),
 
                   HeightSpace(8.h),
@@ -605,9 +566,6 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   TextFormField(
                     controller:
                         nameController,
-
-                    maxLines: 2,
-                    minLines: 1,
 
                     keyboardType:
                         TextInputType.name,
@@ -620,17 +578,17 @@ class _AddProductDialogState extends State<AddProductDialog> {
                       icon: Icons
                           .inventory_2_outlined,
                       hint:
-                          'Example: Beech Wood Chair',
+                          'Example: Beech Wood Chair'
+                              .tr(),
                     ),
 
-                    validator:
-                        (value) {
-                      if (value ==
-                              null ||
+                    validator: (value) {
+                      if (value == null ||
                           value
                               .trim()
                               .isEmpty) {
-                        return 'Product name is required';
+                        return 'Product name is required'
+                            .tr();
                       }
 
                       return null;
@@ -644,7 +602,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   // ==================================================
 
                   _label(
-                    'Category',
+                    'Category'.tr(),
                   ),
 
                   HeightSpace(8.h),
@@ -652,51 +610,13 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   BlocBuilder<
                       CategoriesCubit,
                       CategoriesState>(
-                    builder:
-                        (context, state) {
-                      // ============================================
-                      // Loading
-                      // ============================================
-
-                      if (state
-                          is CategoriesLoading) {
-                        return Container(
-                          height: 55.h,
-
-                          alignment:
-                              Alignment.center,
-
-                          decoration:
-                              BoxDecoration(
-                            border:
-                                Border.all(
-                              color: context
-                                  .colors
-                                  .outline,
-                            ),
-
-                            borderRadius:
-                                BorderRadius.circular(
-                              AppRadius.sm,
-                            ),
-                          ),
-
-                          child:
-                              const SizedBox(
-                            width: 22,
-                            height: 22,
-
-                            child:
-                                CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        );
-                      }
-
-                      // ============================================
-                      // Categories
-                      // ============================================
+                    builder: (
+                      context,
+                      state,
+                    ) {
+                      // =================================================
+                      // CATEGORIES
+                      // =================================================
 
                       List categories = [];
 
@@ -714,153 +634,442 @@ class _AddProductDialogState extends State<AddProductDialog> {
                             state.categories;
                       }
 
-                      return DropdownButtonFormField<
-                          String>(
-                        value:
-                            selectedCategory,
+                      final bool loading =
+                          state
+                              is CategoriesLoading;
 
-                        isExpanded: true,
+                      return Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment
+                                .start,
 
-                        decoration:
-                            InputDecoration(
-                          prefixIcon:
-                              const Icon(
-                            Icons
-                                .category_outlined,
-                          ),
+                        children: [
+                          // =================================================
+                          // DROPDOWN
+                          // =================================================
 
-                          contentPadding:
-                              EdgeInsets.symmetric(
-                            horizontal:
-                                14.w,
-                            vertical:
-                                14.h,
-                          ),
+                          DropdownButtonFormField<
+                              String>(
+                            value:
+                                selectedCategory,
 
-                          border:
-                              OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              AppRadius.sm,
+                            isExpanded: true,
+
+                            decoration:
+                                InputDecoration(
+                              prefixIcon:
+                                  const Icon(
+                                Icons
+                                    .category_outlined,
+                              ),
+
+                              hintText:
+                                  'Select Category'
+                                      .tr(),
+
+                              contentPadding:
+                                  EdgeInsets
+                                      .symmetric(
+                                horizontal:
+                                    14.w,
+                                vertical:
+                                    14.h,
+                              ),
+
+                              border:
+                                  OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                  AppRadius.sm,
+                                ),
+                              ),
+
+                              enabledBorder:
+                                  OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                  AppRadius.sm,
+                                ),
+                                borderSide:
+                                    BorderSide(
+                                  color: context
+                                      .colors
+                                      .outline,
+                                ),
+                              ),
+
+                              focusedBorder:
+                                  OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                  AppRadius.sm,
+                                ),
+                                borderSide:
+                                    BorderSide(
+                                  color: context
+                                      .colors
+                                      .primary,
+                                  width: 1.5,
+                                ),
+                              ),
                             ),
-                          ),
 
-                          enabledBorder:
-                              OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              AppRadius.sm,
-                            ),
+                            hint: loading
+                                ? Row(
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            18.w,
+                                        height:
+                                            18.w,
+                                        child:
+                                            const CircularProgressIndicator(
+                                          strokeWidth:
+                                              2,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            10.w,
+                                      ),
+                                      Text(
+                                        'Loading categories...'
+                                            .tr(),
+                                      ),
+                                    ],
+                                  )
+                                : null,
 
-                            borderSide:
-                                BorderSide(
-                              color: context
-                                  .colors
-                                  .outline,
-                            ),
-                          ),
+                            items: [
+                              // ==========================================
+                              // FIREBASE CATEGORIES
+                              // ==========================================
 
-                          focusedBorder:
-                              OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              AppRadius.sm,
-                            ),
+                              ...categories.map<
+                                  DropdownMenuItem<
+                                      String>>(
+                                (category) {
+                                  return DropdownMenuItem<
+                                      String>(
+                                    value:
+                                        category
+                                            .name,
 
-                            borderSide:
-                                BorderSide(
-                              color: context
-                                  .colors
-                                  .primary,
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons
+                                              .category_outlined,
+                                          size: 20,
+                                        ),
 
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
+                                        SizedBox(
+                                          width:
+                                              10.w,
+                                        ),
 
-                        hint: const Text(
-                          'Select Category',
-                        ),
+                                        Expanded(
+                                          child:
+                                              Text(
+                                            category
+                                                .name,
+                                            overflow:
+                                                TextOverflow
+                                                    .ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
 
-                        items: [
-                          // ========================================
-                          // Firebase Categories
-                          // ========================================
+                              // ==========================================
+                              // ADD NEW CATEGORY
+                              // ==========================================
 
-                          ...categories.map(
-                            (category) {
-                              return DropdownMenuItem<
+                              DropdownMenuItem<
                                   String>(
                                 value:
-                                    category.name,
+                                    '__add_category__',
 
-                                child: Text(
-                                  category.name,
-                                  overflow:
-                                      TextOverflow
-                                          .ellipsis,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons
+                                          .add_circle_outline,
+                                    ),
+
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+
+                                    Text(
+                                      'Add New Category'.tr(),
+                                      style:
+                                          TextStyle(
+                                        fontWeight:
+                                            FontWeight
+                                                .bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              );
+                              ),
+                            ],
+
+                            onChanged:
+                                isSaving ||
+                                        isAddingCategory
+                                    ? null
+                                    : (value) {
+                                        if (value ==
+                                            null) {
+                                          return;
+                                        }
+
+                                        // ==================================
+                                        // ADD CATEGORY
+                                        // ==================================
+
+                                        if (value ==
+                                            '__add_category__') {
+                                          setState(
+                                            () {
+                                              showAddCategory =
+                                                  true;
+
+                                              categoryController
+                                                  .clear();
+                                            },
+                                          );
+
+                                          return;
+                                        }
+
+                                        // ==================================
+                                        // NORMAL CATEGORY
+                                        // ==================================
+
+                                        setState(
+                                          () {
+                                            selectedCategory =
+                                                value;
+
+                                            showAddCategory =
+                                                false;
+                                          },
+                                        );
+                                      },
+
+                            validator: (value) {
+                              if (selectedCategory ==
+                                      null ||
+                                  selectedCategory!
+                                      .isEmpty) {
+                                return 'Please select a category'
+                                    .tr();
+                              }
+
+                              return null;
                             },
                           ),
 
-                          // ========================================
-                          // Add New Category
-                          // ========================================
+                          // =================================================
+                          // ADD CATEGORY FORM
+                          // =================================================
 
-                          const DropdownMenuItem<
-                              String>(
-                            value:
-                                '__add_category__',
+                          if (showAddCategory) ...[
+                            HeightSpace(10.h),
 
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.add,
+                            Container(
+                              width:
+                                  double.infinity,
+
+                              padding:
+                                  EdgeInsets.all(
+                                12.w,
+                              ),
+
+                              decoration:
+                                  BoxDecoration(
+                                border:
+                                    Border.all(
+                                  color: context
+                                      .colors
+                                      .outline,
                                 ),
 
-                                SizedBox(
-                                  width: 8,
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                  AppRadius.sm,
                                 ),
+                              ),
 
-                                Text(
-                                  'Add New Category',
-                                ),
-                              ],
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+
+                                children: [
+                                  Text(
+                                    'Add New Category'
+                                        .tr(),
+                                    style: context
+                                        .text
+                                        .titleMedium
+                                        ?.copyWith(
+                                      fontWeight:
+                                          FontWeight
+                                              .bold,
+                                    ),
+                                  ),
+
+                                  HeightSpace(
+                                    8.h,
+                                  ),
+
+                                  TextField(
+                                    controller:
+                                        categoryController,
+
+                                    enabled:
+                                        !isAddingCategory,
+
+                                    textCapitalization:
+                                        TextCapitalization
+                                            .words,
+
+                                    decoration:
+                                        InputDecoration(
+                                      hintText:
+                                          'Category name'
+                                              .tr(),
+
+                                      prefixIcon:
+                                          const Icon(
+                                        Icons
+                                            .category_outlined,
+                                      ),
+
+                                      border:
+                                          OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius
+                                                .circular(
+                                          AppRadius.sm,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  HeightSpace(
+                                    10.h,
+                                  ),
+
+                                  Row(
+                                    children: [
+                                      // =================================
+                                      // CANCEL
+                                      // =================================
+
+                                      Expanded(
+                                        child:
+                                            OutlinedButton(
+                                          onPressed:
+                                              isAddingCategory
+                                                  ? null
+                                                  : () {
+                                                      setState(
+                                                        () {
+                                                          showAddCategory =
+                                                              false;
+
+                                                          categoryController
+                                                              .clear();
+                                                        },
+                                                      );
+                                                    },
+
+                                          child:
+                                              Text(
+                                            'Cancel'
+                                                .tr(),
+                                          ),
+                                        ),
+                                      ),
+
+                                      SizedBox(
+                                        width:
+                                            8.w,
+                                      ),
+
+                                      // =================================
+                                      // ADD
+                                      // =================================
+
+                                      Expanded(
+                                        child:
+                                            ElevatedButton(
+                                          onPressed:
+                                              isAddingCategory
+                                                  ? null
+                                                  : _addCategory,
+
+                                          child:
+                                              isAddingCategory
+                                                  ? const SizedBox(
+                                                      width:
+                                                          20,
+                                                      height:
+                                                          20,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        strokeWidth:
+                                                            2,
+                                                      ),
+                                                    )
+                                                  : Text(
+                                                      'Add'
+                                                          .tr(),
+                                                    ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                          ],
+
+                          // =================================================
+                          // CATEGORY ERROR
+                          // =================================================
+
+                          if (state
+                              is AddCategoryError)
+                            Padding(
+                              padding:
+                                  EdgeInsets.only(
+                                top: 8.h,
+                              ),
+
+                              child: Text(
+                                state.message,
+
+                                style: TextStyle(
+                                  color: context
+                                      .colors
+                                      .error,
+                                  fontSize: 12.sp,
+                                ),
+                              ),
+                            ),
                         ],
-
-                        onChanged:
-                            isSaving
-                                ? null
-                                : (value) async {
-                                    if (value ==
-                                        '__add_category__') {
-                                      await _showAddCategoryDialog();
-
-                                      return;
-                                    }
-
-                                    setState(
-                                      () {
-                                        selectedCategory =
-                                            value;
-                                      },
-                                    );
-                                  },
-
-                        validator:
-                            (value) {
-                          if (value ==
-                                  null ||
-                              value
-                                  .isEmpty) {
-                            return 'Please select a category';
-                          }
-
-                          return null;
-                        },
                       );
                     },
                   ),
@@ -868,16 +1077,14 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   HeightSpace(16.h),
 
                   // ==================================================
-                  // CODE + PRICE
+                  // PRODUCT CODE + PRICE
                   // ==================================================
 
                   Row(
                     crossAxisAlignment:
-                        CrossAxisAlignment
-                            .start,
+                        CrossAxisAlignment.start,
 
                     children: [
-                      // Product Code
                       Expanded(
                         child: Column(
                           crossAxisAlignment:
@@ -886,23 +1093,17 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
                           children: [
                             _label(
-                              'Product Code',
+                              'Product Code'.tr(),
                             ),
 
-                            HeightSpace(
-                              8.h,
-                            ),
+                            HeightSpace(8.h),
 
                             TextFormField(
                               controller:
                                   barcodeController,
 
-                              maxLines: 1,
-                              minLines: 1,
-
                               keyboardType:
-                                  TextInputType
-                                      .text,
+                                  TextInputType.text,
 
                               textInputAction:
                                   TextInputAction
@@ -910,8 +1111,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
                               decoration:
                                   _inputDecoration(
-                                icon: Icons
-                                    .qr_code_2,
+                                icon:
+                                    Icons.qr_code_2,
                                 hint:
                                     'SKU-0000',
                               ),
@@ -923,7 +1124,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
                                     value
                                         .trim()
                                         .isEmpty) {
-                                  return 'Required';
+                                  return 'Required'
+                                      .tr();
                                 }
 
                                 return null;
@@ -937,7 +1139,6 @@ class _AddProductDialogState extends State<AddProductDialog> {
                         width: 12.w,
                       ),
 
-                      // Selling Price
                       Expanded(
                         child: Column(
                           crossAxisAlignment:
@@ -946,19 +1147,15 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
                           children: [
                             _label(
-                              'Selling Price',
+                              'Selling Price'
+                                  .tr(),
                             ),
 
-                            HeightSpace(
-                              8.h,
-                            ),
+                            HeightSpace(8.h),
 
                             TextFormField(
                               controller:
                                   priceController,
-
-                              maxLines: 1,
-                              minLines: 1,
 
                               keyboardType:
                                   const TextInputType
@@ -974,8 +1171,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                                   _inputDecoration(
                                 icon: Icons
                                     .payments_outlined,
-                                hint:
-                                    '0.00',
+                                hint: '0.00',
                               ),
 
                               validator:
@@ -991,11 +1187,11 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   HeightSpace(16.h),
 
                   // ==================================================
-                  // CURRENT QUANTITY
+                  // QUANTITY
                   // ==================================================
 
                   _label(
-                    'Current Quantity',
+                    'Current Quantity'.tr(),
                   ),
 
                   HeightSpace(8.h),
@@ -1003,9 +1199,6 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   TextFormField(
                     controller:
                         quantityController,
-
-                    maxLines: 1,
-                    minLines: 1,
 
                     keyboardType:
                         const TextInputType
@@ -1024,8 +1217,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                     ),
 
                     validator:
-                        AppValidators
-                            .amount,
+                        AppValidators.amount,
                   ),
 
                   HeightSpace(16.h),
@@ -1035,7 +1227,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   // ==================================================
 
                   _label(
-                    'Unit',
+                    'Unit'.tr(),
                   ),
 
                   HeightSpace(8.h),
@@ -1045,52 +1237,34 @@ class _AddProductDialogState extends State<AddProductDialog> {
                     runSpacing: 8.h,
 
                     children:
-                        units.map(
-                      (unit) {
-                        final bool
-                            isSelected =
-                            selectedUnit ==
-                                unit;
+                        units.map((unit) {
+                      final bool isSelected =
+                          selectedUnit ==
+                              unit;
 
-                        return ChoiceChip(
-                          label:
-                              Text(unit),
+                      return ChoiceChip(
+                        label:
+                            Text(unit),
 
-                          selected:
-                              isSelected,
+                        selected:
+                            isSelected,
 
-                          onSelected:
-                              isSaving
-                                  ? null
-                                  : (_) {
-                                      setState(
-                                        () {
-                                          selectedUnit =
-                                              unit;
-                                        },
-                                      );
-                                    },
-
-                          selectedColor:
-                              context
-                                  .colors
-                                  .primaryContainer,
-
-                          labelStyle:
-                              context
-                                  .text
-                                  .bodyMedium
-                                  ?.copyWith(
-                            fontWeight:
-                                FontWeight
-                                    .w600,
-                          ),
-                        );
-                      },
-                    ).toList(),
+                        onSelected:
+                            isSaving
+                                ? null
+                                : (_) {
+                                    setState(
+                                      () {
+                                        selectedUnit =
+                                            unit;
+                                      },
+                                    );
+                                  },
+                      );
+                    }).toList(),
                   ),
 
-                  HeightSpace(28.h),
+                  HeightSpace(30.h),
 
                   // ==================================================
                   // BUTTONS
@@ -1098,33 +1272,70 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
                   Row(
                     children: [
-                      // =================================================
+                      // ==================================================
                       // CANCEL
-                      // =================================================
+                      // ==================================================
 
                       Expanded(
                         child: SizedBox(
                           height: 56.h,
 
                           child:
-                              TextButton(
+                              ElevatedButton(
                             onPressed:
-                                isSaving
+                                isSaving ||
+                                        isAddingCategory
                                     ? null
-                                    : () => context
-                                        .pop(),
+                                    : () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      },
 
-                            child: Text(
-                              'Cancel',
+                            style:
+                                ElevatedButton
+                                    .styleFrom(
+                              backgroundColor:
+                                  Colors.red,
 
-                              style: context
-                                  .text
-                                  .titleMedium
-                                  ?.copyWith(
-                                fontWeight:
-                                    FontWeight
-                                        .w600,
+                              foregroundColor:
+                                  Colors.white,
+
+                              elevation: 0,
+
+                              shape:
+                                  RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                  AppRadius.md,
+                                ),
                               ),
+                            ),
+
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .center,
+
+                              children: [
+                                const Icon(
+                                  Icons
+                                      .cancel_outlined,
+                                ),
+
+                                SizedBox(
+                                  width: 6.w,
+                                ),
+
+                                Text(
+                                  'Cancel'.tr(),
+                                  style:
+                                      const TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -1134,9 +1345,9 @@ class _AddProductDialogState extends State<AddProductDialog> {
                         width: 12.w,
                       ),
 
-                      // =================================================
+                      // ==================================================
                       // SAVE
-                      // =================================================
+                      // ==================================================
 
                       Expanded(
                         child: SizedBox(
@@ -1145,7 +1356,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
                           child:
                               ElevatedButton(
                             onPressed:
-                                isSaving
+                                isSaving ||
+                                        isAddingCategory
                                     ? null
                                     : _onSave,
 
@@ -1157,158 +1369,86 @@ class _AddProductDialogState extends State<AddProductDialog> {
                                       .colors
                                       .primary,
 
-                              disabledBackgroundColor:
+                              foregroundColor:
                                   context
                                       .colors
-                                      .primary
-                                      .withValues(
-                                alpha:
-                                    0.45,
-                              ),
+                                      .primaryContainer,
+
+                              elevation: 0,
 
                               shape:
                                   RoundedRectangleBorder(
                                 borderRadius:
-                                    BorderRadius
-                                        .circular(
-                                  AppRadius
-                                      .md,
+                                    BorderRadius.circular(
+                                  AppRadius.md,
                                 ),
                               ),
-
-                              elevation: 0,
                             ),
 
                             child:
-                                AnimatedSwitcher(
-                              duration:
-                                  const Duration(
-                                milliseconds:
-                                    200,
-                              ),
+                                isSaving
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
 
-                              child: isSaving
-                                  ? Row(
-                                      key: const ValueKey(
-                                        'saving',
-                                      ),
-
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .center,
-
-                                      mainAxisSize:
-                                          MainAxisSize
-                                              .min,
-
-                                      children: [
-                                        SizedBox(
-                                          width:
-                                              20.w,
-                                          height:
-                                              20.w,
-
-                                          child:
-                                              CircularProgressIndicator(
-                                            strokeWidth:
-                                                2.2,
-
-                                            color: context
-                                                .colors
-                                                .primaryContainer,
+                                        children: [
+                                          const SizedBox(
+                                            width:
+                                                20,
+                                            height:
+                                                20,
+                                            child:
+                                                CircularProgressIndicator(
+                                              strokeWidth:
+                                                  2,
+                                            ),
                                           ),
-                                        ),
 
-                                        SizedBox(
-                                          width:
-                                              8.w,
-                                        ),
+                                          SizedBox(
+                                            width:
+                                                8.w,
+                                          ),
 
-                                        Flexible(
-                                          child:
-                                              Text(
-                                            'Saving...',
-                                            maxLines:
-                                                1,
-                                            overflow:
-                                                TextOverflow
-                                                    .ellipsis,
+                                          Text(
+                                            'Saving...'
+                                                .tr(),
+                                          ),
+                                        ],
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
 
-                                            style: context
-                                                .text
-                                                .titleMedium
-                                                ?.copyWith(
-                                              color: context
-                                                  .colors
-                                                  .primaryContainer,
+                                        children: [
+                                          const Icon(
+                                            Icons
+                                                .save,
+                                          ),
 
+                                          SizedBox(
+                                            width:
+                                                6.w,
+                                          ),
+
+                                          Text(
+                                            'save'
+                                                .tr(),
+                                            style:
+                                                const TextStyle(
                                               fontWeight:
                                                   FontWeight
                                                       .bold,
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    )
-                                  : Row(
-                                      key: const ValueKey(
-                                        'save',
+                                        ],
                                       ),
-
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .center,
-
-                                      mainAxisSize:
-                                          MainAxisSize
-                                              .min,
-
-                                      children: [
-                                        Icon(
-                                          Icons
-                                              .save,
-
-                                          size:
-                                              20.sp,
-
-                                          color: context
-                                              .colors
-                                              .primaryContainer,
-                                        ),
-
-                                        SizedBox(
-                                          width:
-                                              8.w,
-                                        ),
-
-                                        Text(
-                                          'Save',
-                                          maxLines:
-                                              1,
-
-                                          style: context
-                                              .text
-                                              .titleMedium
-                                              ?.copyWith(
-                                            color: context
-                                                .colors
-                                                .primaryContainer,
-
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-
-                  HeightSpace(8.h),
                 ],
               ),
             ),
