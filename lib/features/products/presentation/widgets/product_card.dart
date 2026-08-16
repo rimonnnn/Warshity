@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/constants/app_radius.dart';
@@ -10,24 +11,23 @@ class ProductCard extends StatelessWidget {
     required this.productCode,
     required this.price,
     required this.quantity,
-    this.image,
     this.icon = Icons.inventory_2_outlined,
     this.onTap,
     this.backgroundColor,
     this.borderRadius,
     this.padding,
-    this.imageBackgroundColor, this.height, this.width,
+    this.imageBackgroundColor,
+    this.height,
+    this.width,
+    required this.image,
   });
 
   final String productName;
   final String productCode;
-  final String price;
-  final String quantity;
+  final double price;
+  final int quantity;
 
-  /// لو فيه صورة اعرضها
   final Widget? image;
-
-  /// لو مفيش صورة اعرض الأيقونة
   final IconData icon;
 
   final VoidCallback? onTap;
@@ -38,7 +38,6 @@ class ProductCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double? height;
   final double? width;
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -62,17 +61,9 @@ class ProductCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               clipBehavior: Clip.antiAlias,
-              child: image != null
-                  ? SizedBox.expand(
-                      child: FittedBox(fit: BoxFit.cover, child: image!),
-                    )
-                  : Center(
-                      child: Icon(
-                        icon,
-                        color: context.colors.primary,
-                        size: 30.sp,
-                      ),
-                    ),
+              child: SizedBox.expand(
+                child: FittedBox(fit: BoxFit.cover, child: image),
+              ),
             ),
             SizedBox(width: 14.w),
             Column(
@@ -105,18 +96,31 @@ class ProductCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  price,
-                  style: context.text.titleMedium?.copyWith(
-                    color: context.colors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      '${price % 1 == 0 ? price.toInt() : price}',
+
+                      style: context.text.titleMedium?.copyWith(
+                        color: context.colors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      "EGP".tr(),
+                      style: context.text.titleMedium?.copyWith(
+                        color: context.colors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
 
                 SizedBox(height: 6.h),
 
                 Text(
-                  quantity,
+                  quantity.toString(),
                   style: context.text.bodySmall?.copyWith(
                     color: context.colors.onSurfaceVariant,
                   ),

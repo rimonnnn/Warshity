@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:warshity/core/services/shared_pref_service.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 
@@ -28,7 +29,10 @@ Future<void> main() async {
       version: 'v23.0',
     );
   }
-
+    await Supabase.initialize(
+    url: 'https://jcyynfpomdtlyrnrmrng.supabase.co',
+    publishableKey: 'sb_publishable_wc2dfa0re-gDJ23MJw7hTA_QdWZxwNj',
+  );
   await EasyLocalization.ensureInitialized();
   await SharedPrefService.init();
   await setupDependencies();

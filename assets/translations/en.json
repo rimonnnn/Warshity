@@ -330,5 +330,6 @@
   "invalid_amount": "Please enter a valid amount.",
   "amount_cannot_be_negative": "Amount cannot be negative.",
   "something_error": "Something went wrong. Please try again.",
-  "client_added_successfully": "Client added successfully."
+  "client_added_successfully": "Client added successfully.",
+  "EGP" : "EGP"
 }
