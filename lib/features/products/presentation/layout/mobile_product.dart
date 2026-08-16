@@ -1,11 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
-import 'package:warshity/core/routing/app_routes.dart';
-import 'package:warshity/core/styling/app_assets.dart';
+
+import 'package:warshity/core/di/injection.dart';
+import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/features/products/data/product_model.dart';
+
+import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
+import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
+import 'package:warshity/features/products/presentation/cubit/categories_state.dart';
+import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
+import 'package:warshity/features/products/presentation/cubit/products_state.dart';
+
 import 'package:warshity/features/products/presentation/widgets/empty_products_widget.dart';
 import 'package:warshity/features/products/presentation/widgets/floating_add_product_button.dart';
 import 'package:warshity/features/products/presentation/widgets/product_category_tabs.dart';
@@ -20,87 +27,207 @@ class MobileProduct extends StatefulWidget {
 }
 
 class _MobileProductsState extends State<MobileProduct> {
-  final searchController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
+  // 0 = All
+  // 1+ = Firebase Categories
   int selectedCategory = 0;
 
-  final categories = [
-    "all".tr(),
-    "woods".tr(),
-    "accessories".tr(),
-    "paints".tr(),
-  ];
-
-  final products = [
-    ProductModel(
-      name: "product_wood_swedish".tr(),
-      code: "PRD-002",
-      price: "price_320".tr(),
-      quantity: "quantity_45_meter".tr(),
-      image: Image.asset(AppAssets.product1, fit: BoxFit.cover),
-      icon: Icons.edit_outlined,
-    ),
-    ProductModel(
-      name: "product_stainless_hinge".tr(),
-      code: "PRD-010",
-      price: "price_40".tr(),
-      quantity: "quantity_120_piece".tr(),
-      icon: Icons.edit_outlined,
-      image: Image.asset(AppAssets.product2, fit: BoxFit.cover),
-    ),
-    ProductModel(
-      name: "product_lacquer_paint".tr(),
-      code: "PRD-030",
-      price: "price_550".tr(),
-      quantity: "quantity_18_can".tr(),
-      icon: Icons.edit_outlined,
-      image: Image.asset(AppAssets.product3, fit: BoxFit.cover),
-    ),
-  ];
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("products".tr()), centerTitle: true),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CategoriesCubit>(
+          create: (_) => getIt<CategoriesCubit>()..watchCategories(),
+        ),
+      ],
 
-      floatingActionButton: FloatingAddProductButton(onPressed: () {
-        context.pushNamed(AppRoutes.addproductScreen);
-      }),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(title: Text('products'.tr()), centerTitle: true),
 
-      body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ProductSearchWidget(controller: searchController),
+            // ==========================================================
+            // ADD PRODUCT
+            // ==========================================================
+            floatingActionButton: FloatingAddProductButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (_) {
+                    return MultiBlocProvider(
+                      providers: [
+                        // نفس CategoriesCubit بتاع صفحة Products
+                        BlocProvider.value(
+                          value: context.read<CategoriesCubit>(),
+                        ),
 
-            HeightSpace(16.h),
-
-            ProductCategoryTabs(
-              categories: categories,
-              selectedIndex: selectedCategory,
-              onSelected: (index) {
-                setState(() {
-                  selectedCategory = index;
-                });
+                        // Cubit خاص بالـ Add Product
+                        BlocProvider(create: (_) => getIt<AddProductCubit>()),
+                      ],
+                      child: const AddProductDialog(),
+                    );
+                  },
+                );
               },
             ),
 
-            HeightSpace(20.h),
+            body: Padding(
+              padding: EdgeInsets.all(16.w),
 
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ProductList(products: products),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
 
-                    EmptyProductsWidget(),
-                  ],
-                ),
+                children: [
+                  // ====================================================
+                  // SEARCH
+                  // ====================================================
+                  ProductSearchWidget(controller: searchController),
+
+                  HeightSpace(16.h),
+
+                  // ====================================================
+                  // CATEGORIES
+                  // ====================================================
+                  BlocBuilder<CategoriesCubit, CategoriesState>(
+                    builder: (context, categoryState) {
+                      if (categoryState is CategoriesLoading) {
+                        return SizedBox(
+                          height: 40.h,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      if (categoryState is CategoriesLoaded) {
+                        final categories = categoryState.categories;
+
+                        final categoryNames = [
+                          'all'.tr(),
+                          ...categories.map((category) => category.name),
+                        ];
+
+                        if (selectedCategory >= categoryNames.length) {
+                          selectedCategory = 0;
+                        }
+
+                        return ProductCategoryTabs(
+                          categories: categoryNames,
+
+                          selectedIndex: selectedCategory,
+
+                          onSelected: (index) {
+                            setState(() {
+                              selectedCategory = index;
+                            });
+                          },
+                        );
+                      }
+
+                      if (categoryState is CategoriesError) {
+                        return SizedBox(
+                          height: 40.h,
+                          child: Center(child: Text(categoryState.message)),
+                        );
+                      }
+
+                      return const SizedBox();
+                    },
+                  ),
+
+                  HeightSpace(20.h),
+
+                  // ====================================================
+                  // PRODUCTS
+                  // ====================================================
+                  Expanded(
+                    child: BlocBuilder<ProductsCubit, ProductsState>(
+                      builder: (context, state) {
+                        // ---------------- Loading ----------------
+
+                        if (state is ProductsLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        // ---------------- Success ----------------
+
+                        if (state is ProductsSuccess) {
+                          var products = state.products;
+
+                          // ==========================================
+                          // FILTER BY CATEGORY
+                          // ==========================================
+
+                          if (selectedCategory != 0) {
+                            final categoryState = context
+                                .read<CategoriesCubit>()
+                                .state;
+
+                            if (categoryState is CategoriesLoaded) {
+                              final categories = categoryState.categories;
+
+                              final categoryIndex = selectedCategory - 1;
+
+                              if (categoryIndex >= 0 &&
+                                  categoryIndex < categories.length) {
+                                final selectedCategoryName =
+                                    categories[categoryIndex].name;
+
+                                products = products
+                                    .where(
+                                      (product) =>
+                                          product.category ==
+                                          selectedCategoryName,
+                                    )
+                                    .toList();
+                              }
+                            }
+                          }
+
+                          // ==========================================
+                          // EMPTY
+                          // ==========================================
+
+                          if (products.isEmpty) {
+                            return const EmptyProductsWidget();
+                          }
+
+                          // ==========================================
+                          // LIST
+                          // ==========================================
+
+                          return SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+
+                            child: ProductList(products: products),
+                          );
+                        }
+
+                        // ---------------- Error ----------------
+
+                        if (state is ProductsError) {
+                          return Center(child: Text(state.message));
+                        }
+
+                        return const EmptyProductsWidget();
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

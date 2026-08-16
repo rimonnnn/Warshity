@@ -124,7 +124,7 @@
   "operation_sale_desk": "بيع مكتب خشبي",
   "operation_sale_bed": "بيع سرير خشبي",
 
-    "products": "المنتاجات",
+    "products": "المنتجات",
   "clients": "العملاء",
   "invoice_history": "سجل الفواتير",
 "total_invoices": "إجمالي الفواتير",
@@ -332,7 +332,8 @@
   "invalid_amount": "يرجى إدخال مبلغ صحيح.",
   "amount_cannot_be_negative": "لا يمكن أن يكون المبلغ سالبًا.",
   "something_error": "حدث خطأ ما، يرجى المحاولة مرة أخرى.",
-  "client_added_successfully": "تمت إضافة العميل بنجاح."
+  "client_added_successfully": "تمت إضافة العميل بنجاح.",
+  "EGP" : "ج.م"
 
 }
 

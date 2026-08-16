@@ -4,9 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/features/products/data/product_model.dart';
+import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/widgets/product_category_tabs.dart';
 import 'package:warshity/features/products/presentation/widgets/product_list.dart';
 import 'package:warshity/features/products/presentation/widgets/product_search_widget.dart';
@@ -31,47 +30,42 @@ class _WebProductState extends State<WebProduct> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    categories = [
-      "all".tr(),
-      "woods".tr(),
-      "accessories".tr(),
-      "paints".tr(),
-    ];
+    categories = ["all".tr(), "woods".tr(), "accessories".tr(), "paints".tr()];
   }
 
   final products = [
     ProductModel(
+      id: "1",
       name: "product_wood_swedish".tr(),
-      code: "PRD-002",
-      price: "price_320".tr(),
-      quantity: "quantity_45_meter".tr(),
-      image: Image.asset(
-        AppAssets.product1,
-        fit: BoxFit.cover,
-      ),
-      icon: Icons.edit_outlined,
+      barcode: "PRD-002",
+      category: "Wood",
+      price: 320,
+      quantity: 45,
+      unit: "m",
+      imageUrl:
+          "https://upload.wikimedia.org/wikipedia/en/thumb/4/44/Red_Dead_Redemption_II.jpg/250px-Red_Dead_Redemption_II.jpg",
     ),
     ProductModel(
+      id: "2",
       name: "product_stainless_hinge".tr(),
-      code: "PRD-010",
-      price: "price_40".tr(),
-      quantity: "quantity_120_piece".tr(),
-      image: Image.asset(
-        AppAssets.product2,
-        fit: BoxFit.cover,
-      ),
-      icon: Icons.edit_outlined,
+      barcode: "PRD-010",
+      category: "Accessories",
+      price: 40,
+      quantity: 120,
+      unit: "piece",
+      imageUrl:
+          "https://upload.wikimedia.org/wikipedia/en/thumb/4/44/Red_Dead_Redemption_II.jpg/250px-Red_Dead_Redemption_II.jpg",
     ),
     ProductModel(
+      id: "3",
       name: "product_lacquer_paint".tr(),
-      code: "PRD-030",
-      price: "price_550".tr(),
-      quantity: "quantity_18_can".tr(),
-      image: Image.asset(
-        AppAssets.product3,
-        fit: BoxFit.cover,
-      ),
-      icon: Icons.edit_outlined,
+      barcode: "PRD-030",
+      category: "Paints",
+      price: 550,
+      quantity: 18,
+      unit: "can",
+      imageUrl:
+          "https://upload.wikimedia.org/wikipedia/en/thumb/4/44/Red_Dead_Redemption_II.jpg/250px-Red_Dead_Redemption_II.jpg",
     ),
   ];
 
@@ -95,9 +89,7 @@ class _WebProductState extends State<WebProduct> {
               Row(
                 children: [
                   Expanded(
-                    child: ProductSearchWidget(
-                      controller: searchController,
-                    ),
+                    child: ProductSearchWidget(controller: searchController),
                   ),
                   SizedBox(width: 16.w),
                   FilledButton.icon(
@@ -134,9 +126,7 @@ class _WebProductState extends State<WebProduct> {
                 decoration: BoxDecoration(
                   color: context.colors.surface,
                   borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(
-                    color: context.colors.outlineVariant,
-                  ),
+                  border: Border.all(color: context.colors.outlineVariant),
                 ),
                 child: Column(
                   children: [
@@ -147,10 +137,7 @@ class _WebProductState extends State<WebProduct> {
                       padding: EdgeInsets.all(16.w),
                     ),
 
-                    Divider(
-                      height: 1,
-                      color: context.colors.outlineVariant,
-                    ),
+                    Divider(height: 1, color: context.colors.outlineVariant),
 
                     ProductsPagination(
                       currentPage: currentPage,
