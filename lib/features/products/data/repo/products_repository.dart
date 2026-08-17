@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:warshity/features/products/data/datascource/products_remote_data_source.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
@@ -6,17 +6,41 @@ import 'package:warshity/features/products/data/models/product_model.dart';
 class ProductsRepository {
   final ProductsRemoteDataSource remoteDataSource;
 
-  ProductsRepository(this.remoteDataSource);
+  ProductsRepository(
+    this.remoteDataSource,
+  );
+
+  // ============================================================
+  // WATCH PRODUCTS
+  // ============================================================
 
   Stream<List<ProductModel>> watchProducts() {
     return remoteDataSource.watchProducts();
   }
 
-  Future<String> uploadProductImage(File imageFile) async {
-    return await remoteDataSource.uploadProductImage(imageFile);
+  // ============================================================
+  // UPLOAD IMAGE
+  // ============================================================
+
+  Future<String> uploadProductImage(
+    Uint8List imageBytes,
+    String imageName,
+  ) async {
+    return await remoteDataSource.uploadProductImage(
+      imageBytes,
+      imageName,
+    );
   }
 
-  Future<void> addProduct(ProductModel product) async {
-    await remoteDataSource.addProduct(product);
+  // ============================================================
+  // ADD PRODUCT
+  // ============================================================
+
+  Future<void> addProduct(
+    ProductModel product,
+  ) async {
+    await remoteDataSource.addProduct(
+      product,
+    );
   }
 }

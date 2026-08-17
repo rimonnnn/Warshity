@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:warshity/features/products/data/models/product_model.dart';
 
 class ProductsRemoteDataSource {
@@ -14,11 +15,14 @@ class ProductsRemoteDataSource {
   );
 
   // ============================================================
-  // Watch Products
+  // WATCH PRODUCTS
   // ============================================================
 
   Stream<List<ProductModel>> watchProducts() {
-    return firestore.collection('products').snapshots().map(
+    return firestore
+        .collection('products')
+        .snapshots()
+        .map(
       (snapshot) {
         return snapshot.docs
             .map(
@@ -33,37 +37,57 @@ class ProductsRemoteDataSource {
   }
 
   // ============================================================
-  // Upload Product Image
+  // UPLOAD PRODUCT IMAGE
   // ============================================================
 
-  Future<String> uploadProductImage(File imageFile) async {
-    final fileName =
-        '${DateTime.now().millisecondsSinceEpoch}_${imageFile.path.split('/').last}';
+  Future<String> uploadProductImage(
+    Uint8List imageBytes,
+    String originalFileName,
+  ) async {
+    final String timestamp =
+        DateTime.now()
+            .millisecondsSinceEpoch
+            .toString();
 
-    final filePath = 'products/$fileName';
+    final String safeFileName =
+        originalFileName
+            .replaceAll(
+              RegExp(r'[^a-zA-Z0-9._-]'),
+              '_',
+            );
 
-    await supabase.storage.from('products').upload(
-      filePath,
-      imageFile,
-      fileOptions: const FileOptions(
-        upsert: false,
-      ),
-    );
+    final String filePath =
+        'products/${timestamp}_$safeFileName';
 
-    final imageUrl = supabase.storage
+    await supabase.storage
         .from('products')
-        .getPublicUrl(filePath);
+        .uploadBinary(
+          filePath,
+          imageBytes,
+          fileOptions: const FileOptions(
+            upsert: false,
+          ),
+        );
+
+    final String imageUrl =
+        supabase.storage
+            .from('products')
+            .getPublicUrl(filePath);
 
     return imageUrl;
   }
 
   // ============================================================
-  // Add Product
+  // ADD PRODUCT
   // ============================================================
 
-  Future<void> addProduct(ProductModel product) async {
+  Future<void> addProduct(
+    ProductModel product,
+  ) async {
     await firestore
         .collection('products')
-        .add(product.toFirestore());
+        .add(
+          product.toFirestore(),
+        );
   }
 }

@@ -11,6 +11,11 @@ import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/helper/app_validators.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 
+import 'package:warshity/features/products/data/models/product_model.dart';
+
+import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
+import 'package:warshity/features/products/presentation/cubit/add_product_state.dart';
+
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_state.dart';
 
@@ -29,6 +34,10 @@ class AddProductDialog extends StatefulWidget {
 
 class _AddProductDialogState
     extends State<AddProductDialog> {
+  // ============================================================
+  // FORM
+  // ============================================================
+
   final GlobalKey<FormState> _formKey =
       GlobalKey<FormState>();
 
@@ -47,12 +56,12 @@ class _AddProductDialogState
   final TextEditingController categoryController =
       TextEditingController();
 
-  final ImagePicker _imagePicker =
-      ImagePicker();
-
   // ============================================================
   // IMAGE
   // ============================================================
+
+  final ImagePicker _imagePicker =
+      ImagePicker();
 
   XFile? selectedImage;
 
@@ -117,8 +126,6 @@ class _AddProductDialogState
         return;
       }
 
-      // اقرأ الصورة كـ bytes.
-      // الطريقة دي شغالة على Android + Web.
       final Uint8List bytes =
           await image.readAsBytes();
 
@@ -190,10 +197,6 @@ class _AddProductDialogState
       final CategoriesState currentState =
           categoriesCubit.state;
 
-      // ========================================================
-      // ERROR
-      // ========================================================
-
       if (currentState
           is AddCategoryError) {
         setState(() {
@@ -211,17 +214,10 @@ class _AddProductDialogState
         return;
       }
 
-      // ========================================================
-      // SUCCESS
-      // ========================================================
-
       setState(() {
         selectedCategory = name;
-
         showAddCategory = false;
-
         isAddingCategory = false;
-
         categoryController.clear();
       });
 
@@ -260,10 +256,6 @@ class _AddProductDialogState
       return;
     }
 
-    // ==========================================================
-    // CATEGORY VALIDATION
-    // ==========================================================
-
     if (selectedCategory == null ||
         selectedCategory!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -298,58 +290,74 @@ class _AddProductDialogState
               ) ??
               0;
 
-      final double quantity =
-          double.tryParse(
+      final int quantity =
+          int.tryParse(
                 quantityController.text.trim(),
               ) ??
               0;
 
-      debugPrint(
-        'Product Name: $name',
+      final ProductModel product =
+          ProductModel(
+        id: '',
+        name: name,
+        barcode: barcode,
+        category: selectedCategory!,
+        price: price,
+        quantity: quantity,
+        unit: selectedUnit,
+        imageUrl: '',
       );
 
-      debugPrint(
-        'Product Code: $barcode',
-      );
-
-      debugPrint(
-        'Selling Price: $price',
-      );
-
-      debugPrint(
-        'Quantity: $quantity',
-      );
-
-      debugPrint(
-        'Category: $selectedCategory',
-      );
-
-      debugPrint(
-        'Unit: $selectedUnit',
-      );
-
-      debugPrint(
-        'Image Name: ${selectedImage?.name}',
-      );
-
-      debugPrint(
-        'Image Size: ${selectedImageBytes?.length} bytes',
-      );
-
-      // ========================================================
-      // هنا بعد كده نعمل Upload لـ Supabase
-      // باستخدام selectedImageBytes
-      // ========================================================
-
-      await Future.delayed(
-        const Duration(seconds: 1),
-      );
+      await context
+          .read<AddProductCubit>()
+          .addProduct(
+            product: product,
+            imageBytes: selectedImageBytes,
+            imageName: selectedImage?.name,
+          );
 
       if (!mounted) {
         return;
       }
 
-      Navigator.of(context).pop();
+      final AddProductState state =
+          context
+              .read<AddProductCubit>()
+              .state;
+
+      if (state is AddProductSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Product added successfully'.tr(),
+            ),
+          ),
+        );
+
+        Navigator.of(context).pop();
+
+        return;
+      }
+
+      if (state is AddProductError) {
+        setState(() {
+          isSaving = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              state.message,
+            ),
+          ),
+        );
+
+        return;
+      }
+
+      setState(() {
+        isSaving = false;
+      });
     } catch (e) {
       debugPrint(
         'Save Product Error: $e',
@@ -383,7 +391,6 @@ class _AddProductDialogState
   }) {
     return InputDecoration(
       hintText: hint,
-
       prefixIcon: Icon(icon),
 
       contentPadding:
@@ -470,7 +477,6 @@ class _AddProductDialogState
         constraints:
             BoxConstraints(
           maxWidth: 500.w,
-
           maxHeight:
               MediaQuery.of(context)
                       .size
@@ -503,7 +509,6 @@ class _AddProductDialogState
 
                   Text(
                     'Add New Product'.tr(),
-
                     style: context.text
                         .headlineSmall
                         ?.copyWith(
@@ -544,7 +549,6 @@ class _AddProductDialogState
                               .colors
                               .outline,
                         ),
-
                         borderRadius:
                             BorderRadius
                                 .circular(
@@ -570,7 +574,6 @@ class _AddProductDialogState
                                   mainAxisAlignment:
                                       MainAxisAlignment
                                           .center,
-
                                   children: [
                                     Icon(
                                       Icons
@@ -588,7 +591,6 @@ class _AddProductDialogState
                                     Text(
                                       'Upload Product Image'
                                           .tr(),
-
                                       style: context
                                           .text
                                           .titleMedium
@@ -606,9 +608,6 @@ class _AddProductDialogState
                                     Text(
                                       'PNG, JPG'
                                           .tr(),
-                                      style: context
-                                          .text
-                                          .bodyMedium,
                                     ),
                                   ],
                                 ),
@@ -780,6 +779,9 @@ class _AddProductDialogState
                             hint:
                                 loading
                                     ? Row(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
                                         children: [
                                           SizedBox(
                                             width:
@@ -798,19 +800,18 @@ class _AddProductDialogState
                                                 10.w,
                                           ),
 
-                                          Text(
-                                            'Loading categories...'
-                                                .tr(),
+                                          Flexible(
+                                            child:
+                                                Text(
+                                              'Loading categories...'
+                                                  .tr(),
+                                            ),
                                           ),
                                         ],
                                       )
                                     : null,
 
                             items: [
-                              // ========================================
-                              // FIREBASE CATEGORIES
-                              // ========================================
-
                               ...categories.map<
                                   DropdownMenuItem<
                                       String>>(
@@ -843,7 +844,6 @@ class _AddProductDialogState
                                               Text(
                                             category
                                                 .name,
-
                                             overflow:
                                                 TextOverflow
                                                     .ellipsis,
@@ -854,10 +854,6 @@ class _AddProductDialogState
                                   );
                                 },
                               ),
-
-                              // ========================================
-                              // ADD CATEGORY
-                              // ========================================
 
                               DropdownMenuItem<
                                   String>(
@@ -877,15 +873,14 @@ class _AddProductDialogState
                                           10.w,
                                     ),
 
-                                    Text(
-                                      'Add New Category'
-                                          .tr(),
-
-                                      style:
-                                          const TextStyle(
-                                        fontWeight:
-                                            FontWeight
-                                                .bold,
+                                    Flexible(
+                                      child:
+                                          Text(
+                                        'Add New Category'
+                                            .tr(),
+                                        overflow:
+                                            TextOverflow
+                                                .ellipsis,
                                       ),
                                     ),
                                   ],
@@ -944,13 +939,11 @@ class _AddProductDialogState
                           ),
 
                           // ==================================================
-                          // ADD CATEGORY BOX
+                          // ADD NEW CATEGORY
                           // ==================================================
 
                           if (showAddCategory) ...[
-                            HeightSpace(
-                              10.h,
-                            ),
+                            HeightSpace(10.h),
 
                             Container(
                               width:
@@ -1109,10 +1102,6 @@ class _AddProductDialogState
                             ),
                           ],
 
-                          // ==================================================
-                          // CATEGORY ERROR
-                          // ==================================================
-
                           if (state
                               is AddCategoryError)
                             Padding(
@@ -1143,7 +1132,7 @@ class _AddProductDialogState
                   HeightSpace(16.h),
 
                   // ==================================================
-                  // PRODUCT CODE + PRICE
+                  // PRODUCT CODE + SELLING PRICE
                   // ==================================================
 
                   Row(
@@ -1151,8 +1140,13 @@ class _AddProductDialogState
                         CrossAxisAlignment.start,
 
                     children: [
+                      // =================================================
+                      // PRODUCT CODE
+                      // =================================================
+
                       Expanded(
-                        child: Column(
+                        child:
+                            Column(
                           crossAxisAlignment:
                               CrossAxisAlignment
                                   .start,
@@ -1181,8 +1175,8 @@ class _AddProductDialogState
 
                               decoration:
                                   _inputDecoration(
-                                icon: Icons
-                                    .qr_code_2,
+                                icon:
+                                    Icons.qr_code_2,
                                 hint:
                                     'SKU-0000',
                               ),
@@ -1209,8 +1203,13 @@ class _AddProductDialogState
                         width: 12.w,
                       ),
 
+                      // =================================================
+                      // SELLING PRICE
+                      // =================================================
+
                       Expanded(
-                        child: Column(
+                        child:
+                            Column(
                           crossAxisAlignment:
                               CrossAxisAlignment
                                   .start,
@@ -1311,7 +1310,6 @@ class _AddProductDialogState
                   Wrap(
                     spacing: 8.w,
                     runSpacing: 8.h,
-
                     children:
                         units.map(
                       (unit) {
@@ -1401,6 +1399,10 @@ class _AddProductDialogState
                                   MainAxisAlignment
                                       .center,
 
+                              mainAxisSize:
+                                  MainAxisSize
+                                      .min,
+
                               children: [
                                 const Icon(
                                   Icons
@@ -1412,15 +1414,15 @@ class _AddProductDialogState
                                       6.w,
                                 ),
 
-                                Text(
-                                  'Cancel'
-                                      .tr(),
+                                Flexible(
+                                  child:
+                                      Text(
+                                    'Cancel'
+                                        .tr(),
 
-                                  style:
-                                      const TextStyle(
-                                    fontWeight:
-                                        FontWeight
-                                            .bold,
+                                    overflow:
+                                        TextOverflow
+                                            .ellipsis,
                                   ),
                                 ),
                               ],
@@ -1430,7 +1432,7 @@ class _AddProductDialogState
                       ),
 
                       SizedBox(
-                        width: 12.w,
+                        width: 8.w,
                       ),
 
                       // =================================================
@@ -1459,9 +1461,7 @@ class _AddProductDialogState
                                       .primary,
 
                               foregroundColor:
-                                  context
-                                      .colors
-                                      .primaryContainer,
+                                  Colors.white,
 
                               elevation:
                                   0,
@@ -1475,48 +1475,45 @@ class _AddProductDialogState
                                       .md,
                                 ),
                               ),
+
+                              padding:
+                                  EdgeInsets
+                                      .symmetric(
+                                horizontal:
+                                    8.w,
+                              ),
                             ),
 
                             child:
                                 isSaving
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
-
-                                        children: [
-                                          const SizedBox(
-                                            width:
-                                                20,
-                                            height:
-                                                20,
-                                            child:
-                                                CircularProgressIndicator(
-                                              strokeWidth:
-                                                  2,
-                                            ),
-                                          ),
-
-                                          SizedBox(
-                                            width:
-                                                8.w,
-                                          ),
-
-                                          Text(
-                                            'Saving...'
-                                                .tr(),
-                                          ),
-                                        ],
+                                    ? const SizedBox(
+                                        width:
+                                            22,
+                                        height:
+                                            22,
+                                        child:
+                                            CircularProgressIndicator(
+                                          strokeWidth:
+                                              2,
+                                          color:
+                                              Colors.white,
+                                        ),
                                       )
                                     : Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment
                                                 .center,
 
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+
                                         children: [
                                           const Icon(
                                             Icons
                                                 .save,
+                                            size:
+                                                20,
                                           ),
 
                                           SizedBox(
@@ -1524,15 +1521,25 @@ class _AddProductDialogState
                                                 6.w,
                                           ),
 
-                                          Text(
-                                            'save'
-                                                .tr(),
+                                          Flexible(
+                                            child:
+                                                Text(
+                                              'save'
+                                                  .tr(),
 
-                                            style:
-                                                const TextStyle(
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                              overflow:
+                                                  TextOverflow
+                                                      .ellipsis,
+
+                                              maxLines:
+                                                  1,
+
+                                              style:
+                                                  const TextStyle(
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
                                             ),
                                           ),
                                         ],
