@@ -35,10 +35,10 @@ class CustomerList extends StatelessWidget {
 
         return CustomerCard(
           padding: padding1,
-          name: customer.name,
+          name: customer.name!,
           phone: customer.phone.toString(),
           amount: customer.balance.toString(),
-          hasDebt: customer.hasDebt,
+          hasDebt: customer.hasDebt!,
           // avatar: customer.avatar,
           onTap: () => onTap?.call(index),
         );

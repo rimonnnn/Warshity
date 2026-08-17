@@ -2,11 +2,11 @@ import 'package:warshity/features/ClientDetails/data/invoice_model.dart';
 
 class CustomerModel {
   final String? id;
-  final String name;
-  final String phone;
-  final String address;
-  final num balance;
-  final bool hasDebt;
+  final String? name;
+  final String? phone;
+  final String? address;
+  final num? balance;
+  final bool? hasDebt;
 
   final List<InvoiceModel> invoices;
   final num totalPurchases;
@@ -14,11 +14,11 @@ class CustomerModel {
 
   const CustomerModel({
     this.id,
-    required this.name,
-    required this.phone,
-    required this.address,
-    required this.balance,
-    required this.hasDebt,
+     this.name,
+     this.phone,
+     this.address,
+     this.balance,
+     this.hasDebt,
 
     this.invoices = const [],
     this.totalPurchases = 0,

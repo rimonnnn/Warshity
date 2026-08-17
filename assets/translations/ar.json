@@ -332,7 +332,10 @@
   "invalid_amount": "يرجى إدخال مبلغ صحيح.",
   "amount_cannot_be_negative": "لا يمكن أن يكون المبلغ سالبًا.",
   "something_error": "حدث خطأ ما، يرجى المحاولة مرة أخرى.",
-  "client_added_successfully": "تمت إضافة العميل بنجاح."
+  "client_added_successfully": "تمت إضافة العميل بنجاح.",
+  "debt_payment_amount": "مبلغ السداد",
+"debt_payment_amount_hint": "أدخل المبلغ المراد سداده",
+"decrease_debt": "تخفيض المديونية"
 
 }
 

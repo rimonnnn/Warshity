@@ -4,11 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-import 'package:warshity/features/AddClient/presentation/screens/addclient_screen.dart';
 import 'package:warshity/features/AddProduct/presentation/screens/addproduct_screen.dart';
 import 'package:warshity/features/Cleints/data/model/customer_model.dart';
-import 'package:warshity/features/Cleints/presentation/pages/clients_page.dart';
-import 'package:warshity/features/Cleints/presentation/screens/cleints_screen.dart';
 import 'package:warshity/features/ClientDetails/presentation/screens/customerdetails_screen.dart';
 import 'package:warshity/features/add_invoices/presentation/screens/add_invoice.dart';
 import 'package:warshity/features/auth/access_password/presentation/screens/access_pass_screen.dart';
@@ -28,92 +25,113 @@ import 'package:warshity/features/splash/presentation/screens/splash_screen.dart
 class RouterGeneratorConfig {
   static GoRouter goRouter = GoRouter(
     initialLocation: kIsWeb ? AppRoutes.loginScreen : AppRoutes.splashScreen,
+
     errorBuilder: (context, state) => const NotFoundScreen(),
 
     redirect: (context, state) {
       final isLoggedIn = getIt<AuthRepo>().currentUser != null;
+
       final isGoingToAuthScreen =
           state.matchedLocation == AppRoutes.loginScreen ||
           state.matchedLocation == AppRoutes.registerScreen ||
           state.matchedLocation == AppRoutes.forgetPassScreen ||
           state.matchedLocation == AppRoutes.accessPassScreen;
 
-      // لو متسجل دخول بالفعل وبيحاول يروح لصفحة auth (زي login)
-      // نوديه على home بدل ما نعرضله اللوجين تاني
       if (isLoggedIn && isGoingToAuthScreen) {
         return AppRoutes.mainScreen;
       }
 
-      return null; // من غير تحويل، كمل عادي
+      return null;
     },
+
     routes: [
+      // ------------------------------------------------------------
+      // Splash
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.splashScreen,
         name: AppRoutes.splashScreen,
         builder: (context, state) => const SplashScreen(),
       ),
+
+      // ------------------------------------------------------------
+      // Onboarding
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.onboarding,
         name: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
 
+      // ------------------------------------------------------------
+      // Home
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.homeScreen,
         name: AppRoutes.homeScreen,
         builder: (context, state) => const HomeScreen(),
       ),
+
+      // ------------------------------------------------------------
+      // Main
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.mainScreen,
         name: AppRoutes.mainScreen,
         builder: (context, state) => const MainScreen(),
       ),
+
+      // ------------------------------------------------------------
+      // Invoices
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.invoiceScreen,
         name: AppRoutes.invoiceScreen,
         builder: (context, state) => const InvoiceScreen(),
       ),
+
       GoRoute(
         path: AppRoutes.addInvoicesScreen,
         name: AppRoutes.addInvoicesScreen,
         builder: (context, state) => const AddInvoice(),
       ),
-      GoRoute(
-        path: AppRoutes.addclientScreen,
-        name: AppRoutes.addclientScreen,
-        builder: (context, state) => const AddclientScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.addproductScreen,
-        name: AppRoutes.addproductScreen,
-        builder: (context, state) => const AddproductScreen(),
-      ),
+
       GoRoute(
         path: AppRoutes.checkInvoiceScreen,
         name: AppRoutes.checkInvoiceScreen,
         builder: (context, state) => const CheckInvoice(),
       ),
-      // GoRoute(
-      //   path: AppRoutes.clientsScreen,
-      //   name: AppRoutes.clientsScreen,
-      //   builder: (context, state) => const CleintsScreen(),
-      // ),
+
+      // ------------------------------------------------------------
+      // Add Product
+      // ------------------------------------------------------------
+      GoRoute(
+        path: AppRoutes.addproductScreen,
+        name: AppRoutes.addproductScreen,
+        builder: (context, state) => const AddproductScreen(),
+      ),
+
+      // ------------------------------------------------------------
+      // Clients Details Feature
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.customerdetailsScreen,
         name: AppRoutes.customerdetailsScreen,
-        builder: (context, state) {
-          final customer = state.extra as CustomerModel;
 
-          return CustomerdetailsScreen(customer: customer);
+        builder: (context, state) {
+          final customerId = state.extra as String;
+
+          return CustomerdetailsScreen(customerId: customerId);
         },
       ),
 
-      // كل شاشات الـ Auth بتتشارك في نفس الـ AuthCubit instance
+      // ------------------------------------------------------------
+      // Auth
+      // ------------------------------------------------------------
       ShellRoute(
         builder: (context, state, child) {
           return BlocProvider(
-            create: (context) =>
-                AuthCubit(getIt<RegisterRepo>(), getIt<AuthRepo>()),
+            create: (_) => AuthCubit(getIt<RegisterRepo>(), getIt<AuthRepo>()),
             child: child,
           );
         },
@@ -123,21 +141,24 @@ class RouterGeneratorConfig {
             name: AppRoutes.loginScreen,
             builder: (context, state) => const LoginScreen(),
           ),
+
           GoRoute(
             path: AppRoutes.registerScreen,
             name: AppRoutes.registerScreen,
             builder: (context, state) => const RegisterScreen(),
           ),
+
           GoRoute(
             path: AppRoutes.forgetPassScreen,
             name: AppRoutes.forgetPassScreen,
             builder: (context, state) => const ForgetPassScreen(),
           ),
+
           GoRoute(
             path: AppRoutes.accessPassScreen,
             name: AppRoutes.accessPassScreen,
             builder: (context, state) {
-              final email = state.extra as String? ?? "";
+              final email = state.extra as String? ?? '';
 
               return AccessPassScreen(email: email);
             },
@@ -153,6 +174,6 @@ class NotFoundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text("Page not found")));
+    return const Scaffold(body: Center(child: Text('Page not found')));
   }
 }

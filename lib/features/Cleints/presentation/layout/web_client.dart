@@ -2,10 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
+import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/loading_widget.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_filter_tabs.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_list.dart';
@@ -23,92 +26,19 @@ class WebCustomers extends StatefulWidget {
 class _WebCustomersState extends State<WebCustomers> {
   final searchController = TextEditingController();
 
-  int selectedIndex = 0;
-
-  late final List<String> filters;
+  List<String> get filters => ['all'.tr(), 'debt'.tr(), 'balanced'.tr()];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    filters = ["all".tr(), "debt".tr(), "balanced".tr()];
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
-
-  // final customers = [
-  //   CustomerModel(
-  //     name: "customer_ahmed".tr(),
-  //     phone: "01012345678",
-  //     balance: "1,400 ${"pound".tr()}".toString(),
-  //     hasDebt: true,
-  //     address: '',
-
-  //     invoices: [
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-001",
-  //         customerName: "customer_ahmed".tr(),
-  //         date: "12 ${"month3".tr()} 2024",
-  //         paymentMethod: "unpaid".tr(),
-  //         itemCount: 3,
-  //         totalPrice: "450 ${"pound".tr()}",
-  //       ),
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-002",
-  //         customerName: "customer_ahmed".tr(),
-  //         date: "05 ${"month3".tr()} 2024",
-  //         paymentMethod: "paid".tr(),
-  //         itemCount: 2,
-  //         totalPrice: "950 ${"pound".tr()}",
-  //       ),
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-003",
-  //         customerName: "customer_ahmed".tr(),
-  //         date: "28 ${"month2".tr()} 2024",
-  //         paymentMethod: "unpaid".tr(),
-  //         itemCount: 4,
-  //         totalPrice: "950 ${"pound".tr()}",
-  //       ),
-  //     ],
-
-  //     totalPurchases: 12500,
-  //     orderCount: 24,
-  //   ),
-
-  //   CustomerModel(
-  //     name: "customer_mohamed".tr(),
-  //     phone: "01098765432",
-  //     balance: "0 ${"pound".tr()}",
-  //     hasDebt: false,
-  //     address: '',
-
-  //     invoices: [
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-004",
-  //         customerName: "customer_mohamed".tr(),
-  //         date: "20 ${"month3".tr()} 2024",
-  //         paymentMethod: "paid".tr(),
-  //         itemCount: 5,
-  //         totalPrice: "1,200 ${"pound".tr()}",
-  //       ),
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-005",
-  //         customerName: "customer_mohamed".tr(),
-  //         date: "10 ${"month3".tr()} 2024",
-  //         paymentMethod: "paid".tr(),
-  //         itemCount: 2,
-  //         totalPrice: "750 ${"pound".tr()}",
-  //       ),
-  //     ],
-
-  //     totalPurchases: 8500,
-  //     orderCount: 15,
-  //   ),
-  // ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
@@ -118,7 +48,7 @@ class _WebCustomersState extends State<WebCustomers> {
                 Row(
                   children: [
                     Text(
-                      "customers".tr(),
+                      'customers'.tr(),
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
 
@@ -126,10 +56,17 @@ class _WebCustomersState extends State<WebCustomers> {
 
                     FilledButton.icon(
                       onPressed: () {
-                        context.pushNamed(AppRoutes.addclientScreen);
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (_) => BlocProvider(
+                            create: (context) => getIt<AddClientCubit>(),
+                            child: const AddClientDialog(),
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.person_add_alt_1),
-                      label: Text("new_customer".tr()),
+                      label: Text('new_customer'.tr()),
                     ),
                   ],
                 ),
@@ -139,51 +76,82 @@ class _WebCustomersState extends State<WebCustomers> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// القائمة
                     Expanded(
                       flex: 3,
                       child: Column(
                         children: [
                           ProductSearchWidget(
                             controller: searchController,
-                            hintText: "search_client".tr(),
+                            hintText: 'search_client'.tr(),
+                            onChanged: (query) {
+                              context.read<ClientsCubit>().searchClients(query);
+                            },
                           ),
 
                           HeightSpace(20),
 
-                          CustomerFilterTabs(
-                            categories: filters,
-                            selectedIndex: selectedIndex,
-                            onSelected: (index) {
-                              setState(() {
-                                selectedIndex = index;
-                              });
+                          BlocSelector<
+                            ClientsCubit,
+                            ClientsState,
+                            ClientFilter
+                          >(
+                            selector: (state) {
+                              if (state is ClientsLoaded) {
+                                return state.filter;
+                              }
+
+                              return ClientFilter.all;
+                            },
+                            builder: (context, currentFilter) {
+                              return CustomerFilterTabs(
+                                categories: filters,
+                                selectedIndex: switch (currentFilter) {
+                                  ClientFilter.all => 0,
+                                  ClientFilter.hasDebt => 1,
+                                  ClientFilter.noDebt => 2,
+                                },
+                                onSelected: (index) {
+                                  final filter = switch (index) {
+                                    0 => ClientFilter.all,
+                                    1 => ClientFilter.hasDebt,
+                                    2 => ClientFilter.noDebt,
+                                    _ => ClientFilter.all,
+                                  };
+
+                                  context.read<ClientsCubit>().filterClients(
+                                    filter,
+                                  );
+                                },
+                              );
                             },
                           ),
 
                           HeightSpace(20),
 
                           BlocBuilder<ClientsCubit, ClientsState>(
-                            builder: (BuildContext context, state) {
+                            builder: (context, state) {
                               if (state is ClientsLoading) {
                                 return LoadingWidget(
-                                  message: "Loading Clients...".tr(),
+                                  message: 'Loading Clients...'.tr(),
                                 );
                               }
+
                               if (state is ClientsLoaded) {
                                 return CustomerList(
-                                  customers: state.clients,
+                                  customers: state.displayedClients,
                                   onTap: (index) {
                                     context.pushNamed(
                                       AppRoutes.customerdetailsScreen,
-                                      extra: state.clients[index],
+                                      extra: state.displayedClients[index].id,
                                     );
                                   },
                                 );
                               }
+
                               if (state is ClientsError) {
                                 return Center(child: Text(state.message));
                               }
+
                               return const SizedBox();
                             },
                           ),
@@ -193,7 +161,6 @@ class _WebCustomersState extends State<WebCustomers> {
 
                     WidthSpace(24),
 
-                    /// الخريطة
                     Expanded(
                       flex: 2,
                       child: Column(
