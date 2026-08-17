@@ -124,7 +124,7 @@
   "operation_sale_desk": "بيع مكتب خشبي",
   "operation_sale_bed": "بيع سرير خشبي",
 
-    "products": "المنتاجات",
+    "products": "المنتجات",
   "clients": "العملاء",
   "invoice_history": "سجل الفواتير",
 "total_invoices": "إجمالي الفواتير",
@@ -333,9 +333,41 @@
   "amount_cannot_be_negative": "لا يمكن أن يكون المبلغ سالبًا.",
   "something_error": "حدث خطأ ما، يرجى المحاولة مرة أخرى.",
   "client_added_successfully": "تمت إضافة العميل بنجاح.",
+
   "debt_payment_amount": "مبلغ السداد",
 "debt_payment_amount_hint": "أدخل المبلغ المراد سداده",
-"decrease_debt": "تخفيض المديونية"
+"decrease_debt": "تخفيض المديونية",
+
+
+  "EGP" : "ج.م",
+  "Piece" : "قطعة",
+  "Meter" : "متر",
+  "KG" : "كجم",
+  "Add New Category" : "اضافة فئة جديدة",
+  "category_name" : "اسم الفئة",
+  "category_name_hint" : "مثال: الكهرباء",
+  "Add" : "اضافة",
+  "Category name is required" : "اسم الفئة مطلوب",
+  "Cancel" : "الغاء",
+  "Add New Product" : "اضافة منتج جديد",
+  "Product Image" : "صورة المنتج",
+  "Upload Product Image" : "تحميل صورة المنتج",
+  "Product Name" : "اسم المنتج",
+  "Example: Beech Wood Chair" : "مثال: صناعة الخشب البيضاء",
+  "Product name is required" : "اسم المنتج مطلوب",
+  "Category" : "الفئة",
+  "Select Category" : "اختر الفئة",
+  "Please select a category" : "يرجى تحديد فئة",
+  "Product Code" : "كود المنتج",
+  "Required" : "مطلوب",
+  "Selling Price" : "سعر البيع",
+  "Current Quantity" : "الكمية الحالية",
+  "Unit" : "وحدة",
+  "Saving" : "جاري الحفظ",
+  "Saving..." : "جاري الحفظ...",
+  "Category added successfully" : "تمت اضافة الفئة بنجاح",
+  "Loading categories..." : "جاري تحميل الفئات...",
+  "Category name" : "اسم الفئة"
 
 }
 

@@ -8,8 +8,7 @@ import 'package:warshity/features/invoices/presentation/layout/invoice_web.dart'
 import 'package:warshity/features/main/presentation/layout/main_mobile.dart';
 import 'package:warshity/features/main/presentation/layout/main_web.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
-import 'package:warshity/features/products/presentation/layout/mobile_product.dart';
-import 'package:warshity/features/products/presentation/layout/web_product.dart';
+import 'package:warshity/features/products/presentation/pages/product_pages.dart';
 import 'package:warshity/features/settings/presentation/layout/mobile_settings.dart';
 import 'package:warshity/features/settings/presentation/layout/web_settings.dart';
 
@@ -35,7 +34,7 @@ class MainScreen extends StatelessWidget {
       icon: Icons.inventory_2_outlined,
       selectedIcon: Icons.inventory_2,
       labelKey: 'products',
-      screen: MobileProduct(), // TODO: استبدلها
+      screen: ProductPages(), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.people_outline,
@@ -69,7 +68,7 @@ class MainScreen extends StatelessWidget {
       icon: Icons.inventory_2_outlined,
       selectedIcon: Icons.inventory_2,
       labelKey: 'products',
-      screen: WebProduct(), // TODO: استبدلها
+      screen: ProductPages(), // TODO: استبدلها
     ),
     MainNavItem(
       icon: Icons.people_outline,

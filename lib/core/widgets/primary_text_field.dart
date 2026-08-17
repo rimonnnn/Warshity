@@ -20,7 +20,7 @@ class CustomTextField extends StatelessWidget {
     this.onTap,
     this.width,
     this.height,
-    this.borderRadius,
+    this.borderRadius, this.maxlines,
   });
 
   final String? label;
@@ -42,7 +42,7 @@ class CustomTextField extends StatelessWidget {
   final double? width;
   final double? height;
   final double? borderRadius;
-
+  final int? maxlines;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -67,6 +67,7 @@ class CustomTextField extends StatelessWidget {
             style: context.text.bodyLarge?.copyWith(
               color: context.colors.onSurface,
             ),
+            maxLines: maxlines ?? 1,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: context.text.bodyLarge?.copyWith(
@@ -84,11 +85,8 @@ class CustomTextField extends StatelessWidget {
                       ),
                     )
                   : prefixIconData != null
-                      ? Icon(
-                          prefixIconData,
-                          color: context.colors.onSurfaceVariant,
-                        )
-                      : null,
+                  ? Icon(prefixIconData, color: context.colors.onSurfaceVariant)
+                  : null,
               suffixIcon: suffixIcon,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 20,
