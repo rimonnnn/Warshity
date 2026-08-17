@@ -28,92 +28,13 @@ class MobileClient extends StatefulWidget {
 class _MobileCustomersState extends State<MobileClient> {
   final searchController = TextEditingController();
 
-  int selectedIndex = 0;
-
   List<String> get filters => ["all".tr(), "debt".tr(), "balanced".tr()];
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-
-  //   filters = ["all".tr(), "debt".tr(), "balanced".tr()];
-  // }
-
-  // final customers = [
-  //   CustomerModel(
-  //     name: "customer_ahmed".tr(),
-  //     phone: "01012345678",
-  //     balance: "1,400 ${"pound".tr()}",
-  //     hasDebt: true,
-
-  //     // avatar: Icon(
-  //     //   Icons.person,
-  //     //   size: 48.sp,
-  //     // ),
-  //     invoices: [
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-001",
-  //         customerName: "customer_ahmed".tr(),
-  //         date: "12 ${"month3".tr()} 2024",
-  //         paymentMethod: "unpaid".tr(),
-  //         itemCount: 3,
-  //         totalPrice: "450 ${"pound".tr()}",
-  //       ),
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-002",
-  //         customerName: "customer_ahmed".tr(),
-  //         date: "05 ${"month3".tr()} 2024",
-  //         paymentMethod: "paid".tr(),
-  //         itemCount: 2,
-  //         totalPrice: "950 ${"pound".tr()}",
-  //       ),
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-003",
-  //         customerName: "customer_ahmed".tr(),
-  //         date: "28 ${"month2".tr()} 2024",
-  //         paymentMethod: "unpaid".tr(),
-  //         itemCount: 4,
-  //         totalPrice: "950 ${"pound".tr()}",
-  //       ),
-  //     ],
-
-  //     totalPurchases: 12500 ,
-  //     orderCount: 24,
-  //   ),
-
-  //   CustomerModel(
-  //     name: "customer_mohamed".tr(),
-  //     phone: "01098765432",
-  //     balance: "0 ${"pound".tr()}",
-  //     hasDebt: false,
-
-  //     // avatar: Icon(
-  //     //   Icons.person,
-  //     //   size: 48.sp,
-  //     // ),
-  //     invoices: [
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-004",
-  //         customerName: "customer_mohamed".tr(),
-  //         date: "20 ${"month3".tr()} 2024",
-  //         paymentMethod: "paid".tr(),
-  //         itemCount: 5,
-  //         totalPrice: "1,200 ${"pound".tr()}",
-  //       ),
-  //       InvoiceModel(
-  //         invoiceNumber: "INV-005",
-  //         customerName: "customer_mohamed".tr(),
-  //         date: "10 ${"month3".tr()} 2024",
-  //         paymentMethod: "paid".tr(),
-  //         itemCount: 2,
-  //         totalPrice: "750 ${"pound".tr()}",
-  //       ),
-  //     ],
-
-  //     totalPurchases: 8500,
-  //     orderCount: 15,
-  //   ),
-  // ];
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,18 +62,41 @@ class _MobileCustomersState extends State<MobileClient> {
             children: [
               ProductSearchWidget(
                 controller: searchController,
-                hintText: "search_client".tr(),
+                hintText: 'search_client'.tr(),
+                onChanged: (query) {
+                  context.read<ClientsCubit>().searchClients(query);
+                },
               ),
 
               HeightSpace(20.h),
 
-              CustomerFilterTabs(
-                categories: filters,
-                selectedIndex: selectedIndex,
-                onSelected: (index) {
-                  setState(() {
-                    selectedIndex = index;
-                  });
+              BlocSelector<ClientsCubit, ClientsState, ClientFilter>(
+                selector: (state) {
+                  if (state is ClientsLoaded) {
+                    return state.filter;
+                  }
+
+                  return ClientFilter.all;
+                },
+                builder: (context, currentFilter) {
+                  return CustomerFilterTabs(
+                    categories: filters,
+                    selectedIndex: switch (currentFilter) {
+                      ClientFilter.all => 0,
+                      ClientFilter.hasDebt => 1,
+                      ClientFilter.noDebt => 2,
+                    },
+                    onSelected: (index) {
+                      final filter = switch (index) {
+                        0 => ClientFilter.all,
+                        1 => ClientFilter.hasDebt,
+                        2 => ClientFilter.noDebt,
+                        _ => ClientFilter.all,
+                      };
+
+                      context.read<ClientsCubit>().filterClients(filter);
+                    },
+                  );
                 },
               ),
 
@@ -165,11 +109,11 @@ class _MobileCustomersState extends State<MobileClient> {
                   }
                   if (state is ClientsLoaded) {
                     return CustomerList(
-                      customers: state.clients,
+                      customers: state.displayedClients,
                       onTap: (index) {
                         context.pushNamed(
                           AppRoutes.customerdetailsScreen,
-                          extra: state.clients[index],
+                          extra: state.displayedClients[index].id,
                         );
                       },
                     );

@@ -63,37 +63,45 @@ class PrimaryButtonWidget extends StatelessWidget {
               ),
             )
           : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (prefixicon == true && iconPath != null)
-                  Image.asset(
-                    iconPath!,
-                    width: 24.w,
-                    height: 24.h,
-                    color: textColor ?? context.colors.onPrimary,
-                    fit: BoxFit.cover,
+                  Expanded(
+                    child: Image.asset(
+                      iconPath!,
+                      width: 24.w,
+                      height: 24.h,
+                      color: textColor ?? context.colors.onPrimary,
+                      fit: BoxFit.cover,
+                    ),
                   )
                 else if (iconData != null)
-                  Icon(
-                    iconData,
-                    color: iconeColor ?? context.colors.onSurfaceVariant,
-                    size: iconSize ?? 20,
+                  Expanded(
+                    child: Icon(
+                      iconData,
+                      color: iconeColor ?? context.colors.onSurfaceVariant,
+                      size: iconSize ?? 20,
+                    ),
                   ),
-                Text(
-                  buttonText ?? "",
-                  style: context.text.titleMedium?.copyWith(
-                    color: textColor ?? context.colors.onPrimary,
-                    fontSize: fontSize ?? 16.sp,
+                Expanded(
+                  child: Text(
+                    buttonText ?? "",
+                    style: context.text.titleMedium?.copyWith(
+                      color: textColor ?? context.colors.onPrimary,
+                      fontSize: fontSize ?? 16.sp,
+                    ),
                   ),
                 ),
                 SizedBox(width: buttonspacing ?? 12.w),
                 if (suffixicon == true && iconPath != null)
-                  Image.asset(
-                    iconPath!,
-                    width: 24.w,
-                    height: 24.h,
-                    color: textColor ?? context.colors.onPrimary,
-                    fit: BoxFit.contain,
+                  Expanded(
+                    child: Image.asset(
+                      iconPath!,
+                      width: 24.w,
+                      height: 24.h,
+                      color: textColor ?? context.colors.onPrimary,
+                      fit: BoxFit.contain,
+                    ),
                   ),
               ],
             ),

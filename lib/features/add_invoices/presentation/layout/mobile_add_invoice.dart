@@ -1,14 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/helper/app_validators.dart';
 import 'package:warshity/core/routing/app_routes.dart';
+import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/core/widgets/add_client_dialog.dart';
-import 'package:warshity/features/add_invoices/presentation/widgets/add_product_dialog.dart';
+import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/bestselling_products.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/cart_section.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/create_invoice_button.dart';
@@ -71,7 +73,10 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                     showDialog(
                       context: context,
                       barrierDismissible: true,
-                      builder: (_) => const AddProductDialog(),
+                      builder: (_) => BlocProvider(
+                        create: (context) => getIt<AddClientCubit>(),
+                        child: const AddClientDialog(),
+                      ),
                     );
                   },
                 ),

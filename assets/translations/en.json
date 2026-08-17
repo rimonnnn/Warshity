@@ -331,6 +331,11 @@
   "amount_cannot_be_negative": "Amount cannot be negative.",
   "something_error": "Something went wrong. Please try again.",
   "client_added_successfully": "Client added successfully.",
+
+  "decrease_debt": "Decrease Debt",
+  "debt_payment_amount": "Payment Amount",
+"debt_payment_amount_hint": "Enter the amount to pay",
+
   "EGP" : "EGP",
   "Piece" : "Piece",
   "Meter" : "Meter",
@@ -360,4 +365,5 @@
   "Category added successfully" : "Category added successfully",
   "Loading categories..." : "Loading categories...",
   "Category name" : "Category name"
+
 }

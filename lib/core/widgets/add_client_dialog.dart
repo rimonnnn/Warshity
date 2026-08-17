@@ -173,7 +173,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
                           child: PrimaryButtonWidget(
                             iconData: Icons.cancel_outlined,
                             iconeColor: context.colors.errorContainer,
-                            fontSize: 16.sp,
+                            fontSize: 14.sp,
                             iconSize: 20.sp,
                             buttonColor: context.colors.error,
                             buttonText: isLoading ? ''.tr() : 'cancel'.tr(),
@@ -189,7 +189,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
                             iconData: Icons.save,
                             iconSize: 20.sp,
                             iconeColor: context.colors.primaryContainer,
-                            fontSize: 16.sp,
+                            fontSize: 14.sp,
                             buttonText: isLoading ? ''.tr() : 'save'.tr(),
                             borderRadius: AppRadius.sm,
                             onPress: isLoading ? null : _onSave,
