@@ -29,7 +29,7 @@ class ProductModel {
       barcode: data['barcode']?.toString() ?? '',
       category: data['category']?.toString() ?? '',
       price: (data['price'] as num?)?.toDouble() ?? 0.0,
-      quantity: data['quantity']?.toInt() ?? 0,
+      quantity: (data['quantity'] as num?)?.toInt() ?? 0,
       unit: data['unit']?.toString() ?? '',
       imageUrl: data['imageurl']?.toString() ?? '',
     );
