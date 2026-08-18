@@ -218,7 +218,37 @@ class _MobileProductsState extends State<MobileProduct> {
                           return SingleChildScrollView(
                             physics: const BouncingScrollPhysics(),
 
-                            child: ProductList(products: products),
+                            child: ProductList(
+                              products: products,
+
+                              onDelete: (product) async {
+                                try {
+                                  await context
+                                      .read<ProductsCubit>()
+                                      .deleteProduct(product.id);
+
+                                  if (!context.mounted) return;
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        '${product.name} deleted successfully',
+                                      ),
+                                    ),
+                                  );
+                                } catch (e) {
+                                  if (!context.mounted) return;
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Failed to delete product: $e',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           );
                         }
 

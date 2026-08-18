@@ -28,6 +28,13 @@ class ProductsCubit extends Cubit<ProductsState> {
       },
     );
   }
+  Future<void> deleteProduct(String productId) async {
+  try {
+    await repository.deleteProduct(productId);
+  } catch (e) {
+    rethrow;
+  }
+}
 
   @override
   Future<void> close() {
