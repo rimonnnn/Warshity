@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 
@@ -20,18 +21,20 @@ class CustomTextField extends StatelessWidget {
     this.onTap,
     this.width,
     this.height,
-    this.borderRadius, this.maxlines,
+    this.borderRadius,
+    this.maxlines,
   });
 
   final String? label;
   final String hint;
-
   final TextEditingController? controller;
+
   final String? prefixIcon;
   final IconData? prefixIconData;
   final IconButton? suffixIcon;
 
   final TextInputType? keyboardType;
+
   final bool obscureText;
   final bool readOnly;
 
@@ -43,16 +46,27 @@ class CustomTextField extends StatelessWidget {
   final double? height;
   final double? borderRadius;
   final int? maxlines;
+
   @override
   Widget build(BuildContext context) {
+    final hasLabel = label != null && label!.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label ?? "",
-          style: context.text.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 8),
+        if (hasLabel)
+          Text(
+            label!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.text.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: context.colors.onSurface,
+            ),
+          ),
+
+        if (hasLabel) SizedBox(height: 8.h),
+
         SizedBox(
           width: width ?? 330.w,
           height: height ?? 57.h,
@@ -64,42 +78,58 @@ class CustomTextField extends StatelessWidget {
             onChanged: onChanged,
             readOnly: readOnly,
             onTap: onTap,
+            maxLines: maxlines ?? 1,
+
+            textAlignVertical: TextAlignVertical.center,
+
             style: context.text.bodyLarge?.copyWith(
               color: context.colors.onSurface,
             ),
-            maxLines: maxlines ?? 1,
+
             decoration: InputDecoration(
               hintText: hint,
+
               hintStyle: context.text.bodyLarge?.copyWith(
                 color: context.colors.onSurfaceVariant,
                 fontWeight: FontWeight.normal,
               ),
+
               prefixIcon: prefixIcon != null
                   ? Padding(
-                      padding: EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12.w),
                       child: Image.asset(
                         prefixIcon!,
-                        width: 24,
-                        height: 24,
+                        width: 24.w,
+                        height: 24.h,
                         color: context.colors.onSurfaceVariant,
+                        fit: BoxFit.contain,
                       ),
                     )
                   : prefixIconData != null
-                  ? Icon(prefixIconData, color: context.colors.onSurfaceVariant)
+                  ? Icon(
+                      prefixIconData,
+                      color: context.colors.onSurfaceVariant,
+                      size: 24.sp,
+                    )
                   : null,
+
               suffixIcon: suffixIcon,
+
               contentPadding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 18,
+                horizontal: 16.w,
+                vertical: 12.h,
               ),
+
               filled: true,
               fillColor: context.colors.surface,
+
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
                 ),
                 borderSide: BorderSide(color: context.colors.onSurfaceVariant),
               ),
+
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
@@ -109,21 +139,27 @@ class CustomTextField extends StatelessWidget {
                   width: 1.5,
                 ),
               ),
+
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
                 ),
                 borderSide: BorderSide(color: context.colors.error),
               ),
+
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(
                   borderRadius ?? AppRadius.sm,
                 ),
                 borderSide: BorderSide(color: context.colors.error, width: 1.5),
               ),
+
               errorStyle: context.text.bodySmall?.copyWith(
                 color: context.colors.error,
+                height: 1.2,
               ),
+
+              errorMaxLines: 2,
             ),
           ),
         ),

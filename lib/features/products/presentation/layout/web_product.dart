@@ -116,21 +116,27 @@ class _WebProductState extends State<WebProduct> {
 
                             onPressed: () {
                               showDialog(
-                  context: context,
-                  barrierDismissible: true,
+                                context: context,
+                                barrierDismissible: true,
 
-                  builder: (dialogContext) {
-                    return MultiBlocProvider(
-                      providers: [
-                        BlocProvider.value(value: categoriesCubit),
+                                builder: (dialogContext) {
+                                  return MultiBlocProvider(
+                                    providers: [
+                                      BlocProvider.value(
+                                        value: categoriesCubit,
+                                      ),
 
-                        BlocProvider(create: (_) => getIt<AddProductCubit>()),
-                      ],
+                                      BlocProvider(
+                                        create: (_) => getIt<AddProductCubit>(),
+                                      ),
+                                    ],
 
-                      child: const AddProductDialog(imagecontainerheight: 250,),
-                    );
-                  },
-                );
+                                    child: const AddProductDialog(
+                                      imagecontainerheight: 250,
+                                    ),
+                                  );
+                                },
+                              );
                             },
 
                             icon: const Icon(Icons.add),
@@ -334,13 +340,38 @@ class _WebProductState extends State<WebProduct> {
                                   ProductList(
                                     products: paginatedProducts,
 
-                                    height: 80,
+                                    onDelete: (product) async {
+                                      try {
+                                        await context
+                                            .read<ProductsCubit>()
+                                            .deleteProduct(product.id);
 
-                                    width: 80,
+                                        if (!context.mounted) return;
 
-                                    padding: EdgeInsets.all(16.w),
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              '${product.name} deleted successfully',
+                                            ),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        if (!context.mounted) return;
+
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Failed to delete product: $e',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
                                   ),
-
                                   Divider(
                                     height: 1,
 

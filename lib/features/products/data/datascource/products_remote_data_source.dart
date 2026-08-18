@@ -90,4 +90,10 @@ class ProductsRemoteDataSource {
           product.toFirestore(),
         );
   }
+  Future<void> deleteProduct(String productId) async {
+  await firestore
+      .collection('products')
+      .doc(productId)
+      .delete();
+}
 }
