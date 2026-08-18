@@ -48,7 +48,46 @@ class CustomSwitchTile extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 12.w),
-              Switch(value: value, onChanged: onChanged),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => onChanged(!value),
+                child: SizedBox(
+                  width: 50.w,
+                  height: 35.h,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          decoration: BoxDecoration(
+                            color: value
+                                ? context.colors.primary
+                                : Colors.grey.shade500,
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                        ),
+                      ),
+
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        top: 3.h,
+                        left: value ? 3.w : null,
+                        right: value ? null : 3.w,
+                        child: Container(
+                          width: 22.w,
+                          height: 22.w,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

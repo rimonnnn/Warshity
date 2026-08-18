@@ -29,18 +29,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(
-        title: Text("settings1".tr()),
-
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.pushReplacement(AppRoutes.mainScreen);
-            },
-            icon: Icon(Icons.arrow_forward_ios),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text("settings1".tr())),
 
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
@@ -133,12 +122,16 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   onTap: () {},
                   showDivider: true,
                   trailing: TextButton(
-                    onPressed: () {
-                      context.setLocale(
-                        context.locale == Locale("en")
-                            ? Locale("ar")
-                            : Locale("en"),
-                      );
+                    onPressed: () async {
+                      final newLocale = context.locale.languageCode == 'en'
+                          ? const Locale('ar')
+                          : const Locale('en');
+
+                      await context.setLocale(newLocale);
+
+                      if (!context.mounted) return;
+
+                      context.go(AppRoutes.splashScreen);
                     },
                     child: Text(
                       context.locale.languageCode == "en"
@@ -183,7 +176,9 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
             HeightSpace(20.h),
 
             /// تسجيل الخروج
-            LogoutButton(title: "logout".tr(), onPressed: () {}),
+            LogoutButton(
+              title: "logout".tr(),
+            ),
 
             HeightSpace(30.h),
           ],

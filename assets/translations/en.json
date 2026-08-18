@@ -364,6 +364,10 @@
   "Saving..." : "Saving...",
   "Category added successfully" : "Category added successfully",
   "Loading categories..." : "Loading categories...",
-  "Category name" : "Category name"
+  "Category name" : "Category name",
+  "Delete Product" : "Delete Product",
+  "Are you sure you want to delete" : "Are you sure you want to delete ",
+  "?" : "?",
+  "Delete" : "Delete"
 
 }

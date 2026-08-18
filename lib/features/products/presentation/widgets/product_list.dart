@@ -46,7 +46,7 @@ class ProductList extends StatelessWidget {
           title: Text('Delete Product'.tr()),
 
           content: Text(
-            'Are you sure you want to delete "${product.name}"?'.tr(),
+            'Are you sure you want to delete'.tr() + product.name + '?'.tr(),
           ),
 
           actions: [

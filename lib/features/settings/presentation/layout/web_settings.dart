@@ -2,7 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/theme/cubit/theme_cubit.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
@@ -125,13 +127,13 @@ class _WebSettingsScreenState extends State<WebSettingsScreen> {
                             icon: Icons.language_outlined,
                             showDivider: true,
                             trailing: TextButton(
-                              onPressed: () {
-                                context.setLocale(
-                                  context.locale == Locale("en")
-                                      ? Locale("ar")
-                                      : Locale("en"),
-                                );
-                              },
+                               onPressed: () {
+                      final newLocale = context.locale.languageCode == 'en'
+                          ? const Locale('ar')
+                          : const Locale('en');
+
+                      context.push(AppRoutes.splashScreen, extra: newLocale);
+                    },
                               child: Text(
                                 context.locale.languageCode == "en"
                                     ? "English"
@@ -181,7 +183,6 @@ class _WebSettingsScreenState extends State<WebSettingsScreen> {
                   alignment: Alignment.bottomLeft,
                   child: LogoutButton(
                     title: "logout".tr(),
-                    onPressed: () {},
                     width: 400,
                   ),
                 ),

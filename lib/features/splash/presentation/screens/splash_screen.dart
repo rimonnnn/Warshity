@@ -13,8 +13,8 @@ import 'package:warshity/features/splash/widgets/logo_widget.dart';
 import 'package:warshity/features/splash/widgets/text_widget.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
+  const SplashScreen({super.key, this.locale});
+final Locale? locale;
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -38,14 +38,27 @@ class _SplashScreenState extends State<SplashScreen>
   // Loading indicator: fade in last (0.7 -> 1.0)
   late Animation<double> _loadingFade;
 
-  @override
-  void initState() {
-    super.initState();
-    _initAnimations();
-    _controller.forward();
-    _navigateNext();
-  }
 
+@override
+void initState() {
+  super.initState();
+
+  _initAnimations();
+
+  _controller.forward();
+
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    if (!mounted) return;
+
+    if (widget.locale != null) {
+      await context.setLocale(widget.locale!);
+    }
+
+    if (!mounted) return;
+
+    _navigateNext();
+  });
+}
   void _initAnimations() {
     _controller = AnimationController(
       vsync: this,
