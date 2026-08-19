@@ -1,3 +1,4 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +8,10 @@ import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/theme/cubit/theme_cubit.dart';
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:warshity/features/settings/presentation/cubit/settings_state.dart';
 import 'package:warshity/features/settings/presentation/widgets/custom_switch_tile.dart';
 import 'package:warshity/features/settings/presentation/widgets/info_item.dart';
 import 'package:warshity/features/settings/presentation/widgets/logout_button.dart';
@@ -127,13 +131,17 @@ class _WebSettingsScreenState extends State<WebSettingsScreen> {
                             icon: Icons.language_outlined,
                             showDivider: true,
                             trailing: TextButton(
-                               onPressed: () {
-                      final newLocale = context.locale.languageCode == 'en'
-                          ? const Locale('ar')
-                          : const Locale('en');
+                              onPressed: () {
+                                final newLocale =
+                                    context.locale.languageCode == 'en'
+                                    ? const Locale('ar')
+                                    : const Locale('en');
 
-                      context.push(AppRoutes.splashScreen, extra: newLocale);
-                    },
+                                context.push(
+                                  AppRoutes.mainScreen,
+                                  extra: newLocale,
+                                );
+                              },
                               child: Text(
                                 context.locale.languageCode == "en"
                                     ? "English"
@@ -179,12 +187,40 @@ class _WebSettingsScreenState extends State<WebSettingsScreen> {
 
                 HeightSpace(32.h),
 
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: LogoutButton(
-                    title: "logout".tr(),
-                    width: 400,
-                  ),
+                BlocConsumer<SettingsCubit, SettingsState>(
+                  listener: (context, state) {
+                    if (state is SettingsError) {
+                      showAnimatedSnackDialog(
+                        context,
+                        message: state.message,
+                        type: AnimatedSnackBarType.error,
+                      );
+                    }
+                    if (state is SettingsSuccess) {
+                      showAnimatedSnackDialog(
+                        context,
+                        message: state.message,
+                        type: AnimatedSnackBarType.success,
+                      );
+                      context.goNamed(AppRoutes.loginScreen);
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is SettingsLoading) {
+                      return const CircularProgressIndicator();
+                    }
+                    return Align(
+                      alignment: Alignment.bottomLeft,
+                      child: LogoutButton(
+                        title: "logout".tr(),
+                        isLoading: state is SettingsLoading,
+                        onPressed: () {
+                          context.read<SettingsCubit>().logOut();
+                        },
+                        width: 400,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

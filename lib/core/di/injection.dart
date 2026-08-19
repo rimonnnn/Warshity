@@ -23,21 +23,16 @@ import 'package:warshity/features/products/data/repo/products_repository.dart';
 import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
+import 'package:warshity/features/settings/data/datascource/settings_remote_data_source.dart';
+import 'package:warshity/features/settings/data/repo/settings_repositery.dart';
+import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
-  // ============================================================
-  // Shared Preferences
-  // ============================================================
-
   final sharedPreferences = await SharedPreferences.getInstance();
 
   getIt.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
-
-  // ============================================================
-  // Core Services
-  // ============================================================
 
   getIt.registerLazySingleton<ThemeService>(
     () => ThemeService(getIt<SharedPreferences>()),
@@ -47,39 +42,19 @@ Future<void> setupDependencies() async {
     () => OnboardingLocalDataSource(getIt<SharedPreferences>()),
   );
 
-  // ============================================================
-  // Firebase
-  // ============================================================
-
   getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
 
   getIt.registerLazySingleton<FirebaseFirestore>(
     () => FirebaseFirestore.instance,
   );
 
-  // ============================================================
-  // Supabase
-  // ============================================================
-
   getIt.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
-  // ============================================================
-  // Google Sign-In
-  // ============================================================
-
   getIt.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn());
-
-  // ============================================================
-  // Register Feature
-  // ============================================================
 
   getIt.registerLazySingleton<RegisterRepo>(
     () => RegisterRepoImpl(getIt<FirebaseAuth>(), getIt<FirebaseFirestore>()),
   );
-
-  // ============================================================
-  // Auth Feature
-  // ============================================================
 
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(getIt<FirebaseAuth>(), getIt<GoogleSignIn>()),
@@ -89,15 +64,10 @@ Future<void> setupDependencies() async {
     () => AuthCubit(getIt<RegisterRepo>(), getIt<AuthRepo>()),
   );
 
-  // ============================================================
-  // Clients Feature
-  // ============================================================
-
   getIt.registerLazySingleton<ClientsRemoteDataSource>(
     () => ClientsRemoteDataSource(getIt<FirebaseFirestore>()),
   );
 
-  // Debt feature
   getIt.registerFactory<DebtCubit>(() => DebtCubit(getIt()));
 
   getIt.registerLazySingleton<ClientsRepository>(
@@ -108,18 +78,9 @@ Future<void> setupDependencies() async {
     () => ClientsCubit(getIt<ClientsRepository>()),
   );
 
-  // ============================================================
-  // Add Client
-  // ============================================================
-
   getIt.registerFactory<AddClientCubit>(
     () => AddClientCubit(getIt<ClientsRepository>()),
   );
-
-  // ============================================================
-  // Products Remote Data Source
-  // Firebase + Supabase
-  // ============================================================
 
   getIt.registerLazySingleton<ProductsRemoteDataSource>(
     () => ProductsRemoteDataSource(
@@ -128,51 +89,38 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  // ============================================================
-  // Products Repository
-  // ============================================================
-
   getIt.registerLazySingleton<ProductsRepository>(
     () => ProductsRepository(getIt<ProductsRemoteDataSource>()),
   );
-
-  // ============================================================
-  // Products Cubit
-  // ============================================================
 
   getIt.registerFactory<ProductsCubit>(
     () => ProductsCubit(getIt<ProductsRepository>()),
   );
 
-  // ============================================================
-  // Add Product Cubit
-  // ============================================================
-
   getIt.registerFactory<AddProductCubit>(
     () => AddProductCubit(getIt<ProductsRepository>()),
   );
-
-  // ============================================================
-  // Categories Remote Data Source
-  // ============================================================
 
   getIt.registerLazySingleton<CategoriesRemoteDataSource>(
     () => CategoriesRemoteDataSource(getIt<FirebaseFirestore>()),
   );
 
-  // ============================================================
-  // Categories Repository
-  // ============================================================
-
   getIt.registerLazySingleton<CategoriesRepository>(
     () => CategoriesRepository(getIt<CategoriesRemoteDataSource>()),
   );
 
-  // ============================================================
-  // Categories Cubit
-  // ============================================================
-
   getIt.registerFactory<CategoriesCubit>(
     () => CategoriesCubit(getIt<CategoriesRepository>()),
+  );
+   getIt.registerLazySingleton<SettingsRemoteDataSource>(
+    () => SettingsRemoteDataSource(getIt<FirebaseAuth>()),
+  );
+
+  getIt.registerLazySingleton<SettingsRepositery>(
+    () => SettingsRepositery(getIt<SettingsRemoteDataSource>()),
+  );
+
+  getIt.registerFactory<SettingsCubit>(
+    () => SettingsCubit(getIt<SettingsRepositery>()),
   );
 }
