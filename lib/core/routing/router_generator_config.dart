@@ -44,6 +44,9 @@ class RouterGeneratorConfig {
     },
 
     routes: [
+      // ------------------------------------------------------------
+      // Splash
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.splashScreen,
         name: AppRoutes.splashScreen,
@@ -54,24 +57,39 @@ class RouterGeneratorConfig {
         },
       ),
 
+      // ------------------------------------------------------------
+      // Onboarding
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.onboarding,
         name: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
 
+      // ------------------------------------------------------------
+      // Home
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.homeScreen,
         name: AppRoutes.homeScreen,
         builder: (context, state) => const HomeScreen(),
       ),
 
+      // ------------------------------------------------------------
+      // Main
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.mainScreen,
         name: AppRoutes.mainScreen,
-        builder: (context, state) => const MainScreen(),
+        builder: (context, state) {
+          final locale = state.extra as Locale?;
+          return MainScreen(locale: locale);
+        },
       ),
 
+      // ------------------------------------------------------------
+      // Invoices
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.invoiceScreen,
         name: AppRoutes.invoiceScreen,
@@ -90,12 +108,18 @@ class RouterGeneratorConfig {
         builder: (context, state) => const CheckInvoice(),
       ),
 
+      // ------------------------------------------------------------
+      // Add Product
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.addproductScreen,
         name: AppRoutes.addproductScreen,
         builder: (context, state) => const AddproductScreen(),
       ),
 
+      // ------------------------------------------------------------
+      // Clients Details Feature
+      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.customerdetailsScreen,
         name: AppRoutes.customerdetailsScreen,
@@ -107,6 +131,9 @@ class RouterGeneratorConfig {
         },
       ),
 
+      // ------------------------------------------------------------
+      // Auth
+      // ------------------------------------------------------------
       ShellRoute(
         builder: (context, state, child) {
           return BlocProvider(

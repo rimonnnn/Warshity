@@ -6,44 +6,24 @@ import 'package:warshity/features/products/data/models/product_model.dart';
 class ProductsRepository {
   final ProductsRemoteDataSource remoteDataSource;
 
-  ProductsRepository(
-    this.remoteDataSource,
-  );
-
-  // ============================================================
-  // WATCH PRODUCTS
-  // ============================================================
+  ProductsRepository(this.remoteDataSource);
 
   Stream<List<ProductModel>> watchProducts() {
     return remoteDataSource.watchProducts();
   }
 
-  // ============================================================
-  // UPLOAD IMAGE
-  // ============================================================
-
   Future<String> uploadProductImage(
     Uint8List imageBytes,
     String imageName,
   ) async {
-    return await remoteDataSource.uploadProductImage(
-      imageBytes,
-      imageName,
-    );
+    return await remoteDataSource.uploadProductImage(imageBytes, imageName);
   }
 
-  // ============================================================
-  // ADD PRODUCT
-  // ============================================================
-
-  Future<void> addProduct(
-    ProductModel product,
-  ) async {
-    await remoteDataSource.addProduct(
-      product,
-    );
+  Future<void> addProduct(ProductModel product) async {
+    await remoteDataSource.addProduct(product);
   }
+
   Future<void> deleteProduct(String productId) async {
-  await remoteDataSource.deleteProduct(productId);
-}
+    await remoteDataSource.deleteProduct(productId);
+  }
 }

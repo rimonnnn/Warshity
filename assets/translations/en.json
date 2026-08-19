@@ -368,6 +368,7 @@
   "Delete Product" : "Delete Product",
   "Are you sure you want to delete" : "Are you sure you want to delete ",
   "?" : "?",
-  "Delete" : "Delete"
+  "Delete" : "Delete",
+  "logout_success" : "Logout successfully"
 
 }

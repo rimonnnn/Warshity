@@ -9,91 +9,49 @@ class ProductsRemoteDataSource {
   final FirebaseFirestore firestore;
   final SupabaseClient supabase;
 
-  ProductsRemoteDataSource(
-    this.firestore,
-    this.supabase,
-  );
-
-  // ============================================================
-  // WATCH PRODUCTS
-  // ============================================================
+  ProductsRemoteDataSource(this.firestore, this.supabase);
 
   Stream<List<ProductModel>> watchProducts() {
-    return firestore
-        .collection('products')
-        .snapshots()
-        .map(
-      (snapshot) {
-        return snapshot.docs
-            .map(
-              (doc) => ProductModel.fromFirestore(
-                doc.id,
-                doc.data(),
-              ),
-            )
-            .toList();
-      },
-    );
+    return firestore.collection('products').snapshots().map((snapshot) {
+      return snapshot.docs
+          .map((doc) => ProductModel.fromFirestore(doc.id, doc.data()))
+          .toList();
+    });
   }
-
-  // ============================================================
-  // UPLOAD PRODUCT IMAGE
-  // ============================================================
 
   Future<String> uploadProductImage(
     Uint8List imageBytes,
     String originalFileName,
   ) async {
-    final String timestamp =
-        DateTime.now()
-            .millisecondsSinceEpoch
-            .toString();
+    final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
 
-    final String safeFileName =
-        originalFileName
-            .replaceAll(
-              RegExp(r'[^a-zA-Z0-9._-]'),
-              '_',
-            );
+    final String safeFileName = originalFileName.replaceAll(
+      RegExp(r'[^a-zA-Z0-9._-]'),
+      '_',
+    );
 
-    final String filePath =
-        'products/${timestamp}_$safeFileName';
+    final String filePath = 'products/${timestamp}_$safeFileName';
 
     await supabase.storage
         .from('products')
         .uploadBinary(
           filePath,
           imageBytes,
-          fileOptions: const FileOptions(
-            upsert: false,
-          ),
+          fileOptions: const FileOptions(upsert: false),
         );
 
-    final String imageUrl =
-        supabase.storage
-            .from('products')
-            .getPublicUrl(filePath);
+    final String imageUrl = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
 
     return imageUrl;
   }
 
-  // ============================================================
-  // ADD PRODUCT
-  // ============================================================
-
-  Future<void> addProduct(
-    ProductModel product,
-  ) async {
-    await firestore
-        .collection('products')
-        .add(
-          product.toFirestore(),
-        );
+  Future<void> addProduct(ProductModel product) async {
+    await firestore.collection('products').add(product.toFirestore());
   }
+
   Future<void> deleteProduct(String productId) async {
-  await firestore
-      .collection('products')
-      .doc(productId)
-      .delete();
-}
+    await firestore.collection('products').doc(productId).delete();
+  }
 }

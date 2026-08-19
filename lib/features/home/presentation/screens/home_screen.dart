@@ -5,7 +5,6 @@ import 'package:warshity/features/home/presentation/layout/web_home.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

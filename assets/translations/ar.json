@@ -368,11 +368,11 @@
   "Category added successfully" : "تمت اضافة الفئة بنجاح",
   "Loading categories..." : "جاري تحميل الفئات...",
   "Category name" : "اسم الفئة",
-  "Delete Product" : "حذف المنتج"
-  ,
-  "Are you sure you want to delete" : "هل انت متاكد من حذف المنتج ",
+  "Delete Product" : "حذف المنتج",
+  "Are you sure you want to delete" : "هل انت متاكد من حذف ",
   "?" : "؟",
-  "Delete" : "حذف"
+  "Delete" : "حذف",
+  "logout_success": "تم تسجيل الخروج بنجاح."
 
 }
 

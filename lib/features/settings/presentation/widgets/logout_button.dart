@@ -1,19 +1,19 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 
-import 'package:warshity/core/routing/app_routes.dart';
-
-class LogoutButton extends StatefulWidget {
+class LogoutButton extends StatelessWidget {
   const LogoutButton({
     super.key,
+    required this.onPressed,
     this.title,
     this.backgroundColor,
     this.foregroundColor,
     this.icon,
     this.width,
+    this.isLoading = false,
   });
+
+  final VoidCallback onPressed;
 
   final String? title;
   final Color? backgroundColor;
@@ -21,50 +21,15 @@ class LogoutButton extends StatefulWidget {
   final IconData? icon;
   final double? width;
 
-  @override
-  State<LogoutButton> createState() => _LogoutButtonState();
-}
-
-class _LogoutButtonState extends State<LogoutButton> {
-  bool isLoading = false;
-
-  Future<void> _logout() async {
-    if (isLoading) return;
-
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      // Logout من Firebase
-      await FirebaseAuth.instance.signOut();
-
-      if (!mounted) return;
-
-      // بعد الـ Logout يروح للـ Login
-      context.go(AppRoutes.loginScreen);
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
-    }
-  }
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.width ?? double.infinity,
+      width: width ?? double.infinity,
       height: 52.h,
       child: FilledButton.icon(
-        onPressed: isLoading ? null : _logout,
+        onPressed: isLoading ? null : onPressed,
 
         icon: isLoading
             ? SizedBox(
@@ -76,23 +41,18 @@ class _LogoutButtonState extends State<LogoutButton> {
                 ),
               )
             : Icon(
-                widget.icon ?? Icons.logout_rounded,
+                icon ?? Icons.logout_rounded,
               ),
 
-        label: Text(
-          isLoading
-              ? 'Logging out...'
-              : widget.title ?? 'Logout',
-        ),
+        label: isLoading
+            ? const SizedBox.shrink()
+            : Text(
+                title ?? "Logout",
+              ),
 
         style: FilledButton.styleFrom(
-          backgroundColor:
-              widget.backgroundColor ?? Colors.red,
-          foregroundColor:
-              widget.foregroundColor ?? Colors.white,
-          disabledBackgroundColor:
-              (widget.backgroundColor ?? Colors.red)
-                  .withOpacity(.7),
+          backgroundColor: backgroundColor ?? Colors.red,
+          foregroundColor: foregroundColor ?? Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14.r),
           ),

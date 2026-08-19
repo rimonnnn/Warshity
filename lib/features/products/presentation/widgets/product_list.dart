@@ -34,49 +34,138 @@ class ProductList extends StatelessWidget {
 
   final double? width;
 
+  // ============================================================
+  // DELETE CONFIRMATION
+  // ============================================================
+
   Future<void> _showDeleteConfirmation(
     BuildContext context,
     ProductModel product,
   ) async {
-    final confirmed = await showDialog<bool>(
+    bool isDeleting = false;
+
+    await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text('Delete Product'.tr()),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                'Delete Product'.tr(),
+              ),
 
-          content: Text(
-            'Are you sure you want to delete'.tr() + product.name + '?'.tr(),
-          ),
+              // ==================================================
+              // CONTENT
+              // ==================================================
 
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop(false);
-              },
-              child: Text('Cancel'.tr()),
-            ),
+              content: isDeleting
+                  ? SizedBox(
+                      height: 80.h,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 28.w,
+                              height: 28.w,
+                              child:
+                                  const CircularProgressIndicator(),
+                            ),
 
-            FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () {
-                Navigator.of(dialogContext).pop(true);
-              },
-              child: Text('Delete'.tr()),
-            ),
-          ],
+                            SizedBox(height: 12.h),
+
+                            Text(
+                              'Deleting...'.tr(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : Text(
+                      '${"Are you sure you want to delete".tr()} '
+                      '${product.name}?',
+                    ),
+
+              // ==================================================
+              // ACTIONS
+              // ==================================================
+
+              actions: isDeleting
+                  ? []
+                  : [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(
+                            dialogContext,
+                          ).pop(false);
+                        },
+                        child: Text(
+                          'Cancel'.tr(),
+                        ),
+                      ),
+
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+
+                        onPressed: () async {
+                          if (onDelete == null) {
+                            return;
+                          }
+
+                          setState(() {
+                            isDeleting = true;
+                          });
+
+                          try {
+                            await onDelete!(product);
+
+                            if (!dialogContext.mounted) {
+                              return;
+                            }
+
+                            Navigator.of(
+                              dialogContext,
+                            ).pop(true);
+                          } catch (e) {
+                            if (!dialogContext.mounted) {
+                              return;
+                            }
+
+                            setState(() {
+                              isDeleting = false;
+                            });
+
+                            ScaffoldMessenger.of(
+                              dialogContext,
+                            ).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Failed to delete product'.tr(),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+
+                        child: Text(
+                          'Delete'.tr(),
+                        ),
+                      ),
+                    ],
+            );
+          },
         );
       },
     );
-
-    if (confirmed != true) {
-      return;
-    }
-
-    if (onDelete != null) {
-      await onDelete!(product);
-    }
   }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -89,25 +178,40 @@ class ProductList extends StatelessWidget {
 
       itemCount: products.length,
 
-      separatorBuilder: (_, __) => SizedBox(height: 12.h),
+      separatorBuilder: (_, __) {
+        return SizedBox(height: 12.h);
+      },
 
       itemBuilder: (context, index) {
         final product = products[index];
 
         return Stack(
           children: [
+            // ====================================================
+            // PRODUCT CARD
+            // ====================================================
+
             ProductCard(
               productName: product.name,
+
               productCode: product.barcode,
+
               price: product.price,
+
               quantity: product.quantity,
 
               image: product.imageUrl.isNotEmpty
                   ? Image.network(
                       product.imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.image_not_supported_outlined);
+                      errorBuilder: (
+                        context,
+                        error,
+                        stackTrace,
+                      ) {
+                        return const Icon(
+                          Icons.image_not_supported_outlined,
+                        );
                       },
                     )
                   : null,
@@ -121,31 +225,50 @@ class ProductList extends StatelessWidget {
               height: height,
             ),
 
+            // ====================================================
+            // DELETE BUTTON
+            // ====================================================
+
             if (onDelete != null)
               Positioned(
-                left: 10.w,
+                left:
+                    context.locale.languageCode == "ar"
+                        ? 320.w
+                        : 10.w,
+
                 top: 10.h,
+
                 child: Material(
                   color: Colors.transparent,
+
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(18.r),
+                    borderRadius:
+                        BorderRadius.circular(18.r),
 
                     onTap: () {
-                      _showDeleteConfirmation(context, product);
+                      _showDeleteConfirmation(
+                        context,
+                        product,
+                      );
                     },
 
                     child: Container(
                       width: 34.w,
+
                       height: 34.w,
 
                       decoration: BoxDecoration(
                         color: Colors.red,
+
                         shape: BoxShape.circle,
 
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.12),
+                            color: Colors.black
+                                .withValues(alpha: 0.12),
+
                             blurRadius: 4,
+
                             offset: const Offset(0, 2),
                           ),
                         ],
@@ -153,7 +276,9 @@ class ProductList extends StatelessWidget {
 
                       child: Icon(
                         Icons.delete_outline,
+
                         color: Colors.white,
+
                         size: 19.sp,
                       ),
                     ),
