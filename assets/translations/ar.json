@@ -372,7 +372,10 @@
   "Are you sure you want to delete" : "هل انت متاكد من حذف ",
   "?" : "؟",
   "Delete" : "حذف",
-  "logout_success": "تم تسجيل الخروج بنجاح."
+  "logout_success": "تم تسجيل الخروج بنجاح.",
+   "remove_client": "حذف العميل",
+  "remove_client_confirmation": "هل أنت متأكد من حذف العميل \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "remove": "حذف"
 
 }
 

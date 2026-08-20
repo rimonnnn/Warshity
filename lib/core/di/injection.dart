@@ -10,6 +10,7 @@ import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/debt_cubit.dart';
+import 'package:warshity/features/Cleints/presentation/cubit/remove_clients_state.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/data/auth_repo.dart';
 import 'package:warshity/features/auth/data/auth_repo_impl.dart';
@@ -112,7 +113,7 @@ Future<void> setupDependencies() async {
   getIt.registerFactory<CategoriesCubit>(
     () => CategoriesCubit(getIt<CategoriesRepository>()),
   );
-   getIt.registerLazySingleton<SettingsRemoteDataSource>(
+  getIt.registerLazySingleton<SettingsRemoteDataSource>(
     () => SettingsRemoteDataSource(getIt<FirebaseAuth>()),
   );
 
@@ -122,5 +123,8 @@ Future<void> setupDependencies() async {
 
   getIt.registerFactory<SettingsCubit>(
     () => SettingsCubit(getIt<SettingsRepositery>()),
+  );
+  getIt.registerFactory<RemoveClientCubit>(
+    () => RemoveClientCubit(getIt<ClientsRepository>()),
   );
 }

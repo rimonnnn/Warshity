@@ -369,6 +369,9 @@
   "Are you sure you want to delete" : "Are you sure you want to delete ",
   "?" : "?",
   "Delete" : "Delete",
-  "logout_success" : "Logout successfully"
+  "logout_success" : "Logout successfully",
+  "remove_client": "Remove Client",
+  "remove_client_confirmation": "Are you sure you want to remove \"{name}\"? This action cannot be undone.",
+  "remove": "Remove"
 
 }

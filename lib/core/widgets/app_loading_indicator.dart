@@ -15,6 +15,7 @@ class AppLoadingIndicator extends StatelessWidget {
   });
 
   @override
+
   Widget build(BuildContext context) {
     final indicatorSize = size ?? 24.w;
 

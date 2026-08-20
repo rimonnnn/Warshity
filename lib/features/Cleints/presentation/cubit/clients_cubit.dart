@@ -86,7 +86,7 @@ class ClientsCubit extends Cubit<ClientsState> {
 
     emit(currentState.copyWith(displayedClients: result));
   }
-
+  
  
 
   @override

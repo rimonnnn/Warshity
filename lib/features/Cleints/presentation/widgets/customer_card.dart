@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_status_badge.dart';
 
 class CustomerCard extends StatelessWidget {
@@ -15,7 +16,9 @@ class CustomerCard extends StatelessWidget {
     this.avatar,
     this.onTap,
     this.backgroundColor,
-    this.showDivider = false, this.padding,
+    this.showDivider = false,
+    this.padding,
+    this.tapToDelete,
   });
 
   final String name;
@@ -25,6 +28,7 @@ class CustomerCard extends StatelessWidget {
 
   final Widget? avatar;
   final VoidCallback? onTap;
+  final VoidCallback? tapToDelete;
   final Color? backgroundColor;
   final bool showDivider;
   final double? padding;
@@ -37,6 +41,7 @@ class CustomerCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
@@ -58,7 +63,8 @@ class CustomerCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: avatar ??
+                  child:
+                      avatar ??
                       Icon(
                         Icons.person,
                         color: context.colors.primary,
@@ -66,7 +72,7 @@ class CustomerCard extends StatelessWidget {
                       ),
                 ),
 
-                SizedBox(width: 16.w),
+                WidthSpace(16),
 
                 Expanded(
                   child: Column(
@@ -104,9 +110,18 @@ class CustomerCard extends StatelessWidget {
 
                       SizedBox(height: 12.h),
 
-                      CustomerStatusBadge(
-                        hasDebt: hasDebt,
-                        amount: amount,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomerStatusBadge(hasDebt: hasDebt, amount: amount),
+                          InkWell(
+                            onTap: tapToDelete,
+                            child: Icon(
+                              Icons.delete_outline_outlined,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -115,10 +130,7 @@ class CustomerCard extends StatelessWidget {
             ),
           ),
 
-          Divider(
-            height: 1,
-            color: context.colors.outlineVariant,
-          ),
+          Divider(height: 1, color: context.colors.outlineVariant),
 
           InkWell(
             onTap: onTap,
@@ -127,10 +139,7 @@ class CustomerCard extends StatelessWidget {
               bottomRight: Radius.circular(AppRadius.md),
             ),
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 14.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               child: Row(
                 children: [
                   Text(

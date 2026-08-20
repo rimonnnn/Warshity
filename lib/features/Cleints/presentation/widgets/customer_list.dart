@@ -11,6 +11,7 @@ class CustomerList extends StatelessWidget {
     this.physics = const NeverScrollableScrollPhysics(),
     this.shrinkWrap = true,
     this.onTap,
+    this.onDelete,
     this.padding1,
   });
 
@@ -21,6 +22,7 @@ class CustomerList extends StatelessWidget {
   final bool shrinkWrap;
   final double? padding1;
   final void Function(int index)? onTap;
+  final void Function(int index)? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class CustomerList extends StatelessWidget {
       physics: physics,
       shrinkWrap: shrinkWrap,
       itemCount: customers.length,
-      separatorBuilder: (_, __) => SizedBox(height: 16.h),
+      separatorBuilder: (_, _) => SizedBox(height: 16.h),
       itemBuilder: (context, index) {
         final customer = customers[index];
 
@@ -41,6 +43,7 @@ class CustomerList extends StatelessWidget {
           hasDebt: customer.hasDebt!,
           // avatar: customer.avatar,
           onTap: () => onTap?.call(index),
+          tapToDelete: () => onDelete?.call(index),
         );
       },
     );

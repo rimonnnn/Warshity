@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:warshity/core/styling/app_colors.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 
 class CustomLogo extends StatelessWidget {
   const CustomLogo({
     super.key,
     required this.width,
     required this.height,
-    required this.borderRadius, required this.logoPath,
+    required this.borderRadius,
+    required this.logoPath,
   });
   final double width;
   final double height;
@@ -19,7 +20,7 @@ class CustomLogo extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),
-        color: AppColors.primary,
+        color: context.colors.primary,
       ),
       child: Image.asset(logoPath),
     );
