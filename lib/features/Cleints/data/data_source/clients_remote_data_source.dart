@@ -18,21 +18,14 @@ class ClientsRemoteDataSource {
   }
 
   Stream<CustomerModel> watchClient(String clientId) {
-  return firestore
-      .collection('clients')
-      .doc(clientId)
-      .snapshots()
-      .map((doc) {
-        if (!doc.exists || doc.data() == null) {
-          throw Exception('Client not found');
-        }
+    return firestore.collection('clients').doc(clientId).snapshots().map((doc) {
+      if (!doc.exists || doc.data() == null) {
+        throw Exception('Client not found');
+      }
 
-        return CustomerModel.fromFirestore(
-          doc.id,
-          doc.data()!,
-        );
-      });
-}
+      return CustomerModel.fromFirestore(doc.id, doc.data()!);
+    });
+  }
 
   Future<void> addClient(CustomerModel client) async {
     await firestore.collection("clients").add(client.toFirestore());
@@ -70,5 +63,9 @@ class ClientsRemoteDataSource {
         'hasDebt': newBalance > 0,
       });
     });
+  }
+
+  Future<void> removeClient(String clientId) async {
+    await firestore.collection("clients").doc(clientId).delete();
   }
 }

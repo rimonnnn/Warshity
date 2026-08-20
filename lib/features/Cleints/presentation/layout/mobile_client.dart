@@ -11,11 +11,13 @@ import 'package:warshity/core/widgets/loading_widget.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
+import 'package:warshity/features/Cleints/presentation/cubit/remove_clients_state.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/add_customer_button.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_filter_tabs.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_list.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/customer_map_card.dart';
 import 'package:warshity/features/Cleints/presentation/widgets/delivery_orders_card.dart';
+import 'package:warshity/features/Cleints/presentation/widgets/remove_client_dialog.dart';
 import 'package:warshity/features/products/presentation/widgets/product_search_widget.dart';
 
 class MobileClient extends StatefulWidget {
@@ -33,6 +35,7 @@ class _MobileCustomersState extends State<MobileClient> {
   @override
   void dispose() {
     searchController.dispose();
+
     super.dispose();
   }
 
@@ -110,10 +113,30 @@ class _MobileCustomersState extends State<MobileClient> {
                   if (state is ClientsLoaded) {
                     return CustomerList(
                       customers: state.displayedClients,
+
                       onTap: (index) {
                         context.pushNamed(
                           AppRoutes.customerdetailsScreen,
                           extra: state.displayedClients[index].id,
+                        );
+                      },
+                      onDelete: (index) {
+                        final customer = state.displayedClients[index];
+                        if (customer.id == null) {
+                          return;
+                        }
+
+                        showDialog(
+                          context: context,
+                          builder: (_) {
+                            return BlocProvider(
+                              create: (_) => getIt<RemoveClientCubit>(),
+                              child: RemoveClientDialog(
+                                clientId: customer.id!,
+                                clientName: customer.name ?? '',
+                              ),
+                            );
+                          },
                         );
                       },
                     );

@@ -50,6 +50,8 @@ class MobileCustomerDetails extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
+                  
                   CustomerHeaderCard(
                     name: customer.name ?? '',
                     phone: customer.phone ?? '',
