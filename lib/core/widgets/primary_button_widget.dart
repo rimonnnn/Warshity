@@ -63,7 +63,7 @@ class PrimaryButtonWidget extends StatelessWidget {
               ),
             )
           : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (prefixicon == true && iconPath != null)
                   Expanded(
