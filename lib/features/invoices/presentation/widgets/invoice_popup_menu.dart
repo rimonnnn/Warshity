@@ -16,7 +16,7 @@ class InvoicePopupMenuItem extends StatelessWidget {
         PopupMenuItem(value: 'duplicate', child: Text('duplicate'.tr())),
         PopupMenuItem(value: 'delete', child: Text('delete'.tr())),
       ],
-      iconColor: context.colors.surface,
+      iconColor: context.colors.primary,
     );
   }
 }

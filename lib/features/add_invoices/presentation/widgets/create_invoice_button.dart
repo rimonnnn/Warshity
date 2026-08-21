@@ -20,6 +20,8 @@ class CreateInvoiceButton extends StatelessWidget {
       vertical: AppPadding.sm,
     ),
     child: PrimaryButtonWidget(
+      iconeColor: context.colors.surface,
+      iconData: Icons.receipt_long_outlined,
       onPress: onPressed,
       buttonText: 'create_invoice'.tr(),
       height: 56,
