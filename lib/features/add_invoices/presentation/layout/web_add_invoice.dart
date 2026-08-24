@@ -12,7 +12,6 @@ import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
-import 'package:warshity/features/Cleints/data/model/customer_model.dart';
 
 import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
@@ -43,48 +42,34 @@ class WebAddInvoice extends StatefulWidget {
 }
 
 class _WebAddInvoiceState extends State<WebAddInvoice> {
-  final TextEditingController discountController =
-      TextEditingController();
-
-  final TextEditingController searchController =
-      TextEditingController();
+  final TextEditingController discountController = TextEditingController();
 
   static const double _maxContentWidth = 1400;
   static const double _rightColumnWidth = 380;
   static const double _gap = 24;
 
-  late final CustomerSearchCubit customerSearchCubit =
-      CustomerSearchCubit(
+  late final CustomerSearchCubit customerSearchCubit = CustomerSearchCubit(
     getIt<ClientsRepository>(),
   );
 
-  late final ProductSearchCubit productSearchCubit =
-      ProductSearchCubit(
+  late final ProductSearchCubit productSearchCubit = ProductSearchCubit(
     getIt<ProductsRepository>(),
   );
 
-  late final InvoiceCubit invoiceCubit =
-      getIt<InvoiceCubit>();
+  late final InvoiceCubit invoiceCubit = getIt<InvoiceCubit>();
 
-  CategoriesCubit get categoriesCubit =>
-      context.read<CategoriesCubit>();
+  CategoriesCubit get categoriesCubit => context.read<CategoriesCubit>();
 
   @override
   void dispose() {
     discountController.dispose();
-    searchController.dispose();
-
     customerSearchCubit.close();
     productSearchCubit.close();
     invoiceCubit.close();
-
     super.dispose();
   }
 
-  void _showMessage(
-    String message, {
-    bool error = false,
-  }) {
+  void _showMessage(String message, {bool error = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -110,12 +95,8 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
       barrierDismissible: true,
       builder: (_) => MultiBlocProvider(
         providers: [
-          BlocProvider.value(
-            value: categoriesCubit,
-          ),
-          BlocProvider(
-            create: (_) => getIt<AddProductCubit>(),
-          ),
+          BlocProvider.value(value: categoriesCubit),
+          BlocProvider(create: (_) => getIt<AddProductCubit>()),
         ],
         child: const AddProductDialog(),
       ),
@@ -126,22 +107,14 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(
-          value: customerSearchCubit,
-        ),
-        BlocProvider.value(
-          value: productSearchCubit,
-        ),
-        BlocProvider.value(
-          value: invoiceCubit,
-        ),
+        BlocProvider.value(value: customerSearchCubit),
+        BlocProvider.value(value: productSearchCubit),
+        BlocProvider.value(value: invoiceCubit),
       ],
       child: Scaffold(
         appBar: AppBar(
           title: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               'add_invoice'.tr(),
               style: context.text.headlineSmall?.copyWith(
@@ -154,102 +127,69 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
 
         body: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: _maxContentWidth,
-            ),
+            constraints: const BoxConstraints(maxWidth: _maxContentWidth),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Row(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // =========================
-                  // LEFT COLUMN
-                  // =========================
-
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         InvoiceSearchBar(
-                          onSearchChanged:
-                              productSearchCubit.searchProducts,
-                          onAddProduct:
-                              _showAddProductDialog,
+                          onSearchChanged: productSearchCubit.searchProducts,
+                          onAddProduct: _showAddProductDialog,
                         ),
 
-                        BlocBuilder<
-                            ProductSearchCubit,
-                            ProductSearchState>(
+                        BlocBuilder<ProductSearchCubit, ProductSearchState>(
                           builder: (context, state) {
-                            if (state
-                                is ProductSearchLoading) {
+                            if (state is ProductSearchLoading) {
                               return const Padding(
                                 padding: EdgeInsets.all(12),
                                 child: Center(
-                                  child:
-                                      CircularProgressIndicator(),
+                                  child: CircularProgressIndicator(),
                                 ),
                               );
                             }
 
-                            if (state
-                                is ProductSearchError) {
+                            if (state is ProductSearchError) {
                               return Padding(
-                                padding:
-                                    const EdgeInsets.all(12),
-                                child: Text(
-                                  state.message,
-                                ),
+                                padding: const EdgeInsets.all(12),
+                                child: Text(state.message),
                               );
                             }
 
-                            if (state
-                                is! ProductSearchSuccess) {
+                            if (state is! ProductSearchSuccess) {
                               return const SizedBox.shrink();
                             }
 
                             if (state.products.isEmpty) {
                               return Padding(
-                                padding:
-                                    const EdgeInsets.all(12),
-                                child: Text(
-                                  'no_products_found'.tr(),
-                                ),
+                                padding: const EdgeInsets.all(12),
+                                child: Text('no_products_found'.tr()),
                               );
                             }
 
                             return ListView.builder(
                               shrinkWrap: true,
-                              physics:
-                                  const NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  state.products.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: state.products.length,
                               itemBuilder: (_, index) {
-                                final product =
-                                    state.products[index];
+                                final product = state.products[index];
 
                                 return Card(
                                   child: ListTile(
-                                    leading:
-                                        const CircleAvatar(
-                                      child: Icon(
-                                        Icons
-                                            .inventory_2_outlined,
-                                      ),
+                                    leading: const CircleAvatar(
+                                      child: Icon(Icons.inventory_2_outlined),
                                     ),
-                                    title:
-                                        Text(product.name),
+                                    title: Text(product.name),
                                     subtitle: Text(
                                       '${product.price} - ${product.barcode}',
                                     ),
                                     onTap: () {
-                                      invoiceCubit
-                                          .addProduct(product);
-
-                                      productSearchCubit
-                                          .clearSearch();
+                                      invoiceCubit.addProduct(product);
+                                      productSearchCubit.clearSearch();
                                     },
                                   ),
                                 );
@@ -258,181 +198,96 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
                           },
                         ),
 
-                        const SizedBox(
-                          height: _gap,
-                        ),
+                        const SizedBox(height: _gap),
 
                         const BestSellingProducts(),
 
-                        const SizedBox(
-                          height: _gap,
-                        ),
+                        const SizedBox(height: _gap),
 
                         const CartSection(),
                       ],
                     ),
                   ),
 
-                  const SizedBox(
-                    width: _gap,
-                  ),
-
-                  // =========================
-                  // RIGHT COLUMN
-                  // =========================
+                  const SizedBox(width: _gap),
 
                   SizedBox(
                     width: _rightColumnWidth,
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Customer Card
-                        BlocBuilder<
-                            InvoiceCubit,
-                            InvoiceState>(
+                        BlocBuilder<InvoiceCubit, InvoiceState>(
                           builder: (context, state) {
                             return InvoiceCustomerCard(
-                              controller:
-                                  searchController,
-
-                              selectedClient:
-                                  state.selectedCustomerId !=
-                                          null
-                                      ? CustomerModel(
-                                          id: state
-                                              .selectedCustomerId,
-                                          name: state
-                                              .selectedCustomerName,
-                                        )
-                                      : null,
-
-                              onClientSelected:
-                                  (client) {
-                                if (client.id == null ||
-                                    client.name == null) {
-                                  return;
-                                }
-
-                                invoiceCubit
-                                    .selectCustomer(
-                                  customerId:
-                                      client.id!,
-                                  customerName:
-                                      client.name!,
-                                );
-
-                                customerSearchCubit
-                                    .clearSearch();
+                              selectedCustomerName: state.selectedCustomerName,
+                              onSearchChanged:
+                                  customerSearchCubit.searchClients,
+                              onClearCustomer: () {
+                                invoiceCubit.removeCustomer();
+                                customerSearchCubit.clearSearch();
                               },
-
-                              onClearClient: () {
-                                invoiceCubit
-                                    .removeCustomer();
-
-                                customerSearchCubit
-                                    .clearSearch();
-
-                                searchController.clear();
-                              },
-
-                              onTap:
-                                  _showAddClientDialog,
+                              onTap: _showAddClientDialog,
                             );
                           },
                         ),
 
-                        // Customer Search Results
-                        BlocBuilder<
-                            CustomerSearchCubit,
-                            CustomerSearchState>(
+                        BlocBuilder<CustomerSearchCubit, CustomerSearchState>(
                           builder: (context, state) {
-                            if (state
-                                is CustomerSearchLoading) {
+                            if (state is CustomerSearchLoading) {
                               return const Padding(
                                 padding: EdgeInsets.all(12),
                                 child: Center(
-                                  child:
-                                      CircularProgressIndicator(),
+                                  child: CircularProgressIndicator(),
                                 ),
                               );
                             }
 
-                            if (state
-                                is CustomerSearchError) {
+                            if (state is CustomerSearchError) {
                               return Padding(
-                                padding:
-                                    const EdgeInsets.all(12),
-                                child: Text(
-                                  state.message,
-                                ),
+                                padding: const EdgeInsets.all(12),
+                                child: Text(state.message),
                               );
                             }
 
-                            if (state
-                                is! CustomerSearchSuccess) {
+                            if (state is! CustomerSearchSuccess) {
                               return const SizedBox.shrink();
                             }
 
                             if (state.clients.isEmpty) {
                               return Padding(
-                                padding:
-                                    const EdgeInsets.all(12),
-                                child: Text(
-                                  'no_clients_found'.tr(),
-                                ),
+                                padding: const EdgeInsets.all(12),
+                                child: Text('no_clients_found'.tr()),
                               );
                             }
 
                             return ListView.builder(
                               shrinkWrap: true,
-                              physics:
-                                  const NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  state.clients.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: state.clients.length,
                               itemBuilder: (_, index) {
-                                final client =
-                                    state.clients[index];
+                                final client = state.clients[index];
 
                                 return Card(
                                   child: ListTile(
-                                    leading:
-                                        const CircleAvatar(
-                                      child: Icon(
-                                        Icons.person,
-                                      ),
+                                    leading: const CircleAvatar(
+                                      child: Icon(Icons.person),
                                     ),
-                                    title: Text(
-                                      client.name ?? '',
-                                    ),
-                                    subtitle: client.phone
-                                                ?.isNotEmpty ==
-                                            true
-                                        ? Text(
-                                            client.phone!,
-                                          )
+                                    title: Text(client.name ?? ''),
+                                    subtitle: client.phone?.isNotEmpty == true
+                                        ? Text(client.phone!)
                                         : null,
                                     onTap: () {
-                                      if (client.id ==
-                                              null ||
-                                          client.name ==
-                                              null) {
+                                      if (client.id == null ||
+                                          client.name == null) {
                                         return;
                                       }
 
-                                      invoiceCubit
-                                          .selectCustomer(
-                                        customerId:
-                                            client.id!,
-                                        customerName:
-                                            client.name!,
+                                      invoiceCubit.selectCustomer(
+                                        customerId: client.id!,
+                                        customerName: client.name!,
                                       );
 
-                                      customerSearchCubit
-                                          .clearSearch();
-
-                                      searchController
-                                          .clear();
+                                      customerSearchCubit.clearSearch();
                                     },
                                   ),
                                 );
@@ -441,133 +296,85 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
                           },
                         ),
 
-                        const SizedBox(
-                          height: _gap,
-                        ),
+                        const SizedBox(height: _gap),
 
-                        // Discount
                         CustomTextField(
                           label: 'discount'.tr(),
-                          keyboardType:
-                              const TextInputType
-                                  .numberWithOptions(
+                          keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          prefixIconData:
-                              Icons.percent,
+                          prefixIconData: Icons.percent,
                           onChanged: (value) {
-                            invoiceCubit
-                                .updateDiscount(
+                            invoiceCubit.updateDiscount(
                               double.tryParse(value) ?? 0,
                             );
                           },
-                          hint:
-                              'enter_discount'.tr(),
-                          controller:
-                              discountController,
-                          validator:
-                              AppValidators.price,
+                          hint: 'enter_discount'.tr(),
+                          controller: discountController,
+                          validator: AppValidators.price,
                         ),
 
-                        const SizedBox(
-                          height: _gap,
-                        ),
+                        const SizedBox(height: _gap),
 
-                        // Summary
-                        BlocBuilder<
-                            InvoiceCubit,
-                            InvoiceState>(
+                        BlocBuilder<InvoiceCubit, InvoiceState>(
                           builder: (_, state) {
                             return InvoiceSummaryCard(
-                              subtotal:
-                                  state.subtotal,
-                              discount:
-                                  state.subtotal *
-                                      state.discount /
-                                      100,
-                              total:
-                                  state.total,
+                              subtotal: state.subtotal,
+                              discount: state.subtotal * state.discount / 100,
+                              total: state.total,
                             );
                           },
                         ),
 
-                        const SizedBox(
-                          height: _gap,
-                        ),
+                        const SizedBox(height: _gap),
 
-                        // Create Invoice
-                        BlocConsumer<
-                            InvoiceCubit,
-                            InvoiceState>(
-                          listener:
-                              (context, state) {
-                            if (state
-                                is InvoiceError) {
+                        BlocConsumer<InvoiceCubit, InvoiceState>(
+                          listener: (context, state) {
+                            if (state is InvoiceError) {
                               showAnimatedSnackDialog(
                                 context,
-                                message:
-                                    state.message,
-                                type:
-                                    AnimatedSnackBarType
-                                        .error,
+                                message: state.message,
+                                type: AnimatedSnackBarType.error,
                               );
                             }
 
-                            if (state
-                                is InvoiceSuccess) {
+                            if (state is InvoiceSuccess) {
                               showAnimatedSnackDialog(
                                 context,
-                                message:
-                                    'invoice_created_successfully'
-                                        .tr(),
-                                type:
-                                    AnimatedSnackBarType
-                                        .success,
+                                message: 'invoice_created_successfully'.tr(),
+                                type: AnimatedSnackBarType.success,
                               );
 
-                              context
-                                  .pushReplacementNamed(
-                                AppRoutes
-                                    .checkInvoiceScreen,
+                              context.pushReplacementNamed(
+                                AppRoutes.checkInvoiceScreen,
                               );
                             }
                           },
-                          builder:
-                              (context, state) {
-                            final isLoading =
-                                state
-                                    is InvoiceLoading;
+                          builder: (context, state) {
+                            final isLoading = state is InvoiceLoading;
 
                             return CreateInvoiceButton(
-                              isLoading:
-                                  isLoading,
+                              isLoading: isLoading,
                               onPressed: isLoading
                                   ? null
                                   : () {
-                                      if (state
-                                              .selectedCustomerId ==
-                                          null) {
+                                      if (state.selectedCustomerId == null) {
                                         _showMessage(
-                                          'please_select_customer'
-                                              .tr(),
+                                          'please_select_customer'.tr(),
                                           error: true,
                                         );
                                         return;
                                       }
 
-                                      if (state
-                                          .cartItems
-                                          .isEmpty) {
+                                      if (state.cartItems.isEmpty) {
                                         _showMessage(
-                                          'please_add_product'
-                                              .tr(),
+                                          'please_add_product'.tr(),
                                           error: true,
                                         );
                                         return;
                                       }
 
-                                      invoiceCubit
-                                          .createInvoice();
+                                      invoiceCubit.createInvoice();
                                     },
                               fontSize: 20,
                             );

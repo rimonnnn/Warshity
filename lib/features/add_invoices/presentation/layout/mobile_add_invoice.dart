@@ -15,10 +15,6 @@ import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 
-import 'package:warshity/features/Cleints/data/model/customer_model.dart';
-import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
-import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
-
 import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
 
@@ -49,7 +45,6 @@ class MobileAddInvoice extends StatefulWidget {
 
 class _MobileAddInvoiceState extends State<MobileAddInvoice> {
   final discountController = TextEditingController();
-  final customerSearchController = TextEditingController();
 
   late final customerSearchCubit = CustomerSearchCubit(
     getIt<ClientsRepository>(),
@@ -62,20 +57,10 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
   late final invoiceCubit = getIt<InvoiceCubit>();
 
   CategoriesCubit get categoriesCubit => context.read<CategoriesCubit>();
-  CustomerModel? selectedClient;
-
-  @override
-  void initState() {
-    super.initState();
-    // لازم نجيب الكلينتس الأول عشان الـ state يبقى ClientsLoaded
-    context.read<ClientsCubit>().watchClients();
-  }
 
   @override
   void dispose() {
     discountController.dispose();
-    customerSearchController.dispose();
-
     customerSearchCubit.close();
     productSearchCubit.close();
     invoiceCubit.close();
@@ -121,54 +106,15 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                 children: [
                   HeightSpace(4),
 
-                  // Customer Section
-                  InvoiceCustomerCard(
-                    controller: customerSearchController,
-                    selectedClient: selectedClient,
-                    onClientSelected: (client) =>
-                        setState(() => selectedClient = client),
-                    onClearClient: () => setState(() => selectedClient = null),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (_) => BlocProvider(
-                          create: (context) => getIt<AddClientCubit>(),
-                          child: const AddClientDialog(),
-                        ),
-                      );
-                    },
-                  ),
-
                   BlocBuilder<InvoiceCubit, InvoiceState>(
                     builder: (context, state) {
                       return InvoiceCustomerCard(
-                        controller: customerSearchController,
-
-                        selectedClient: state.selectedCustomerId != null
-                            ? CustomerModel(
-                                id: state.selectedCustomerId,
-                                name: state.selectedCustomerName,
-                              )
-                            : null,
-
-                        onClientSelected: (client) {
-                          if (client.id == null || client.name == null) {
-                            return;
-                          }
-
-                          invoiceCubit.selectCustomer(
-                            customerId: client.id!,
-                            customerName: client.name!,
-                          );
-                        },
-
-                        onClearClient: () {
+                        selectedCustomerName: state.selectedCustomerName,
+                        onSearchChanged: customerSearchCubit.searchClients,
+                        onClearCustomer: () {
                           invoiceCubit.removeCustomer();
                           customerSearchCubit.clearSearch();
-                          customerSearchController.clear();
                         },
-
                         onTap: () {
                           showDialog(
                             context: context,
