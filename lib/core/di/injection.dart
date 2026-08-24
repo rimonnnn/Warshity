@@ -11,6 +11,9 @@ import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.da
 import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/debt_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/remove_clients_state.dart';
+import 'package:warshity/features/add_invoices/data/data_source/add_invoice_remote_data.dart';
+import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
+import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/data/auth_repo.dart';
 import 'package:warshity/features/auth/data/auth_repo_impl.dart';
@@ -127,4 +130,21 @@ Future<void> setupDependencies() async {
   getIt.registerFactory<RemoveClientCubit>(
     () => RemoveClientCubit(getIt<ClientsRepository>()),
   );
+  getIt.registerLazySingleton<InvoicesRemoteDataSource>(
+  () => InvoicesRemoteDataSource(
+    getIt<FirebaseFirestore>(),
+  ),
+);
+
+getIt.registerLazySingleton<InvoicesRepository>(
+  () => InvoicesRepository(
+    getIt<InvoicesRemoteDataSource>(),
+  ),
+);
+
+getIt.registerFactory<InvoiceCubit>(
+  () => InvoiceCubit(
+    getIt<InvoicesRepository>(),
+  ),
+);
 }

@@ -38,8 +38,9 @@ class InvoiceModel {
       createdAt: DateTime.parse(json['createdAt'] as String),
       items: (json['items'] as List)
           .map(
-            (item) =>
-                InvoiceItemModel.fromJson(Map<String, dynamic>.from(item)),
+            (item) => InvoiceItemModel.fromJson(
+              Map<String, dynamic>.from(item),
+            ),
           )
           .toList(),
       subtotal: (json['subtotal'] as num).toDouble(),

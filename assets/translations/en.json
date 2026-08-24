@@ -372,6 +372,12 @@
   "logout_success" : "Logout successfully",
   "remove_client": "Remove Client",
   "remove_client_confirmation": "Are you sure you want to remove \"{name}\"? This action cannot be undone.",
-  "remove": "Remove"
-
+  "remove": "Remove",
+  "no_clients_found": "No clients found",
+  "no_products_found": "No products found",
+  "please_select_customer": "Please select a customer",
+  "please_add_product": "Please add a product",
+  "invoice_created_successfully": "Invoice created successfully"
 }
+
+

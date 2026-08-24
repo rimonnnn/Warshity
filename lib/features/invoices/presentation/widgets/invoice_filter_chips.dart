@@ -10,12 +10,12 @@ class InvoiceFilterChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final filters = [
-      'all'.tr(),
-      'today'.tr(),
-      'this_week'.tr(),
-      'this_month'.tr(),
-      'paid'.tr(),
-      'unpaid'.tr(),
+      'all',
+      'today',
+      'this_week',
+      'this_month',
+      'paid',
+      'unpaid',
     ];
 
     return SizedBox(
@@ -31,8 +31,7 @@ class InvoiceFilterChips extends StatelessWidget {
           return Padding(
             padding: EdgeInsets.only(right: 8.w),
             child: ChoiceChip(
-              label: Text(label.tr()),
-              selected: isSelected,
+              label: Text(label.tr()),              selected: isSelected,
               onSelected: (val) {},
               selectedColor: context.colors.primary.withValues(alpha: 0.1),
               labelStyle: context.text.labelMedium?.copyWith(
