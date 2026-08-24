@@ -375,8 +375,15 @@
   "logout_success": "تم تسجيل الخروج بنجاح.",
    "remove_client": "حذف العميل",
   "remove_client_confirmation": "هل أنت متأكد من حذف العميل \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
-  "remove": "حذف"
+  "remove": "حذف",
+  
+  "no_clients_found": "لا يوجد عملاء",
+  "no_products_found": "لا يوجد منتجات",
 
+  "please_select_customer": "من فضلك اختر العميل",
+  "please_add_product": "من فضلك أضف منتج",
+  "invoice_created_successfully": "تم إنشاء الفاتورة بنجاح"
 }
+
 
 
