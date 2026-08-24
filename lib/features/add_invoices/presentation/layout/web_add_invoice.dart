@@ -29,6 +29,7 @@ class WebAddInvoice extends StatefulWidget {
 
 class _WebAddInvoiceState extends State<WebAddInvoice> {
   final TextEditingController discountController = TextEditingController();
+   final searchController = TextEditingController();
 
   static const double _maxContentWidth = 1400;
   static const double _rightColumnWidth = 380;
@@ -98,7 +99,7 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    InvoiceCustomerCard(onTap: _showAddClientDialog),
+                    InvoiceCustomerCard(onTap: _showAddClientDialog, controller: searchController,),
                     const SizedBox(height: _gap),
                     CustomTextField(
                       label: 'discount'.tr(),

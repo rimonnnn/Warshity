@@ -1,47 +1,67 @@
 import 'invoice_item_model.dart';
 
 class InvoiceModel {
-  final String invoiceId;
-  final String customerName;
-  final String date;
-  final double totalPrice;
-  final List<InvoiceItemModel> productsItem;
-  final double debt;
-  final double balance;
+  final String? invoiceId;
 
-  InvoiceModel({
-    required this.invoiceId,
+  final String customerId;
+  final String customerName;
+
+  final DateTime createdAt;
+
+  final List<InvoiceItemModel> items;
+
+  final double subtotal;
+  final double discount;
+  final double total;
+
+  final double paidAmount;
+  final double remainingAmount;
+
+  const InvoiceModel({
+    this.invoiceId,
+    required this.customerId,
     required this.customerName,
-    required this.date,
-    required this.totalPrice,
-    required this.productsItem,
-    required this.debt,
-    required this.balance,
+    required this.createdAt,
+    required this.items,
+    required this.subtotal,
+    required this.discount,
+    required this.total,
+    required this.paidAmount,
+    required this.remainingAmount,
   });
 
   factory InvoiceModel.fromJson(Map<String, dynamic> json) {
     return InvoiceModel(
-      invoiceId: json['invoiceId'] as String,
+      invoiceId: json['invoiceId'] as String?,
+      customerId: json['customerId'] as String,
       customerName: json['customerName'] as String,
-      date: json['date'] as String,
-      totalPrice: (json['totalPrice'] as num).toDouble(),
-      productsItem: (json['productsItem'] as List)
-          .map((item) => InvoiceItemModel.fromJson(item))
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      items: (json['items'] as List)
+          .map(
+            (item) =>
+                InvoiceItemModel.fromJson(Map<String, dynamic>.from(item)),
+          )
           .toList(),
-      debt: (json['debt'] as num).toDouble(),
-      balance: (json['balance'] as num).toDouble(),
+      subtotal: (json['subtotal'] as num).toDouble(),
+      discount: (json['discount'] as num).toDouble(),
+      total: (json['total'] as num).toDouble(),
+      paidAmount: (json['paidAmount'] as num).toDouble(),
+      remainingAmount: (json['remainingAmount'] as num).toDouble(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'invoiceId': invoiceId,
+      'customerId': customerId,
       'customerName': customerName,
-      'date': date,
-      'totalPrice': totalPrice,
-      'productsItem': productsItem.map((item) => item.toJson()).toList(),
-      'debt': debt,
-      'balance': balance,
+      'createdAt': createdAt.toIso8601String(),
+      'items': items.map((item) => item.toJson()).toList(),
+      'subtotal': subtotal,
+      'discount': discount,
+      'total': total,
+      'paidAmount': paidAmount,
+      'remainingAmount': remainingAmount,
     };
   }
 }

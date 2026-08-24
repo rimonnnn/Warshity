@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 
@@ -23,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     this.height,
     this.borderRadius,
     this.maxlines,
+    this.focusNode,
   });
 
   final String? label;
@@ -46,6 +46,7 @@ class CustomTextField extends StatelessWidget {
   final double? height;
   final double? borderRadius;
   final int? maxlines;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {

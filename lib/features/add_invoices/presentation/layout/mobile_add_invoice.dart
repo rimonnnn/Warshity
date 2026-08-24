@@ -11,7 +11,9 @@ import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+import 'package:warshity/features/Cleints/data/model/customer_model.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
+import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/bestselling_products.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/cart_section.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/create_invoice_button.dart';
@@ -30,11 +32,21 @@ class MobileAddInvoice extends StatefulWidget {
 
 class _MobileAddInvoiceState extends State<MobileAddInvoice> {
   final TextEditingController discountController = TextEditingController();
+  final searchController = TextEditingController();
   CategoriesCubit get categoriesCubit => context.read<CategoriesCubit>();
+  CustomerModel? selectedClient;
+
+  @override
+  void initState() {
+    super.initState();
+    // لازم نجيب الكلينتس الأول عشان الـ state يبقى ClientsLoaded
+    context.read<ClientsCubit>().watchClients();
+  }
 
   @override
   void dispose() {
     discountController.dispose();
+    searchController.dispose(); // كنت ناسيها برضو
     super.dispose();
   }
 
@@ -65,6 +77,11 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                   HeightSpace(4),
                   // Customer Section
                   InvoiceCustomerCard(
+                    controller: searchController,
+                    selectedClient: selectedClient,
+                    onClientSelected: (client) =>
+                        setState(() => selectedClient = client),
+                    onClearClient: () => setState(() => selectedClient = null),
                     onTap: () {
                       showDialog(
                         context: context,

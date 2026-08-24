@@ -63,7 +63,7 @@ class _MobileCustomersState extends State<MobileClient> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProductSearchWidget(
+              ProductSearchWidget( 
                 controller: searchController,
                 hintText: 'search_client'.tr(),
                 onChanged: (query) {
