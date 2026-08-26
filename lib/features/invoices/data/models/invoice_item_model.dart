@@ -13,10 +13,10 @@ class InvoiceItemModel {
 
   factory InvoiceItemModel.fromJson(Map<String, dynamic> json) {
     return InvoiceItemModel(
-      productId: json['productId'] as String,
-      productName: json['productName'] as String,
-      quantity: json['quantity'] as int,
-      price: (json['price'] as num).toDouble(),
+      productId: (json['productId'] as String?) ?? '',
+      productName: (json['productName'] as String?) ?? '',
+      quantity: (json['quantity'] as int?) ?? 0,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
     );
   }
 

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'invoice_item_model.dart';
 
 class InvoiceModel {
@@ -33,22 +35,54 @@ class InvoiceModel {
   factory InvoiceModel.fromJson(Map<String, dynamic> json) {
     return InvoiceModel(
       invoiceId: json['invoiceId'] as String?,
-      customerId: json['customerId'] as String,
-      customerName: json['customerName'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      items: (json['items'] as List)
+      customerId: (json['customerId'] as String?) ?? '',
+      customerName: (json['customerName'] as String?) ?? '',
+      createdAt: _parseCreatedAt(json['createdAt']),
+      items: _parseItems(json['items']),
+      subtotal: _parseDouble(json['subtotal']),
+      discount: _parseDouble(json['discount']),
+      total: _parseDouble(json['total']),
+      paidAmount: _parseDouble(json['paidAmount']),
+      remainingAmount: _parseDouble(json['remainingAmount']),
+    );
+  }
+
+  static DateTime _parseCreatedAt(dynamic value) {
+    if (value == null) return DateTime.now();
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) {
+      try {
+        return DateTime.parse(value);
+      } catch (_) {
+        return DateTime.now();
+      }
+    }
+    return DateTime.now();
+  }
+
+  static List<InvoiceItemModel> _parseItems(dynamic value) {
+    if (value == null) return <InvoiceItemModel>[];
+    if (value is List) {
+      return value
+          .whereType<Map>()
           .map(
             (item) => InvoiceItemModel.fromJson(
               Map<String, dynamic>.from(item),
             ),
           )
-          .toList(),
-      subtotal: (json['subtotal'] as num).toDouble(),
-      discount: (json['discount'] as num).toDouble(),
-      total: (json['total'] as num).toDouble(),
-      paidAmount: (json['paidAmount'] as num).toDouble(),
-      remainingAmount: (json['remainingAmount'] as num).toDouble(),
-    );
+          .toList();
+    }
+    return <InvoiceItemModel>[];
+  }
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value) ?? 0.0;
+    }
+    return 0.0;
   }
 
   Map<String, dynamic> toJson() {

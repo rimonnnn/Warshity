@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:warshity/features/invoices/presentation/cubit/invoice_history_cubit.dart';
+import 'package:warshity/features/invoices/presentation/cubit/invoice_history_state.dart';
+
 import 'package:warshity/features/invoices/presentation/widgets/invoice_card.dart';
 
 class InvoiceList extends StatelessWidget {
@@ -7,35 +12,69 @@ class InvoiceList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mocking data for presentation
-    final invoices = [
-      const InvoiceCard(
-        invoiceNumber: 'INV-001',
-        customerName: 'John Doe',
-        date: 'Aug 04, 2026',
-        paymentMethod: 'Card',
-        itemCount: 3,
-        totalPrice: '\$450.00',
-        status: 'paid',
-      ),
-      const InvoiceCard(
-        invoiceNumber: 'INV-002',
-        customerName: 'Jane Smith',
-        date: 'Aug 03, 2026',
-        paymentMethod: 'Bank',
-        itemCount: 1,
-        totalPrice: '\$1,200.00',
-        status: 'unpaid',
-      ),
-    ];
+    return BlocBuilder<InvoiceHistoryCubit, InvoiceHistoryState>(
+      builder: (context, state) {
+        if (state is InvoiceHistoryLoading &&
+            state.invoices.isEmpty) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-    return ListView.builder(
-      padding: EdgeInsets.only(bottom: 80.h),
-      itemCount: invoices.length,
-      itemBuilder: (context, index) => Padding(
-        padding: EdgeInsets.only(bottom: 8.h),
-        child: invoices[index],
-      ),
+        if (state is InvoiceHistoryError &&
+            state.invoices.isEmpty) {
+          return Center(
+            child: Text(state.message),
+          );
+        }
+
+        if (state is! InvoiceHistoryLoaded) {
+          return const SizedBox.shrink();
+        }
+
+        final invoices = state.filteredInvoices;
+
+        if (invoices.isEmpty) {
+          return const Center(
+            child: Text('No invoices found'),
+          );
+        }
+
+        return ListView.builder(
+          padding: EdgeInsets.only(bottom: 80.h),
+          itemCount: invoices.length,
+          itemBuilder: (context, index) {
+            final invoice = invoices[index];
+
+            final date = invoice.createdAt;
+
+            final formattedDate =
+                '${date.day.toString().padLeft(2, '0')}/'
+                '${date.month.toString().padLeft(2, '0')}/'
+                '${date.year}';
+
+            return Padding(
+              padding: EdgeInsets.only(bottom: 8.h),
+              child: InvoiceCard(
+                invoiceNumber:
+                    invoice.invoiceId ?? '',
+                customerName:
+                    invoice.customerName,
+                date: formattedDate,
+                paymentMethod: invoice.remainingAmount <= 0
+                    ? 'paid'
+                    : 'unpaid',
+                itemCount: invoice.items.length,
+                totalPrice:
+                    '\$${invoice.total.toStringAsFixed(2)}',
+                status: invoice.remainingAmount <= 0
+                    ? 'paid'
+                    : 'unpaid',
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
