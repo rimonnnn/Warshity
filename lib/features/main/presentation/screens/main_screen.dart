@@ -7,6 +7,7 @@ import 'package:warshity/features/home/presentation/layout/mobile_home.dart';
 import 'package:warshity/features/home/presentation/layout/web_home.dart';
 import 'package:warshity/features/invoices/presentation/layout/invoice_mobile.dart';
 import 'package:warshity/features/invoices/presentation/layout/invoice_web.dart';
+import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
 import 'package:warshity/features/main/presentation/layout/main_mobile.dart';
 import 'package:warshity/features/main/presentation/layout/main_web.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
@@ -68,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
       icon: Icons.receipt_long_outlined,
       selectedIcon: Icons.receipt_long,
       labelKey: 'invoices',
-      screen: const InvoiceMobile(),
+      screen: const InvoicePages(),
     ),
     MainNavItem(
       icon: Icons.inventory_2_outlined,

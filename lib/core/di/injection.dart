@@ -19,6 +19,8 @@ import 'package:warshity/features/auth/data/auth_repo.dart';
 import 'package:warshity/features/auth/data/auth_repo_impl.dart';
 import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/data/repos/register_repo_impl.dart';
+import 'package:warshity/features/invoices/data/datasource/invoices_remote_data_source.dart';
+import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
 import 'package:warshity/features/onboarding/data/onboarding_local_data_source.dart';
 import 'package:warshity/features/products/data/datascource/categories_remote_data_source.dart';
 import 'package:warshity/features/products/data/datascource/products_remote_data_source.dart';
@@ -147,4 +149,16 @@ getIt.registerFactory<InvoiceCubit>(
     getIt<InvoicesRepository>(),
   ),
 );
+  getIt.registerLazySingleton<InvoicesRemoteDataSources>(
+  () => InvoicesRemoteDataSources(
+    getIt<FirebaseFirestore>(),
+  ),
+);
+
+getIt.registerLazySingleton<InvoiceRepository>(
+  () => InvoiceRepository(
+    getIt<InvoicesRemoteDataSources>(),
+  ),
+);
+
 }
