@@ -9,8 +9,7 @@ import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 
 class InvoiceCubit extends Cubit<InvoiceState> {
-  InvoiceCubit(this.invoicesRepository)
-      : super(const InvoiceInitial());
+  InvoiceCubit(this.invoicesRepository) : super(const InvoiceInitial());
 
   final InvoicesRepository invoicesRepository;
 
@@ -19,8 +18,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   // =========================
 
   void addProduct(ProductModel product) {
-    final currentItems =
-        List<InvoiceItemModel>.from(state.cartItems);
+    final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
     final index = currentItems.indexWhere(
       (item) => item.productId == product.id,
@@ -50,19 +48,15 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }
 
   void removeProduct(String productId) {
-    final currentItems =
-        List<InvoiceItemModel>.from(state.cartItems);
+    final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
-    currentItems.removeWhere(
-      (item) => item.productId == productId,
-    );
+    currentItems.removeWhere((item) => item.productId == productId);
 
     _updateState(currentItems);
   }
 
   void increaseQuantity(String productId) {
-    final currentItems =
-        List<InvoiceItemModel>.from(state.cartItems);
+    final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
     final index = currentItems.indexWhere(
       (item) => item.productId == productId,
@@ -83,8 +77,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }
 
   void decreaseQuantity(String productId) {
-    final currentItems =
-        List<InvoiceItemModel>.from(state.cartItems);
+    final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
     final index = currentItems.indexWhere(
       (item) => item.productId == productId,
@@ -121,34 +114,21 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       discount = 100;
     }
 
-    _emitWithTotals(
-      cartItems: state.cartItems,
-      discount: discount,
-    );
+    _emitWithTotals(cartItems: state.cartItems, discount: discount);
   }
 
   // =========================
   // Calculations
   // =========================
 
-  double _calculateSubtotal(
-    List<InvoiceItemModel> items,
-  ) {
-    return items.fold(
-      0.0,
-      (sum, item) {
-        return sum + (item.price * item.quantity);
-      },
-    );
+  double _calculateSubtotal(List<InvoiceItemModel> items) {
+    return items.fold(0.0, (sum, item) {
+      return sum + (item.price * item.quantity);
+    });
   }
 
-  void _updateState(
-    List<InvoiceItemModel> items,
-  ) {
-    _emitWithTotals(
-      cartItems: items,
-      discount: state.discount,
-    );
+  void _updateState(List<InvoiceItemModel> items) {
+    _emitWithTotals(cartItems: items, discount: state.discount);
   }
 
   void _emitWithTotals({
@@ -157,11 +137,9 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }) {
     final subtotal = _calculateSubtotal(cartItems);
 
-    final discountAmount =
-        subtotal * discount / 100;
+    final discountAmount = subtotal * discount / 100;
 
-    final total =
-        subtotal - discountAmount;
+    final total = subtotal - discountAmount;
 
     emit(
       InvoiceLoaded(
@@ -218,10 +196,8 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       emit(
         InvoiceError(
           message: 'Please select a customer',
-          selectedCustomerId:
-              state.selectedCustomerId,
-          selectedCustomerName:
-              state.selectedCustomerName,
+          selectedCustomerId: state.selectedCustomerId,
+          selectedCustomerName: state.selectedCustomerName,
           cartItems: state.cartItems,
           discount: state.discount,
           subtotal: state.subtotal,
@@ -236,10 +212,8 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       emit(
         InvoiceError(
           message: 'Please add at least one product',
-          selectedCustomerId:
-              state.selectedCustomerId,
-          selectedCustomerName:
-              state.selectedCustomerName,
+          selectedCustomerId: state.selectedCustomerId,
+          selectedCustomerName: state.selectedCustomerName,
           cartItems: state.cartItems,
           discount: state.discount,
           subtotal: state.subtotal,
@@ -252,10 +226,8 @@ class InvoiceCubit extends Cubit<InvoiceState> {
 
     emit(
       InvoiceLoading(
-        selectedCustomerId:
-            state.selectedCustomerId,
-        selectedCustomerName:
-            state.selectedCustomerName,
+        selectedCustomerId: state.selectedCustomerId,
+        selectedCustomerName: state.selectedCustomerName,
         cartItems: state.cartItems,
         discount: state.discount,
         subtotal: state.subtotal,
@@ -264,8 +236,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
     );
 
     try {
-      final invoiceId =
-          'INV-${DateTime.now().millisecondsSinceEpoch}';
+      final invoiceId = 'INV-${DateTime.now().millisecondsSinceEpoch}';
 
       final invoice = InvoiceModel(
         invoiceId: invoiceId,
@@ -273,24 +244,17 @@ class InvoiceCubit extends Cubit<InvoiceState> {
         customerName: state.selectedCustomerName!,
         createdAt: DateTime.now(),
         items: state.cartItems,
-        subtotal: state.subtotal,
-        discount: state.discount,
         total: state.total,
-        paidAmount: 0.0,
-        remainingAmount: state.total,
+        debt: state.total,
       );
 
-      await invoicesRepository.createInvoice(
-        invoice,
-      );
+      await invoicesRepository.createInvoice(invoice);
 
       emit(
         InvoiceSuccess(
           message: 'Invoice created successfully',
-          selectedCustomerId:
-              state.selectedCustomerId,
-          selectedCustomerName:
-              state.selectedCustomerName,
+          selectedCustomerId: state.selectedCustomerId,
+          selectedCustomerName: state.selectedCustomerName,
           cartItems: state.cartItems,
           discount: state.discount,
           subtotal: state.subtotal,
@@ -301,10 +265,8 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       emit(
         InvoiceError(
           message: e.toString(),
-          selectedCustomerId:
-              state.selectedCustomerId,
-          selectedCustomerName:
-              state.selectedCustomerName,
+          selectedCustomerId: state.selectedCustomerId,
+          selectedCustomerName: state.selectedCustomerName,
           cartItems: state.cartItems,
           discount: state.discount,
           subtotal: state.subtotal,
@@ -319,9 +281,6 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   // =========================
 
   void clearCart() {
-    _emitWithTotals(
-      cartItems: const [],
-      discount: 0,
-    );
+    _emitWithTotals(cartItems: const [], discount: 0);
   }
 }
