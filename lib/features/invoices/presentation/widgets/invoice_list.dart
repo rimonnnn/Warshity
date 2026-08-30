@@ -61,13 +61,13 @@ class InvoiceList extends StatelessWidget {
                 customerName:
                     invoice.customerName,
                 date: formattedDate,
-                paymentMethod: invoice.remainingAmount <= 0
+                paymentMethod: invoice.debt <= 0
                     ? 'paid'
                     : 'unpaid',
                 itemCount: invoice.items.length,
                 totalPrice:
                     '\$${invoice.total.toStringAsFixed(2)}',
-                status: invoice.remainingAmount <= 0
+                status: invoice.debt <= 0
                     ? 'paid'
                     : 'unpaid',
               ),

@@ -77,10 +77,10 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
               date.month == now.month;
 
         case InvoiceFilter.paid:
-          return invoice.remainingAmount <= 0;
+          return invoice.debt <= 0;
 
         case InvoiceFilter.unpaid:
-          return invoice.remainingAmount > 0;
+          return invoice.debt > 0;
       }
     }).toList();
   }
@@ -103,7 +103,7 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
       invoices.fold(0, (sum, invoice) => sum + invoice.total);
 
   int get unpaidInvoices =>
-      invoices.where((invoice) => invoice.remainingAmount > 0).length;
+      invoices.where((invoice) => invoice.debt > 0).length;
 }
 
 class InvoiceHistoryError extends InvoiceHistoryState {

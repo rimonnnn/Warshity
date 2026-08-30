@@ -1,23 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'invoice_item_model.dart';
 
 class InvoiceModel {
   final String? invoiceId;
-
   final String customerId;
   final String customerName;
-
   final DateTime createdAt;
-
   final List<InvoiceItemModel> items;
-
-  final double subtotal;
-  final double discount;
   final double total;
-
-  final double paidAmount;
-  final double remainingAmount;
+  final double debt;
 
   const InvoiceModel({
     this.invoiceId,
@@ -25,64 +15,48 @@ class InvoiceModel {
     required this.customerName,
     required this.createdAt,
     required this.items,
-    required this.subtotal,
-    required this.discount,
     required this.total,
-    required this.paidAmount,
-    required this.remainingAmount,
+    required this.debt,
   });
 
   factory InvoiceModel.fromJson(Map<String, dynamic> json) {
     return InvoiceModel(
-      invoiceId: json['invoiceId'] as String?,
-      customerId: (json['customerId'] as String?) ?? '',
-      customerName: (json['customerName'] as String?) ?? '',
-      createdAt: _parseCreatedAt(json['createdAt']),
-      items: _parseItems(json['items']),
-      subtotal: _parseDouble(json['subtotal']),
-      discount: _parseDouble(json['discount']),
-      total: _parseDouble(json['total']),
-      paidAmount: _parseDouble(json['paidAmount']),
-      remainingAmount: _parseDouble(json['remainingAmount']),
+      invoiceId: json['invoiceId']?.toString(),
+      customerId: json['customerId']?.toString() ?? '',
+      customerName: json['customerName']?.toString() ?? '',
+      createdAt: _parseDate(json['date']),
+      items: _parseItems(json['productsItem']),
+      total: _parseDouble(json['totalPrice']),
+      debt: _parseDouble(json['debt']),
     );
   }
 
-  static DateTime _parseCreatedAt(dynamic value) {
-    if (value == null) return DateTime.now();
-    if (value is Timestamp) return value.toDate();
+  static DateTime _parseDate(dynamic value) {
     if (value is DateTime) return value;
-    if (value is String) {
-      try {
-        return DateTime.parse(value);
-      } catch (_) {
-        return DateTime.now();
-      }
+
+    if (value != null) {
+      return DateTime.tryParse(value.toString()) ?? DateTime.now();
     }
+
     return DateTime.now();
   }
 
-  static List<InvoiceItemModel> _parseItems(dynamic value) {
-    if (value == null) return <InvoiceItemModel>[];
-    if (value is List) {
-      return value
-          .whereType<Map>()
-          .map(
-            (item) => InvoiceItemModel.fromJson(
-              Map<String, dynamic>.from(item),
-            ),
-          )
-          .toList();
-    }
-    return <InvoiceItemModel>[];
+  static double _parseDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0;
   }
 
-  static double _parseDouble(dynamic value) {
-    if (value == null) return 0.0;
-    if (value is num) return value.toDouble();
-    if (value is String) {
-      return double.tryParse(value) ?? 0.0;
-    }
-    return 0.0;
+  static List<InvoiceItemModel> _parseItems(dynamic value) {
+    if (value is! List) return [];
+
+    return value
+        .whereType<Map>()
+        .map(
+          (item) => InvoiceItemModel.fromJson(
+            Map<String, dynamic>.from(item),
+          ),
+        )
+        .toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -90,13 +64,10 @@ class InvoiceModel {
       'invoiceId': invoiceId,
       'customerId': customerId,
       'customerName': customerName,
-      'createdAt': createdAt.toIso8601String(),
-      'items': items.map((item) => item.toJson()).toList(),
-      'subtotal': subtotal,
-      'discount': discount,
-      'total': total,
-      'paidAmount': paidAmount,
-      'remainingAmount': remainingAmount,
+      'date': createdAt.toIso8601String(),
+      'productsItem': items.map((item) => item.toJson()).toList(),
+      'totalPrice': total,
+      'debt': debt,
     };
   }
 }
