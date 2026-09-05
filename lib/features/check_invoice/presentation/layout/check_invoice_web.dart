@@ -10,12 +10,17 @@ import 'package:warshity/features/check_invoice/presentation/widgets/paid_and_re
 import 'package:warshity/features/check_invoice/presentation/widgets/thanks_widget.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/top_check_invoice_widget.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/total_price.dart';
+import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 
 class CheckInvoiceWeb extends StatelessWidget {
-  const CheckInvoiceWeb({super.key});
+  const CheckInvoiceWeb({super.key, required this.invoice});
+  final InvoiceModel invoice;
 
   @override
   Widget build(BuildContext context) {
+    final date = DateTime.now();
+
+    final formattedDate = DateFormat('dd/MM/yyyy').format(date);
     return Scaffold(
       appBar: AppBar(
         title: Text("check_invoice".tr(), style: context.text.headlineMedium),
@@ -86,9 +91,21 @@ class CheckInvoiceWeb extends StatelessWidget {
                             color: Colors.grey[400],
                           ),
                           const HeightSpace(16),
-                          const CheckInvoiceInformation(),
+                          CheckInvoiceInformation(
+                            invoiceModel: InvoiceModel(
+                              customerId: "12",
+                              customerName: "Rimon",
+                              createdAt: formattedDate,
+                              items: [],
+                              subtotal: 5,
+                              discount: 5,
+                              total: 20,
+                              paidAmount: 20,
+                              remainingAmount: 20,
+                            ),
+                          ),
                           const HeightSpace(24),
-                          const AmountAndPriceWidget(),
+                          AmountAndPriceWidget(items: invoice.items),
                           const HeightSpace(40),
                           Divider(
                             thickness: 1,
@@ -96,11 +113,17 @@ class CheckInvoiceWeb extends StatelessWidget {
                             color: Colors.grey[400],
                           ),
                           const HeightSpace(16),
-                          const TotalPrice(),
+                          TotalPrice(
+                            subtotal: invoice.subtotal,
+                            discount: invoice.discount,
+                          ),
                           const HeightSpace(16),
-                          const FinallyPrice(),
+                          FinallyPrice(total: invoice.total),
                           const HeightSpace(8),
-                          const PaidAndRemaining(),
+                          PaidAndRemaining(
+                            paidAmount: invoice.paidAmount,
+                            remainingAmount: invoice.remainingAmount,
+                          ),
                           const HeightSpace(12),
                           const ThanksWidget(),
                           const HeightSpace(24),

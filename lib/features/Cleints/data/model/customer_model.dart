@@ -8,7 +8,7 @@ class CustomerModel {
   final num? balance;
   final bool? hasDebt;
 
-  final List<InvoiceModel> invoices;
+  final List<InvoiceClientsModel> invoices;
   final num totalPurchases;
   final num orderCount;
 

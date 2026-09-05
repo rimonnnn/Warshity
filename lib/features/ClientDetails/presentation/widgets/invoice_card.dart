@@ -12,7 +12,7 @@ class InvoiceCard extends StatelessWidget {
     this.onTap,
   });
 
-  final InvoiceModel invoice;
+  final InvoiceClientsModel invoice;
   final VoidCallback? onTap;
 
   @override

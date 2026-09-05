@@ -16,6 +16,7 @@ import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/check_invoice/presentation/screens/check_invoice.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
+import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/presentation/screens/invoice_screen.dart';
 import 'package:warshity/features/main/presentation/screens/main_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
@@ -105,7 +106,11 @@ class RouterGeneratorConfig {
       GoRoute(
         path: AppRoutes.checkInvoiceScreen,
         name: AppRoutes.checkInvoiceScreen,
-        builder: (context, state) => const CheckInvoice(),
+        builder: (context, state) {
+          final invoice = state.extra as InvoiceModel;
+
+          return CheckInvoice(invoice: invoice);
+        },
       ),
 
       // ------------------------------------------------------------

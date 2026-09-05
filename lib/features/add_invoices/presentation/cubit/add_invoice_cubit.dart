@@ -1,16 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_state.dart';
-
+import 'package:warshity/features/check_invoice/data/invoice_pdf_data.dart';
 import 'package:warshity/features/invoices/data/models/invoice_item_model.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
-
 import 'package:warshity/features/products/data/models/product_model.dart';
 
 class InvoiceCubit extends Cubit<InvoiceState> {
-  InvoiceCubit(this.invoicesRepository)
-      : super(const InvoiceInitial());
+  InvoiceCubit(this.invoicesRepository) : super(const InvoiceInitial());
 
   final InvoicesRepository invoicesRepository;
 
@@ -19,8 +17,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   // =========================
 
   void addProduct(ProductModel product) {
-    final currentItems =
-        List<InvoiceItemModel>.from(state.cartItems);
+    final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
     final index = currentItems.indexWhere(
       (item) => item.productId == product.id,
@@ -50,19 +47,15 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }
 
   void removeProduct(String productId) {
-    final currentItems =
-        List<InvoiceItemModel>.from(state.cartItems);
+    final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
-    currentItems.removeWhere(
-      (item) => item.productId == productId,
-    );
+    currentItems.removeWhere((item) => item.productId == productId);
 
     _updateState(currentItems);
   }
 
   void increaseQuantity(String productId) {
-    final currentItems =
-        List<InvoiceItemModel>.from(state.cartItems);
+    final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
     final index = currentItems.indexWhere(
       (item) => item.productId == productId,
@@ -83,8 +76,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }
 
   void decreaseQuantity(String productId) {
-    final currentItems =
-        List<InvoiceItemModel>.from(state.cartItems);
+    final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
     final index = currentItems.indexWhere(
       (item) => item.productId == productId,
@@ -117,13 +109,10 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       discount = 0;
     }
 
-    if (discount > 100) {
-      discount = 100;
-    }
-
     _emitWithTotals(
       cartItems: state.cartItems,
       discount: discount,
+      paidAmount: state.paidAmount,
     );
   }
 
@@ -131,46 +120,47 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   // Calculations
   // =========================
 
-  double _calculateSubtotal(
-    List<InvoiceItemModel> items,
-  ) {
-    return items.fold(
-      0.0,
-      (sum, item) {
-        return sum + (item.price * item.quantity);
-      },
-    );
+  double _calculateSubtotal(List<InvoiceItemModel> items) {
+    return items.fold(0.0, (sum, item) {
+      return sum + (item.price * item.quantity);
+    });
   }
 
-  void _updateState(
-    List<InvoiceItemModel> items,
-  ) {
+  void _updateState(List<InvoiceItemModel> items) {
     _emitWithTotals(
       cartItems: items,
       discount: state.discount,
+      paidAmount: state.paidAmount,
     );
   }
 
   void _emitWithTotals({
     required List<InvoiceItemModel> cartItems,
     required double discount,
+    required double paidAmount,
   }) {
     final subtotal = _calculateSubtotal(cartItems);
 
-    final discountAmount =
-        subtotal * discount / 100;
+    final discountAmount = discount.clamp(0, subtotal).toDouble();
 
-    final total =
-        subtotal - discountAmount;
+    final total = subtotal - discountAmount;
+
+    final newPaidAmount = paidAmount.clamp(0, total).toDouble();
+
+    final remainingAmount = total - newPaidAmount;
 
     emit(
       InvoiceLoaded(
+        invoiceId: state.invoiceId,
         selectedCustomerId: state.selectedCustomerId,
         selectedCustomerName: state.selectedCustomerName,
+        createdAt: state.createdAt,
         cartItems: cartItems,
-        discount: discount,
+        discount: discountAmount,
         subtotal: subtotal,
         total: total,
+        paidAmount: newPaidAmount,
+        remainingAmount: remainingAmount,
       ),
     );
   }
@@ -191,6 +181,8 @@ class InvoiceCubit extends Cubit<InvoiceState> {
         discount: state.discount,
         subtotal: state.subtotal,
         total: state.total,
+        paidAmount: state.paidAmount,
+        remainingAmount: state.remainingAmount,
       ),
     );
   }
@@ -204,6 +196,8 @@ class InvoiceCubit extends Cubit<InvoiceState> {
         discount: state.discount,
         subtotal: state.subtotal,
         total: state.total,
+        paidAmount: state.paidAmount,
+        remainingAmount: state.remainingAmount,
       ),
     );
   }
@@ -218,14 +212,14 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       emit(
         InvoiceError(
           message: 'Please select a customer',
-          selectedCustomerId:
-              state.selectedCustomerId,
-          selectedCustomerName:
-              state.selectedCustomerName,
+          selectedCustomerId: state.selectedCustomerId,
+          selectedCustomerName: state.selectedCustomerName,
           cartItems: state.cartItems,
           discount: state.discount,
           subtotal: state.subtotal,
           total: state.total,
+          paidAmount: state.paidAmount,
+          remainingAmount: state.remainingAmount,
         ),
       );
 
@@ -236,82 +230,116 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       emit(
         InvoiceError(
           message: 'Please add at least one product',
-          selectedCustomerId:
-              state.selectedCustomerId,
-          selectedCustomerName:
-              state.selectedCustomerName,
+          selectedCustomerId: state.selectedCustomerId,
+          selectedCustomerName: state.selectedCustomerName,
           cartItems: state.cartItems,
           discount: state.discount,
           subtotal: state.subtotal,
           total: state.total,
+          paidAmount: state.paidAmount,
+          remainingAmount: state.remainingAmount,
         ),
       );
 
       return;
     }
 
+    final currentState = state;
+
     emit(
       InvoiceLoading(
-        selectedCustomerId:
-            state.selectedCustomerId,
-        selectedCustomerName:
-            state.selectedCustomerName,
-        cartItems: state.cartItems,
-        discount: state.discount,
-        subtotal: state.subtotal,
-        total: state.total,
+        selectedCustomerId: currentState.selectedCustomerId,
+        selectedCustomerName: currentState.selectedCustomerName,
+        cartItems: currentState.cartItems,
+        discount: currentState.discount,
+        subtotal: currentState.subtotal,
+        total: currentState.total,
+        paidAmount: currentState.paidAmount,
+        remainingAmount: currentState.remainingAmount,
       ),
     );
 
     try {
-      final invoiceId =
-          'INV-${DateTime.now().millisecondsSinceEpoch}';
+      final invoiceId = 'INV-${DateTime.now().millisecondsSinceEpoch}';
+      final date = DateTime.now();
+      final formattedDate = DateFormat('dd/MM/yyyy').format(date);
 
       final invoice = InvoiceModel(
         invoiceId: invoiceId,
-        customerId: state.selectedCustomerId!,
-        customerName: state.selectedCustomerName!,
-        createdAt: DateTime.now(),
-        items: state.cartItems,
-        subtotal: state.subtotal,
-        discount: state.discount,
-        total: state.total,
-        paidAmount: 0.0,
-        remainingAmount: state.total,
+        customerId: currentState.selectedCustomerId!,
+        customerName: currentState.selectedCustomerName!,
+        createdAt: formattedDate,
+        items: currentState.cartItems,
+        subtotal: currentState.subtotal,
+        discount: currentState.discount,
+        total: currentState.total,
+        paidAmount: currentState.paidAmount,
+        remainingAmount: currentState.remainingAmount,
       );
 
-      await invoicesRepository.createInvoice(
-        invoice,
-      );
+      await invoicesRepository.createInvoice(invoice);
 
       emit(
         InvoiceSuccess(
           message: 'Invoice created successfully',
-          selectedCustomerId:
-              state.selectedCustomerId,
-          selectedCustomerName:
-              state.selectedCustomerName,
-          cartItems: state.cartItems,
-          discount: state.discount,
-          subtotal: state.subtotal,
-          total: state.total,
+          invoice: invoice,
+          invoiceId: invoice.invoiceId,
+          createdAt: invoice.createdAt,
+          selectedCustomerId: currentState.selectedCustomerId,
+          selectedCustomerName: currentState.selectedCustomerName,
+          cartItems: currentState.cartItems,
+          discount: currentState.discount,
+          subtotal: currentState.subtotal,
+          total: currentState.total,
+          paidAmount: currentState.paidAmount,
+          remainingAmount: currentState.remainingAmount,
         ),
       );
     } catch (e) {
       emit(
         InvoiceError(
           message: e.toString(),
-          selectedCustomerId:
-              state.selectedCustomerId,
-          selectedCustomerName:
-              state.selectedCustomerName,
-          cartItems: state.cartItems,
-          discount: state.discount,
-          subtotal: state.subtotal,
-          total: state.total,
+          selectedCustomerId: currentState.selectedCustomerId,
+          selectedCustomerName: currentState.selectedCustomerName,
+          cartItems: currentState.cartItems,
+          discount: currentState.discount,
+          subtotal: currentState.subtotal,
+          total: currentState.total,
+          paidAmount: currentState.paidAmount,
+          remainingAmount: currentState.remainingAmount,
         ),
       );
     }
+  }
+
+  void updatePaidAmount(double paidAmount) {
+    _emitWithTotals(
+      cartItems: state.cartItems,
+      discount: state.discount,
+      paidAmount: paidAmount,
+    );
+  }
+
+  InvoicePdfData getInvoicePdfData() {
+    if (state.invoiceId == null ||
+        state.createdAt == null ||
+        state.selectedCustomerName == null) {
+      throw Exception('Invoice data is incomplete');
+    }
+    final discountAmount = state.subtotal * state.discount / 100;
+
+    return InvoicePdfData(
+      invoiceId: state.invoiceId!,
+      createdAt: state.createdAt!,
+      customerName: state.selectedCustomerName!,
+      items: List.unmodifiable(state.cartItems),
+      subtotal: state.subtotal,
+      discount: state.discount,
+      total: state.total,
+      paidAmount: state.paidAmount,
+      remainingAmount: state.remainingAmount,
+      discountAmount: discountAmount,
+    );
   }
 
   // =========================
@@ -319,9 +347,6 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   // =========================
 
   void clearCart() {
-    _emitWithTotals(
-      cartItems: const [],
-      discount: 0,
-    );
+    _emitWithTotals(cartItems: const [], discount: 0, paidAmount: 0.0);
   }
 }

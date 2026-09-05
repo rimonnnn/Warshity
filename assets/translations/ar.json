@@ -215,7 +215,7 @@
   "add_new_product": "إضافة منتج جديد",
   "search_products": "بحث عن المنتجات...",
   "search_clients": "بحث عن العملاء...",
-  "enter_discount": "أدخل الخصم",
+  "enter_discount": "أدخل قيمة الخصم بالجنية",
 
   "cart": "سلة المشتريات",
   "create_invoice": "إنشاء فاتورة",
@@ -382,7 +382,19 @@
 
   "please_select_customer": "من فضلك اختر العميل",
   "please_add_product": "من فضلك أضف منتج",
-  "invoice_created_successfully": "تم إنشاء الفاتورة بنجاح"
+  "invoice_created_successfully": "تم إنشاء الفاتورة بنجاح",
+    "invoice_no": "فاتورة رقم",
+
+  "item": "الصنف",
+  "qty": "الكمية",
+
+  "total": "الإجمالي",
+
+  "thank_you": "شكراً لتعاملكم معنا",
+  "paid_amount": "المبلغ المدفوع",
+  "enter_paid_amount": "أدخل المبلغ المدفوع",
+  "remaining_amount": "المبلغ المتبقي",
+  "enter_remaining_amount": "أدخل المبلغ المتبقي"
 }
 
 

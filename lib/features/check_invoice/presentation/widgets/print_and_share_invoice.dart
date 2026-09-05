@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 
 class PrintAndShareInvoice extends StatelessWidget {
-  const PrintAndShareInvoice({super.key});
+  final VoidCallback onSharePdf;
+  final VoidCallback onPrint;
+  const PrintAndShareInvoice({super.key, required this.onSharePdf, required this.onPrint});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class PrintAndShareInvoice extends StatelessWidget {
             iconSize: 18.sp,
 
             iconData: Icons.print,
-            onPress: () {},
+            onPress: onPrint,
           ),
         ),
         SizedBox(width: 12), // لو عندك spacing widget كده
@@ -33,7 +35,7 @@ class PrintAndShareInvoice extends StatelessWidget {
             textColor: Colors.white,
             iconeColor: Colors.white,
             iconData: Icons.share,
-            onPress: () {},
+            onPress: onSharePdf,
           ),
         ),
       ],

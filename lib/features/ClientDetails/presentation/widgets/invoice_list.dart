@@ -10,7 +10,7 @@ class InvoiceList extends StatelessWidget {
     this.onTap,
   });
 
-  final List<InvoiceModel> invoices;
+  final List<InvoiceClientsModel> invoices;
   final void Function(int index)? onTap;
 
   @override

@@ -1,4 +1,4 @@
-class InvoiceModel {
+class InvoiceClientsModel {
   final String invoiceNumber;
   final String customerName;
   final String date;
@@ -6,7 +6,7 @@ class InvoiceModel {
   final int itemCount;
   final String totalPrice;
 
-  const InvoiceModel({
+  const InvoiceClientsModel({
     required this.invoiceNumber,
     required this.customerName,
     required this.date,

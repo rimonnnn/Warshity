@@ -6,7 +6,7 @@ class InvoiceModel {
   final String customerId;
   final String customerName;
 
-  final DateTime createdAt;
+  final String createdAt;
 
   final List<InvoiceItemModel> items;
 
@@ -35,7 +35,7 @@ class InvoiceModel {
       invoiceId: json['invoiceId'] as String?,
       customerId: json['customerId'] as String,
       customerName: json['customerName'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: json['createdAt'] as String,
       items: (json['items'] as List)
           .map(
             (item) => InvoiceItemModel.fromJson(
@@ -56,7 +56,7 @@ class InvoiceModel {
       'invoiceId': invoiceId,
       'customerId': customerId,
       'customerName': customerName,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': createdAt,
       'items': items.map((item) => item.toJson()).toList(),
       'subtotal': subtotal,
       'discount': discount,
