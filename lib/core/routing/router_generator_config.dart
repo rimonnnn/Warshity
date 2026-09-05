@@ -17,7 +17,7 @@ import 'package:warshity/features/auth/register/presentation/screens/register_sc
 import 'package:warshity/features/check_invoice/presentation/screens/check_invoice.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
-import 'package:warshity/features/invoices/presentation/screens/invoice_screen.dart';
+import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
 import 'package:warshity/features/main/presentation/screens/main_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
@@ -45,9 +45,6 @@ class RouterGeneratorConfig {
     },
 
     routes: [
-      // ------------------------------------------------------------
-      // Splash
-      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.splashScreen,
         name: AppRoutes.splashScreen,
@@ -58,27 +55,18 @@ class RouterGeneratorConfig {
         },
       ),
 
-      // ------------------------------------------------------------
-      // Onboarding
-      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.onboarding,
         name: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
 
-      // ------------------------------------------------------------
-      // Home
-      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.homeScreen,
         name: AppRoutes.homeScreen,
         builder: (context, state) => const HomeScreen(),
       ),
 
-      // ------------------------------------------------------------
-      // Main
-      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.mainScreen,
         name: AppRoutes.mainScreen,
@@ -88,13 +76,10 @@ class RouterGeneratorConfig {
         },
       ),
 
-      // ------------------------------------------------------------
-      // Invoices
-      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.invoiceScreen,
         name: AppRoutes.invoiceScreen,
-        builder: (context, state) => const InvoiceScreen(),
+        builder: (context, state) => const InvoicePages(),
       ),
 
       GoRoute(
@@ -113,18 +98,12 @@ class RouterGeneratorConfig {
         },
       ),
 
-      // ------------------------------------------------------------
-      // Add Product
-      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.addproductScreen,
         name: AppRoutes.addproductScreen,
         builder: (context, state) => const AddproductScreen(),
       ),
 
-      // ------------------------------------------------------------
-      // Clients Details Feature
-      // ------------------------------------------------------------
       GoRoute(
         path: AppRoutes.customerdetailsScreen,
         name: AppRoutes.customerdetailsScreen,
@@ -136,9 +115,6 @@ class RouterGeneratorConfig {
         },
       ),
 
-      // ------------------------------------------------------------
-      // Auth
-      // ------------------------------------------------------------
       ShellRoute(
         builder: (context, state, child) {
           return BlocProvider(

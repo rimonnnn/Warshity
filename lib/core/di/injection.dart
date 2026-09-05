@@ -19,7 +19,12 @@ import 'package:warshity/features/auth/data/auth_repo.dart';
 import 'package:warshity/features/auth/data/auth_repo_impl.dart';
 import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/data/repos/register_repo_impl.dart';
+
 import 'package:warshity/features/check_invoice/data/invoice_pdf_service.dart';
+
+import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
+import 'package:warshity/features/invoices/data/datasource/invoices_remote_data_source.dart';
+import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
 import 'package:warshity/features/onboarding/data/onboarding_local_data_source.dart';
 import 'package:warshity/features/products/data/datascource/categories_remote_data_source.dart';
 import 'package:warshity/features/products/data/datascource/products_remote_data_source.dart';
@@ -139,9 +144,31 @@ Future<void> setupDependencies() async {
     () => InvoicesRepository(getIt<InvoicesRemoteDataSource>()),
   );
 
+
   getIt.registerFactory<InvoiceCubit>(
     () => InvoiceCubit(getIt<InvoicesRepository>()),
   );
 
   getIt.registerLazySingleton<InvoicePdfService>(() => InvoicePdfService());
+
+
+  getIt.registerLazySingleton<InvoicesRemoteDataSources>(
+  () => InvoicesRemoteDataSources(
+    getIt<FirebaseFirestore>(),
+  ),
+);
+
+getIt.registerLazySingleton<InvoiceRepository>(
+  () => InvoiceRepository(
+    getIt<InvoicesRemoteDataSources>(),
+  ),
+);
+getIt.registerFactory<HomeCubit>(
+  () => HomeCubit(
+    clientsRepository: getIt<ClientsRepository>(),
+    productsRepository: getIt<ProductsRepository>(),
+    invoicesRepository: getIt<InvoicesRepository>(),
+  ),
+);
+
 }

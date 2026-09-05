@@ -1,0 +1,17 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:warshity/core/di/injection.dart';
+import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
+import 'package:warshity/features/home/presentation/screens/home_screen.dart';
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => getIt<HomeCubit>(),
+      child: const HomeScreen(),
+    );
+  }
+}
