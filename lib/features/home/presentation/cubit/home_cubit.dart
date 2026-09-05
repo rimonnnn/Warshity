@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
@@ -35,36 +34,35 @@ class HomeCubit extends Cubit<HomeState> {
   void loadHome() {
     emit(const HomeLoading());
 
-    _clientsSubscription = clientsRepository.watchClients().listen(
-      (clients) {
-        _clientCount = clients.length;
-        _emitLoaded();
-      },
-      onError: _handleError,
-    );
+    _clientsSubscription = clientsRepository.watchClients().listen((clients) {
+      _clientCount = clients.length;
+      _emitLoaded();
+    }, onError: _handleError);
 
-    _productsSubscription = productsRepository.watchProducts().listen(
-      (products) {
-        _products = products;
-        _emitLoaded();
-      },
-      onError: _handleError,
-    );
+    _productsSubscription = productsRepository.watchProducts().listen((
+      products,
+    ) {
+      _products = products;
+      _emitLoaded();
+    }, onError: _handleError);
 
-    _invoicesSubscription = invoicesRepository.watchInvoices().listen(
-      (invoices) {
-        _invoices = invoices;
-        _emitLoaded();
-      },
-      onError: _handleError,
-    );
+    _invoicesSubscription = invoicesRepository.watchInvoices().listen((
+      invoices,
+    ) {
+      _invoices = invoices;
+      _emitLoaded();
+    }, onError: _handleError);
   }
 
   void _emitLoaded() {
     final now = DateTime.now();
 
     final todayInvoices = _invoices.where((invoice) {
-      final date = invoice.createdAt;
+      final date = DateTime.tryParse(invoice.createdAt);
+
+      if (date == null) {
+        return false;
+      }
 
       return date.year == now.year &&
           date.month == now.month &&
@@ -81,9 +79,7 @@ class HomeCubit extends Cubit<HomeState> {
         .toList();
 
     final recentInvoices = List<InvoiceModel>.from(_invoices)
-      ..sort(
-        (a, b) => b.createdAt.compareTo(a.createdAt),
-      );
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     emit(
       HomeLoaded(
@@ -98,11 +94,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void _handleError(Object error) {
-    emit(
-      HomeError(
-        message: error.toString(),
-      ),
-    );
+    emit(HomeError(message: error.toString()));
   }
 
   @override

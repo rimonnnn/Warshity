@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_cubit.dart';
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_state.dart';
-
 import 'package:warshity/features/invoices/presentation/widgets/invoice_card.dart';
 
 class InvoiceList extends StatelessWidget {
@@ -14,18 +12,12 @@ class InvoiceList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<InvoiceHistoryCubit, InvoiceHistoryState>(
       builder: (context, state) {
-        if (state is InvoiceHistoryLoading &&
-            state.invoices.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+        if (state is InvoiceHistoryLoading && state.invoices.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
         }
 
-        if (state is InvoiceHistoryError &&
-            state.invoices.isEmpty) {
-          return Center(
-            child: Text(state.message),
-          );
+        if (state is InvoiceHistoryError && state.invoices.isEmpty) {
+          return Center(child: Text(state.message));
         }
 
         if (state is! InvoiceHistoryLoaded) {
@@ -35,9 +27,7 @@ class InvoiceList extends StatelessWidget {
         final invoices = state.filteredInvoices;
 
         if (invoices.isEmpty) {
-          return const Center(
-            child: Text('No invoices found'),
-          );
+          return const Center(child: Text('No invoices found'));
         }
 
         return ListView.builder(
@@ -46,30 +36,16 @@ class InvoiceList extends StatelessWidget {
           itemBuilder: (context, index) {
             final invoice = invoices[index];
 
-            final date = invoice.createdAt;
-
-            final formattedDate =
-                '${date.day.toString().padLeft(2, '0')}/'
-                '${date.month.toString().padLeft(2, '0')}/'
-                '${date.year}';
-
             return Padding(
               padding: EdgeInsets.only(bottom: 8.h),
               child: InvoiceCard(
-                invoiceNumber:
-                    invoice.invoiceId ?? '',
-                customerName:
-                    invoice.customerName,
-                date: formattedDate,
-                paymentMethod: invoice.debt <= 0
-                    ? 'paid'
-                    : 'unpaid',
+                invoiceNumber: invoice.invoiceId ?? '',
+                customerName: invoice.customerName,
+                date: invoice.createdAt,
+                paymentMethod: invoice.remainingAmount <= 0 ? 'paid' : 'unpaid',
                 itemCount: invoice.items.length,
-                totalPrice:
-                    '\$${invoice.total.toStringAsFixed(2)}',
-                status: invoice.debt <= 0
-                    ? 'paid'
-                    : 'unpaid',
+                totalPrice: '\$${invoice.total.toStringAsFixed(2)}',
+                status: invoice.remainingAmount <= 0 ? 'paid' : 'unpaid',
               ),
             );
           },

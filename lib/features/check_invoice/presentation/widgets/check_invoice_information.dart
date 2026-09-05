@@ -1,9 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 
 class CheckInvoiceInformation extends StatelessWidget {
-  const CheckInvoiceInformation({super.key});
+  final InvoiceModel invoiceModel;
+  const CheckInvoiceInformation({super.key, required this.invoiceModel});
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +35,23 @@ class CheckInvoiceInformation extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              "1".tr(),
+              invoiceModel.invoiceId.toString(),
+
+              style: context.text.bodyLarge!.copyWith(
+                color: Color(0xFF6F4627),
+                fontSize: 12,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              maxLines: 1,
+              overflow: TextOverflow.fade,
+              invoiceModel.createdAt.toString(),
               style: context.text.bodyLarge!.copyWith(color: Color(0xFF6F4627)),
             ),
             SizedBox(height: 8),
             Text(
-              "2o-9-2004".tr(),
-              style: context.text.bodyLarge!.copyWith(color: Color(0xFF6F4627)),
-            ),
-            SizedBox(height: 8),
-            Text(
-              "Rimon".tr(),
+              invoiceModel.customerName,
               style: context.text.bodyLarge!.copyWith(color: Color(0xFF6F4627)),
             ),
           ],

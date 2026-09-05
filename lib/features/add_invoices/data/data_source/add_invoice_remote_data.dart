@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 
 class InvoicesRemoteDataSource {
@@ -19,20 +18,15 @@ class InvoicesRemoteDataSource {
         .collection('invoices')
         .orderBy('date', descending: true)
         .snapshots()
-        .map(
-          (snapshot) {
-            return snapshot.docs.map((doc) {
-              return InvoiceModel.fromJson(doc.data());
-            }).toList();
-          },
-        );
+        .map((snapshot) {
+          return snapshot.docs.map((doc) {
+            return InvoiceModel.fromJson(doc.data());
+          }).toList();
+        });
   }
 
   Future<InvoiceModel?> getInvoice(String invoiceId) async {
-    final doc = await firestore
-        .collection('invoices')
-        .doc(invoiceId)
-        .get();
+    final doc = await firestore.collection('invoices').doc(invoiceId).get();
 
     if (!doc.exists || doc.data() == null) {
       return null;

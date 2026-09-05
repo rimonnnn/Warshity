@@ -10,7 +10,7 @@ import 'package:warshity/features/invoices/presentation/widgets/invoice_search_b
 class InvoiceWeb extends StatelessWidget {
   const InvoiceWeb({super.key});
 
-  @override
+  @override  
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
 

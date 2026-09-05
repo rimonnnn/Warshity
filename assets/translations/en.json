@@ -377,7 +377,19 @@
   "no_products_found": "No products found",
   "please_select_customer": "Please select a customer",
   "please_add_product": "Please add a product",
-  "invoice_created_successfully": "Invoice created successfully"
+  "invoice_created_successfully": "Invoice created successfully",
+    "invoice_no": "Invoice #",
+ 
+  "item": "Item",
+  "qty": "Qty",
+ 
+  "total": "Total",
+  
+  "thank_you": "Thank you",
+  "paid_amount": "Paid Amount",
+  "enter_paid_amount": "Enter Paid Amount",
+  "remaining_amount": "Remaining Amount",
+  "enter_remaining_amount": "Enter Remaining Amount"
 }
 
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/helper/app_validators.dart';
@@ -14,24 +13,19 @@ import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-
 import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
-
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_cubit.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_state.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/customer_search_cubit.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/customer_search_state.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/product_search_cubit.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/product_search_state.dart';
-
-import 'package:warshity/features/add_invoices/presentation/widgets/bestselling_products.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/cart_section.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/create_invoice_button.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/invoice_customer_card.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/invoice_search_bar.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/invoice_summary_card.dart';
-
 import 'package:warshity/features/products/data/repo/products_repository.dart';
 import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
@@ -45,6 +39,7 @@ class MobileAddInvoice extends StatefulWidget {
 
 class _MobileAddInvoiceState extends State<MobileAddInvoice> {
   final discountController = TextEditingController();
+  final paidAmountController = TextEditingController();
 
   late final customerSearchCubit = CustomerSearchCubit(
     getIt<ClientsRepository>(),
@@ -61,6 +56,7 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
   @override
   void dispose() {
     discountController.dispose();
+    paidAmountController.dispose();
     customerSearchCubit.close();
     productSearchCubit.close();
     invoiceCubit.close();
@@ -264,10 +260,6 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
 
                   HeightSpace(16),
 
-                  const BestSellingProducts(),
-
-                  HeightSpace(16),
-
                   const CartSection(),
 
                   HeightSpace(16),
@@ -277,12 +269,30 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    prefixIconData: Icons.percent,
+                    prefixIconData: Icons.discount_outlined,
+
                     onChanged: (value) {
                       invoiceCubit.updateDiscount(double.tryParse(value) ?? 0);
                     },
                     hint: 'enter_discount'.tr(),
                     controller: discountController,
+                    validator: AppValidators.price,
+                  ),
+                  HeightSpace(16),
+                  CustomTextField(
+                    label: 'paid_amount'.tr(),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    prefixIconData: Icons.attach_money_outlined,
+
+                    onChanged: (value) {
+                      invoiceCubit.updatePaidAmount(
+                        double.tryParse(value) ?? 0,
+                      );
+                    },
+                    hint: 'enter_paid_amount'.tr(),
+                    controller: paidAmountController,
                     validator: AppValidators.price,
                   ),
 
@@ -292,7 +302,7 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                     builder: (_, state) {
                       return InvoiceSummaryCard(
                         subtotal: state.subtotal,
-                        discount: state.subtotal * state.discount / 100,
+                        discount: state.discount,
                         total: state.total,
                       );
                     },
@@ -319,6 +329,7 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
 
                         context.pushReplacementNamed(
                           AppRoutes.checkInvoiceScreen,
+                          extra: state.invoice,
                         );
                       }
                     },
