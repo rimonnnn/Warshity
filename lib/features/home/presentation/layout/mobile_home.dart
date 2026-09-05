@@ -3,16 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-
 import 'package:warshity/features/home/data/recent_operation_model.dart';
 import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
 import 'package:warshity/features/home/presentation/cubit/home_state.dart';
-
 import 'package:warshity/features/home/presentation/widgets/card_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/container_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/lowstackitem_widget.dart';
@@ -42,15 +39,11 @@ class MobileHome extends StatelessWidget {
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
             if (state is HomeLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (state is HomeError) {
-              return Center(
-                child: Text(state.message),
-              );
+              return Center(child: Text(state.message));
             }
 
             if (state is! HomeLoaded) {
@@ -94,8 +87,7 @@ class MobileHome extends StatelessWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: statistics.length,
-                      gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 16.w,
                         mainAxisSpacing: 16.h,
@@ -120,8 +112,7 @@ class MobileHome extends StatelessWidget {
                           .map(
                             (product) => LowStockItem(
                               productName: product.name,
-                              remainText:
-                                  '${product.quantity} ${product.unit}',
+                              remainText: '${product.quantity} ${product.unit}',
                               onPressed: () {},
                             ),
                           )
@@ -134,26 +125,24 @@ class MobileHome extends StatelessWidget {
                       title: 'lastoperations'.tr(),
                       actionText: 'Show All'.tr(),
                       onActionPressed: () {
-                        context.pushNamed(
-                          AppRoutes.invoiceScreen,
-                        );
+                        context.pushNamed(AppRoutes.invoiceScreen);
                       },
                     ),
 
                     HeightSpace(16.h),
 
                     RecentOperationList(
-                      operations: state.recentInvoices
-                          .map(
-                            (invoice) => RecentOperationModel(
-                              customerName: invoice.customerName,
-                              time: DateFormat(
-                                'hh:mm a',
-                              ).format(invoice.createdAt),
-                              price: invoice.total.toStringAsFixed(2),
-                            ),
-                          )
-                          .toList(),
+                      operations: state.recentInvoices.map((invoice) {
+                        final date = DateTime.tryParse(invoice.createdAt);
+
+                        return RecentOperationModel(
+                          customerName: invoice.customerName,
+                          time: date != null
+                              ? DateFormat('hh:mm a').format(date)
+                              : '--:--',
+                          price: invoice.total.toStringAsFixed(2),
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),

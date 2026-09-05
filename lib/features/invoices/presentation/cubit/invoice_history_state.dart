@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 
 enum InvoiceFilter { all, today, thisWeek, thisMonth, paid, unpaid }
@@ -10,7 +11,7 @@ abstract class InvoiceHistoryState {
   const InvoiceHistoryState({
     this.invoices = const [],
     this.search = '',
-    this.filter = InvoiceFilter.all,
+    this.filter = InvoiceFilter.all, 
   });
 }
 
@@ -26,6 +27,18 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
   const InvoiceHistoryLoaded({super.invoices, super.search, super.filter});
 
   // =========================
+  // Date Parser
+  // =========================
+
+  DateTime? _parseInvoiceDate(String date) {
+    try {
+      return DateFormat('dd/MM/yyyy').parse(date);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // =========================
   // Filtered Invoices
   // =========================
 
@@ -34,10 +47,7 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
     final now = DateTime.now();
 
     return invoices.where((invoice) {
-      // -------------------------
       // Search
-      // -------------------------
-
       final matchesSearch =
           query.isEmpty ||
           (invoice.invoiceId ?? '').toLowerCase().contains(query) ||
@@ -47,13 +57,15 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
         return false;
       }
 
-      // createdAt is String
-      final date = DateTime.parse(invoice.createdAt);
+      // Convert String -> DateTime
+      final date = _parseInvoiceDate(invoice.createdAt);
 
-      // -------------------------
+      // Invalid date
+      if (date == null) {
+        return false;
+      }
+
       // Filter
-      // -------------------------
-
       switch (filter) {
         case InvoiceFilter.all:
           return true;
@@ -94,7 +106,11 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
     final now = DateTime.now();
 
     return invoices.where((invoice) {
-      final date = DateTime.parse(invoice.createdAt);
+      final date = _parseInvoiceDate(invoice.createdAt);
+
+      if (date == null) {
+        return false;
+      }
 
       return date.year == now.year &&
           date.month == now.month &&
