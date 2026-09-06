@@ -45,7 +45,9 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   void removeProduct(String productId) {
     final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
-    currentItems.removeWhere((item) => item.productId == productId);
+    currentItems.removeWhere(
+      (item) => item.productId == productId,
+    );
 
     _updateState(currentItems);
   }
@@ -97,7 +99,9 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }
 
   void updateDiscount(double discount) {
-    final normalizedDiscount = discount.clamp(0, 100).toDouble();
+    final subtotal = _calculateSubtotal(state.cartItems);
+
+    final normalizedDiscount = discount.clamp(0, subtotal).toDouble();
 
     _emitWithTotals(
       cartItems: state.cartItems,
@@ -115,15 +119,20 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }
 
   double _calculateSubtotal(List<InvoiceItemModel> items) {
-    return items.fold(0.0, (sum, item) {
-      return sum + (item.price * item.quantity);
-    });
+    return items.fold(
+      0.0,
+      (sum, item) => sum + (item.price * item.quantity),
+    );
   }
 
   void _updateState(List<InvoiceItemModel> items) {
+    final subtotal = _calculateSubtotal(items);
+
+    final discount = state.discount.clamp(0, subtotal).toDouble();
+
     _emitWithTotals(
       cartItems: items,
-      discount: state.discount,
+      discount: discount,
       paidAmount: state.paidAmount,
     );
   }
@@ -135,9 +144,9 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }) {
     final subtotal = _calculateSubtotal(cartItems);
 
-    final discountAmount = subtotal * discount / 100;
+    final normalizedDiscount = discount.clamp(0, subtotal).toDouble();
 
-    final total = subtotal - discountAmount;
+    final total = subtotal - normalizedDiscount;
 
     final newPaidAmount = paidAmount.clamp(0, total).toDouble();
 
@@ -150,7 +159,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
         selectedCustomerName: state.selectedCustomerName,
         createdAt: state.createdAt,
         cartItems: cartItems,
-        discount: discount,
+        discount: normalizedDiscount,
         subtotal: subtotal,
         total: total,
         paidAmount: newPaidAmount,
@@ -251,7 +260,8 @@ class InvoiceCubit extends Cubit<InvoiceState> {
     );
 
     try {
-      final invoiceId = 'INV-${DateTime.now().millisecondsSinceEpoch}';
+      final invoiceId =
+          'INV-${DateTime.now().millisecondsSinceEpoch}';
 
       final createdAt = DateTime.now().toIso8601String();
 
@@ -310,8 +320,6 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       throw Exception('Invoice data is incomplete');
     }
 
-    final discountAmount = state.subtotal * state.discount / 100;
-
     return InvoicePdfData(
       invoiceId: state.invoiceId!,
       createdAt: state.createdAt!,
@@ -322,11 +330,15 @@ class InvoiceCubit extends Cubit<InvoiceState> {
       total: state.total,
       paidAmount: state.paidAmount,
       remainingAmount: state.remainingAmount,
-      discountAmount: discountAmount,
+      discountAmount: state.discount,
     );
   }
 
   void clearCart() {
-    _emitWithTotals(cartItems: const [], discount: 0, paidAmount: 0.0);
+    _emitWithTotals(
+      cartItems: const [],
+      discount: 0,
+      paidAmount: 0.0,
+    );
   }
 }
