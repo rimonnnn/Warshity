@@ -2,13 +2,15 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
+
 import 'invoice_history_state.dart';
 
 class InvoiceHistoryCubit extends Cubit<InvoiceHistoryState> {
   final InvoiceRepository repository;
   StreamSubscription? _subscription;
 
-  InvoiceHistoryCubit(this.repository) : super(const InvoiceHistoryInitial()) {
+  InvoiceHistoryCubit(this.repository)
+      : super(const InvoiceHistoryInitial()) {
     watchInvoices();
   }
 
@@ -25,6 +27,17 @@ class InvoiceHistoryCubit extends Cubit<InvoiceHistoryState> {
 
     _subscription = repository.watchInvoices().listen(
       (invoices) {
+        print('🔥 INVOICE HISTORY COUNT = ${invoices.length}');
+
+        for (final invoice in invoices) {
+          print(
+            '📄 ${invoice.invoiceId} | '
+            '${invoice.customerName} | '
+            '${invoice.createdAt} | '
+            '${invoice.total}',
+          );
+        }
+
         emit(
           InvoiceHistoryLoaded(
             invoices: invoices,
@@ -69,7 +82,10 @@ class InvoiceHistoryCubit extends Cubit<InvoiceHistoryState> {
     }
   }
 
-  void _emitLoaded({String? search, InvoiceFilter? filter}) {
+  void _emitLoaded({
+    String? search,
+    InvoiceFilter? filter,
+  }) {
     emit(
       InvoiceHistoryLoaded(
         invoices: state.invoices,
@@ -80,8 +96,8 @@ class InvoiceHistoryCubit extends Cubit<InvoiceHistoryState> {
   }
 
   @override
-  Future<void> close() {
-    _subscription?.cancel();
+  Future<void> close() async {
+    await _subscription?.cancel();
     return super.close();
   }
 }

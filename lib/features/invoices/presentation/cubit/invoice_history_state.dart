@@ -11,7 +11,7 @@ abstract class InvoiceHistoryState {
   const InvoiceHistoryState({
     this.invoices = const [],
     this.search = '',
-    this.filter = InvoiceFilter.all, 
+    this.filter = InvoiceFilter.all,
   });
 }
 
@@ -20,52 +20,41 @@ class InvoiceHistoryInitial extends InvoiceHistoryState {
 }
 
 class InvoiceHistoryLoading extends InvoiceHistoryState {
-  const InvoiceHistoryLoading({super.invoices, super.search, super.filter});
+  const InvoiceHistoryLoading({
+    super.invoices,
+    super.search,
+    super.filter,
+  });
 }
 
 class InvoiceHistoryLoaded extends InvoiceHistoryState {
-  const InvoiceHistoryLoaded({super.invoices, super.search, super.filter});
-
-  // =========================
-  // Date Parser
-  // =========================
+  const InvoiceHistoryLoaded({
+    super.invoices,
+    super.search,
+    super.filter,
+  });
 
   DateTime? _parseInvoiceDate(String date) {
-    try {
-      return DateFormat('dd/MM/yyyy').parse(date);
-    } catch (_) {
-      return null;
-    }
+    return DateTime.tryParse(date) ??
+        DateFormat('dd/MM/yyyy').tryParse(date);
   }
-
-  // =========================
-  // Filtered Invoices
-  // =========================
 
   List<InvoiceModel> get filteredInvoices {
     final query = search.trim().toLowerCase();
     final now = DateTime.now();
 
     return invoices.where((invoice) {
-      // Search
       final matchesSearch =
           query.isEmpty ||
           (invoice.invoiceId ?? '').toLowerCase().contains(query) ||
           invoice.customerName.toLowerCase().contains(query);
 
-      if (!matchesSearch) {
-        return false;
-      }
+      if (!matchesSearch) return false;
 
-      // Convert String -> DateTime
       final date = _parseInvoiceDate(invoice.createdAt);
 
-      // Invalid date
-      if (date == null) {
-        return false;
-      }
+      if (date == null) return false;
 
-      // Filter
       switch (filter) {
         case InvoiceFilter.all:
           return true;
@@ -80,12 +69,15 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
             now.year,
             now.month,
             now.day,
-          ).subtract(Duration(days: now.weekday - 1));
+          ).subtract(
+            Duration(days: now.weekday - 1),
+          );
 
           return !date.isBefore(startOfWeek);
 
         case InvoiceFilter.thisMonth:
-          return date.year == now.year && date.month == now.month;
+          return date.year == now.year &&
+              date.month == now.month;
 
         case InvoiceFilter.paid:
           return invoice.remainingAmount <= 0;
@@ -96,10 +88,6 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
     }).toList();
   }
 
-  // =========================
-  // Statistics
-  // =========================
-
   int get totalInvoices => invoices.length;
 
   int get todayInvoices {
@@ -108,9 +96,7 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
     return invoices.where((invoice) {
       final date = _parseInvoiceDate(invoice.createdAt);
 
-      if (date == null) {
-        return false;
-      }
+      if (date == null) return false;
 
       return date.year == now.year &&
           date.month == now.month &&
@@ -119,11 +105,16 @@ class InvoiceHistoryLoaded extends InvoiceHistoryState {
   }
 
   double get totalSales {
-    return invoices.fold(0.0, (sum, invoice) => sum + invoice.total);
+    return invoices.fold(
+      0.0,
+      (sum, invoice) => sum + invoice.total,
+    );
   }
 
   int get unpaidInvoices {
-    return invoices.where((invoice) => invoice.remainingAmount > 0).length;
+    return invoices.where(
+      (invoice) => invoice.remainingAmount > 0,
+    ).length;
   }
 }
 

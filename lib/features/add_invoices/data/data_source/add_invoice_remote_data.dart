@@ -16,17 +16,20 @@ class InvoicesRemoteDataSource {
   Stream<List<InvoiceModel>> watchInvoices() {
     return firestore
         .collection('invoices')
-        .orderBy('date', descending: true)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) {
-            return InvoiceModel.fromJson(doc.data());
-          }).toList();
-        });
+      return snapshot.docs.map((doc) {
+        return InvoiceModel.fromJson(doc.data());
+      }).toList();
+    });
   }
 
   Future<InvoiceModel?> getInvoice(String invoiceId) async {
-    final doc = await firestore.collection('invoices').doc(invoiceId).get();
+    final doc = await firestore
+        .collection('invoices')
+        .doc(invoiceId)
+        .get();
 
     if (!doc.exists || doc.data() == null) {
       return null;
