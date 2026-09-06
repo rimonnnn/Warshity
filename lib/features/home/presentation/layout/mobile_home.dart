@@ -135,14 +135,33 @@ class MobileHome extends StatelessWidget {
                       operations: state.recentInvoices.map((invoice) {
                         final date = DateTime.tryParse(invoice.createdAt);
 
+                        String formattedDate;
+
+                        if (date != null) {
+                          formattedDate = DateFormat(
+                            'dd/MM/yyyy - hh:mm a',
+                          ).format(date);
+                        } else {
+                          final oldDate = DateFormat(
+                            'dd/MM/yyyy',
+                          ).tryParse(invoice.createdAt);
+
+                          formattedDate = oldDate != null
+                              ? DateFormat('dd/MM/yyyy').format(oldDate)
+                              : invoice.createdAt;
+                        }
+
                         return RecentOperationModel(
                           customerName: invoice.customerName,
-                          time: date != null
-                              ? DateFormat('hh:mm a').format(date)
-                              : '--:--',
+                          time: formattedDate,
                           price: invoice.total.toStringAsFixed(2),
                         );
                       }).toList(),
+                      avatarSize: 22,
+                      widthbetween: 10,
+                      horzontalPadding: 16,
+                      verticalPadding: 14,
+                      borderRadius: 12,
                     ),
                   ],
                 ),

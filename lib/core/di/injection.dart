@@ -167,7 +167,7 @@ getIt.registerFactory<HomeCubit>(
   () => HomeCubit(
     clientsRepository: getIt<ClientsRepository>(),
     productsRepository: getIt<ProductsRepository>(),
-    invoicesRepository: getIt<InvoicesRepository>(),
+    invoicesRepository: getIt<InvoiceRepository>(),
   ),
 );
 
