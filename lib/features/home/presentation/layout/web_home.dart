@@ -2,11 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/widgets/search_widget.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+
 import 'package:warshity/features/home/data/recent_operation_model.dart';
 import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
 import 'package:warshity/features/home/presentation/cubit/home_state.dart';
@@ -44,11 +46,15 @@ class WebHome extends StatelessWidget {
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
             if (state is HomeLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             }
 
             if (state is HomeError) {
-              return Center(child: Text(state.message));
+              return Center(
+                child: Text(state.message),
+              );
             }
 
             if (state is! HomeLoaded) {
@@ -84,21 +90,29 @@ class WebHome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    ContainerWidget(height: 192, borderRadius: 12),
+                    ContainerWidget(
+                      height: 192,
+                      borderRadius: 12,
+                    ),
 
                     const HeightSpace(32),
 
+                    // =========================
+                    // Statistics
+                    // =========================
+
                     GridView.builder(
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
+                      physics:
+                          const NeverScrollableScrollPhysics(),
                       itemCount: statistics.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            mainAxisExtent: 130,
-                          ),
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        mainAxisExtent: 130,
+                      ),
                       itemBuilder: (context, index) {
                         final item = statistics[index];
 
@@ -109,7 +123,8 @@ class WebHome extends StatelessWidget {
                           heightspace: 10,
                           padding: 16,
                           iconSize: 15,
-                          color: context.colors.surfaceContainerLow,
+                          color:
+                              context.colors.surfaceContainerLow,
                           onTap: () {},
                           title: item.$1,
                           icon: item.$2,
@@ -120,9 +135,18 @@ class WebHome extends StatelessWidget {
 
                     const HeightSpace(32),
 
+                    // =========================
+                    // Low Stock + Recent Operations
+                    // =========================
+
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
                       children: [
+                        // =========================
+                        // Low Stock
+                        // =========================
+
                         Expanded(
                           flex: 7,
                           child: LowStockCard(
@@ -142,6 +166,10 @@ class WebHome extends StatelessWidget {
 
                         const SizedBox(width: 24),
 
+                        // =========================
+                        // Recent Operations
+                        // =========================
+
                         Expanded(
                           flex: 3,
                           child: Column(
@@ -150,25 +178,31 @@ class WebHome extends StatelessWidget {
                                 title: 'lastoperations'.tr(),
                                 actionText: 'Show All'.tr(),
                                 onActionPressed: () {
-                                  context.pushNamed(AppRoutes.invoiceScreen);
+                                  context.pushNamed(
+                                    AppRoutes.invoiceScreen,
+                                  );
                                 },
                               ),
 
                               const SizedBox(height: 16),
 
                               RecentOperationList(
-                                operations: state.recentInvoices.map((invoice) {
-                                  final date = DateTime.tryParse(
-                                    invoice.createdAt,
-                                  );
-                                  return RecentOperationModel(
-                                    customerName: invoice.customerName,
-                                    time: date != null
-                                        ? DateFormat('hh:mm a').format(date)
-                                        : '--:--',
-                                    price: invoice.total.toStringAsFixed(2),
-                                  );
-                                }).toList(),
+                                operations:
+                                    state.recentInvoices.map(
+                                  (invoice) {
+                                    return RecentOperationModel(
+                                      customerName:
+                                          invoice.customerName,
+                                      time: context
+                                          .read<HomeCubit>()
+                                          .formatInvoiceDate(
+                                            invoice.createdAt,
+                                          ),
+                                      price: invoice.total
+                                          .toStringAsFixed(2),
+                                    );
+                                  },
+                                ).toList(),
                                 avatarSize: 22,
                                 widthbetween: 10,
                                 horzontalPadding: 16,
