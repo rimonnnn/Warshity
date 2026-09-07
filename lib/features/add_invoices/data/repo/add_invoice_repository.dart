@@ -10,6 +10,10 @@ class InvoicesRepository {
     await remoteDataSource.createInvoice(invoice);
   }
 
+  Future<void> finalizeInvoice(InvoiceModel invoice) async {
+    await remoteDataSource.finalizeInvoice(invoice);
+  }
+
   Stream<List<InvoiceModel>> watchInvoices() {
     return remoteDataSource.watchInvoices();
   }
@@ -17,4 +21,10 @@ class InvoicesRepository {
   Future<InvoiceModel?> getInvoice(String invoiceId) async {
     return await remoteDataSource.getInvoice(invoiceId);
   }
+  Future<void> checkStock(InvoiceModel invoice) async {
+  await remoteDataSource.checkStock(invoice);
+}
+Future<void> deleteInvoice(String invoiceId) async {
+  await remoteDataSource.deleteInvoice(invoiceId);
+}
 }

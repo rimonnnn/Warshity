@@ -45,9 +45,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   void removeProduct(String productId) {
     final currentItems = List<InvoiceItemModel>.from(state.cartItems);
 
-    currentItems.removeWhere(
-      (item) => item.productId == productId,
-    );
+    currentItems.removeWhere((item) => item.productId == productId);
 
     _updateState(currentItems);
   }
@@ -119,10 +117,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }
 
   double _calculateSubtotal(List<InvoiceItemModel> items) {
-    return items.fold(
-      0.0,
-      (sum, item) => sum + (item.price * item.quantity),
-    );
+    return items.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
   }
 
   void _updateState(List<InvoiceItemModel> items) {
@@ -260,42 +255,41 @@ class InvoiceCubit extends Cubit<InvoiceState> {
     );
 
     try {
-      final invoiceId =
-          'INV-${DateTime.now().millisecondsSinceEpoch}';
+      final invoiceId = 'INV-${DateTime.now().millisecondsSinceEpoch}';
 
       final createdAt = DateTime.now().toIso8601String();
 
-      final invoice = InvoiceModel(
-        invoiceId: invoiceId,
-        customerId: currentState.selectedCustomerId!,
-        customerName: currentState.selectedCustomerName!,
-        createdAt: createdAt,
-        items: currentState.cartItems,
-        subtotal: currentState.subtotal,
-        discount: currentState.discount,
-        total: currentState.total,
-        paidAmount: currentState.paidAmount,
-        remainingAmount: currentState.remainingAmount,
-      );
+     final invoice = InvoiceModel(
+  invoiceId: invoiceId,
+  customerId: currentState.selectedCustomerId!,
+  customerName: currentState.selectedCustomerName!,
+  createdAt: createdAt,
+  items: currentState.cartItems,
+  subtotal: currentState.subtotal,
+  discount: currentState.discount,
+  total: currentState.total,
+  paidAmount: currentState.paidAmount,
+  remainingAmount: currentState.remainingAmount,
+);
 
-      await invoicesRepository.createInvoice(invoice);
+await invoicesRepository.checkStock(invoice);
 
-      emit(
-        InvoiceSuccess(
-          message: 'Invoice created successfully',
-          invoice: invoice,
-          invoiceId: invoice.invoiceId,
-          createdAt: invoice.createdAt,
-          selectedCustomerId: currentState.selectedCustomerId,
-          selectedCustomerName: currentState.selectedCustomerName,
-          cartItems: currentState.cartItems,
-          discount: currentState.discount,
-          subtotal: currentState.subtotal,
-          total: currentState.total,
-          paidAmount: currentState.paidAmount,
-          remainingAmount: currentState.remainingAmount,
-        ),
-      );
+emit(
+  InvoiceSuccess(
+    message: 'Invoice ready',
+    invoice: invoice,
+    invoiceId: invoice.invoiceId,
+    createdAt: invoice.createdAt,
+    selectedCustomerId: currentState.selectedCustomerId,
+    selectedCustomerName: currentState.selectedCustomerName,
+    cartItems: currentState.cartItems,
+    discount: currentState.discount,
+    subtotal: currentState.subtotal,
+    total: currentState.total,
+    paidAmount: currentState.paidAmount,
+    remainingAmount: currentState.remainingAmount,
+  ),
+);
     } catch (e) {
       emit(
         InvoiceError(
@@ -311,6 +305,10 @@ class InvoiceCubit extends Cubit<InvoiceState> {
         ),
       );
     }
+  }
+
+  Future<void> saveInvoice(InvoiceModel invoice) async {
+    await invoicesRepository.createInvoice(invoice);
   }
 
   InvoicePdfData getInvoicePdfData() {
@@ -335,10 +333,6 @@ class InvoiceCubit extends Cubit<InvoiceState> {
   }
 
   void clearCart() {
-    _emitWithTotals(
-      cartItems: const [],
-      discount: 0,
-      paidAmount: 0.0,
-    );
+    _emitWithTotals(cartItems: const [], discount: 0, paidAmount: 0.0);
   }
 }

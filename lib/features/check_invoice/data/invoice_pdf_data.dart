@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import 'package:warshity/features/invoices/data/models/invoice_item_model.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 
@@ -28,12 +30,17 @@ class InvoicePdfData {
   });
 
   factory InvoicePdfData.fromInvoice(InvoiceModel invoice) {
-    final discountAmount =
-        invoice.subtotal * invoice.discount / 100;
+    final discountAmount = invoice.subtotal * invoice.discount / 100;
+
+    final date = DateTime.tryParse(invoice.createdAt);
+
+    final formattedDate = date != null
+        ? DateFormat('dd/MM/yyyy hh:mm a').format(date)
+        : invoice.createdAt;
 
     return InvoicePdfData(
       invoiceId: invoice.invoiceId!,
-      createdAt: invoice.createdAt,
+      createdAt: formattedDate,
       customerName: invoice.customerName,
       items: List.unmodifiable(invoice.items),
       subtotal: invoice.subtotal,
