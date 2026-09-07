@@ -16,7 +16,7 @@ class InvoiceCard extends StatelessWidget {
     required this.paymentMethod,
     required this.itemCount,
     required this.totalPrice,
-    required this.status,
+    required this.status, required this.onPrint, required this.onExport, required this.onDelete,
   });
 
   final String invoiceNumber;
@@ -26,6 +26,9 @@ class InvoiceCard extends StatelessWidget {
   final int itemCount;
   final String totalPrice;
   final String status;
+    final VoidCallback onPrint;
+  final VoidCallback onExport;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +98,11 @@ class InvoiceCard extends StatelessWidget {
               children: [
                 Text(paymentMethod),
                 const SizedBox(width: 8),
-                const InvoicePopupMenuItem(),
+                 InvoicePopupMenuItem(
+                  onDelete: onDelete,
+                  onExport: onExport,
+                  onPrint: onPrint,
+                ),
               ],
             ),
           ],

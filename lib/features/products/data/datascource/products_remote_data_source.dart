@@ -54,4 +54,12 @@ class ProductsRemoteDataSource {
   Future<void> deleteProduct(String productId) async {
     await firestore.collection('products').doc(productId).delete();
   }
+  Future<void> decreaseProductQuantity(
+  String productId,
+  int quantity,
+) async {
+  await firestore.collection('products').doc(productId).update({
+    'quantity': FieldValue.increment(-quantity),
+  });
+}
 }

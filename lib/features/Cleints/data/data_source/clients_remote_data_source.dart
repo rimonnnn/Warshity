@@ -68,4 +68,30 @@ class ClientsRemoteDataSource {
   Future<void> removeClient(String clientId) async {
     await firestore.collection("clients").doc(clientId).delete();
   }
+  Future<void> increaseDebt({
+  required String clientId,
+  required num amount,
+}) async {
+  final clientRef = firestore.collection('clients').doc(clientId);
+
+  await firestore.runTransaction((transaction) async {
+    final snapshot = await transaction.get(clientRef);
+
+    if (!snapshot.exists) {
+      throw Exception('Client not found');
+    }
+
+    final data = snapshot.data() ?? {};
+    final currentBalance = (data['balance'] as num?) ?? 0;
+
+    if (amount <= 0) return;
+
+    final newBalance = currentBalance + amount;
+
+    transaction.update(clientRef, {
+      'balance': newBalance,
+      'hasDebt': newBalance > 0,
+    });
+  });
+}
 }

@@ -12,7 +12,7 @@ class CheckInvoiceInformation extends StatelessWidget {
     final date = DateTime.tryParse(value);
 
     if (date != null) {
-      return DateFormat('dd/MM/yyyy HH:mm').format(date);
+      return DateFormat('dd/MM/yyyy hh:mm a').format(date);
     }
 
     final oldDate = DateFormat('dd/MM/yyyy').tryParse(value);
@@ -73,13 +73,12 @@ class CheckInvoiceInformation extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              Text(
-                _formatDate(invoiceModel.createdAt),
-                maxLines: 1,
-                overflow: TextOverflow.visible,
-                style: context.text.bodyLarge!.copyWith(
-                  color: const Color(0xFF6F4627),
-                  fontSize: 14,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Text(
+                  _formatDate(invoiceModel.createdAt),
+                  style: context.text.bodyLarge,
                 ),
               ),
 

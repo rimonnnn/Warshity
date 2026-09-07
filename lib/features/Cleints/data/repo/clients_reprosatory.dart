@@ -27,4 +27,13 @@ class ClientsRepository {
   Future<void> removeClient(String clientId) async {
     await remoteDataSource.removeClient(clientId);
   }
+  Future<void> increaseDebt({
+  required String clientId,
+  required num amount,
+}) async {
+  await remoteDataSource.increaseDebt(
+    clientId: clientId,
+    amount: amount,
+  );
+}
 }

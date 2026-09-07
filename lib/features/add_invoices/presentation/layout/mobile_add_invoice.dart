@@ -321,12 +321,6 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                       }
 
                       if (state is InvoiceSuccess) {
-                        showAnimatedSnackDialog(
-                          context,
-                          message: 'invoice_created_successfully'.tr(),
-                          type: AnimatedSnackBarType.success,
-                        );
-
                         context.pushReplacementNamed(
                           AppRoutes.checkInvoiceScreen,
                           extra: state.invoice,

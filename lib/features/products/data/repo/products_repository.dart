@@ -26,4 +26,13 @@ class ProductsRepository {
   Future<void> deleteProduct(String productId) async {
     await remoteDataSource.deleteProduct(productId);
   }
+  Future<void> decreaseProductQuantity(
+  String productId,
+  int quantity,
+) async {
+  await remoteDataSource.decreaseProductQuantity(
+    productId,
+    quantity,
+  );
+}
 }

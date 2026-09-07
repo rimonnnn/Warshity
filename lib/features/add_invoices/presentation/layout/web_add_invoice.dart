@@ -339,11 +339,7 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
                             }
 
                             if (state is InvoiceSuccess) {
-                              showAnimatedSnackDialog(
-                                context,
-                                message: 'invoice_created_successfully'.tr(),
-                                type: AnimatedSnackBarType.success,
-                              );
+
 
                               context.pushReplacementNamed(
                                 AppRoutes.checkInvoiceScreen,
