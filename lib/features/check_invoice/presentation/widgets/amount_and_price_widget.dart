@@ -4,10 +4,7 @@ import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/invoices/data/models/invoice_item_model.dart';
 
 class AmountAndPriceWidget extends StatelessWidget {
-  const AmountAndPriceWidget({
-    super.key,
-    required this.items,
-  });
+  const AmountAndPriceWidget({super.key, required this.items});
 
   final List<InvoiceItemModel> items;
 
@@ -16,40 +13,19 @@ class AmountAndPriceWidget extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 22,
-            vertical: 8,
-          ),
-          margin: const EdgeInsets.symmetric(
-            horizontal: 2,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
           width: double.infinity,
           decoration: BoxDecoration(
-            color: const Color(0xFFFFDCC5),
+            color: context.colors.outlineVariant,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "catagory".tr(),
-                style: context.text.bodyLarge!.copyWith(
-                  color: const Color(0xFF6F4627),
-                ),
-              ),
-              Text(
-                "amount".tr(),
-                style: context.text.bodyLarge!.copyWith(
-                  color: const Color(0xFF6F4627),
-                ),
-              ),
-              Text(
-                "the_price".tr(),
-                style: context.text.bodyLarge!.copyWith(
-                  color: const Color(0xFF6F4627),
-                ),
-              ),
+              Text("catagory".tr(), style: context.text.bodyLarge),
+              Text("amount".tr(), style: context.text.bodyLarge),
+              Text("the_price".tr(), style: context.text.bodyLarge),
             ],
           ),
         ),
@@ -66,9 +42,7 @@ class AmountAndPriceWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       item.productName,
-                      style: context.text.bodyLarge!.copyWith(
-                        color: const Color(0xFF6F4627),
-                      ),
+                      style: context.text.bodyMedium,
                     ),
                   ),
 
@@ -76,9 +50,7 @@ class AmountAndPriceWidget extends StatelessWidget {
                     child: Text(
                       item.quantity.toString(),
                       textAlign: TextAlign.center,
-                      style: context.text.bodyLarge!.copyWith(
-                        color: const Color(0xFF6F4627),
-                      ),
+                      style: context.text.bodyLarge,
                     ),
                   ),
 
@@ -86,9 +58,7 @@ class AmountAndPriceWidget extends StatelessWidget {
                     child: Text(
                       item.price.toStringAsFixed(2),
                       textAlign: TextAlign.end,
-                      style: context.text.bodyLarge!.copyWith(
-                        color: const Color(0xFF6F4627),
-                      ),
+                      style: context.text.bodyMedium,
                     ),
                   ),
                 ],

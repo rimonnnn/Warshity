@@ -20,19 +20,9 @@ class PaidAndRemaining extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "the_paid".tr(),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
-            ),
+            Text("the_paid".tr(), style: context.text.bodyMedium),
             const SizedBox(height: 16),
-            Text(
-              "remaining".tr(),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
-            ),
+            Text("remaining".tr(), style: context.text.bodyLarge),
           ],
         ),
         Column(
@@ -40,15 +30,15 @@ class PaidAndRemaining extends StatelessWidget {
           children: [
             Text(
               paidAmount.toStringAsFixed(2),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
+              style: context.text.bodyMedium!.copyWith(
+                color: context.colors.primary,
               ),
             ),
             const SizedBox(height: 16),
             Text(
               remainingAmount.toStringAsFixed(2),
               style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
+                color: context.colors.error,
               ),
             ),
           ],

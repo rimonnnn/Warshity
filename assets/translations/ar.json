@@ -395,7 +395,13 @@
   "enter_paid_amount": "أدخل المبلغ المدفوع",
   "remaining_amount": "المبلغ المتبقي",
   "enter_remaining_amount": "أدخل المبلغ المتبقي",
-  "Are you sure you want to delete this invoice?" : "هل انت متاكد من حذف هذه الفاتورة؟"
+  "Are you sure you want to delete this invoice?" : "هل انت متاكد من حذف هذه الفاتورة؟",
+  "share_invoice": "مشاركة الفاتورة",
+  "share_as_pdf": "مشاركة كملف PDF",
+  "share_as_image": "مشاركة كصورة",
+  "share": "مشاركة",
+  "developed_by": "تم التطوير بواسطة",
+  "developer_names": "م. ريمون عبد المسيح و م. كيرلس عماد"
 }
 
 

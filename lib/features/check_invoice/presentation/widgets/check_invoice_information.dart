@@ -32,26 +32,11 @@ class CheckInvoiceInformation extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'invoice_numer'.tr(),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
-            ),
+            Text('invoice_numer'.tr(), style: context.text.bodyMedium),
             const SizedBox(height: 8),
-            Text(
-              'date'.tr(),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
-            ),
+            Text('date'.tr(), style: context.text.bodyMedium),
             const SizedBox(height: 8),
-            Text(
-              'customer'.tr(),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
-            ),
+            Text('customer'.tr(), style: context.text.bodyMedium),
           ],
         ),
 
@@ -65,10 +50,7 @@ class CheckInvoiceInformation extends StatelessWidget {
                 invoiceModel.invoiceId ?? '',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.text.bodyLarge!.copyWith(
-                  color: const Color(0xFF6F4627),
-                  fontSize: 12,
-                ),
+                style: context.text.bodyMedium,
               ),
 
               const SizedBox(height: 8),
@@ -78,7 +60,7 @@ class CheckInvoiceInformation extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: Text(
                   _formatDate(invoiceModel.createdAt),
-                  style: context.text.bodyLarge,
+                  style: context.text.bodyMedium,
                 ),
               ),
 
@@ -88,9 +70,7 @@ class CheckInvoiceInformation extends StatelessWidget {
                 invoiceModel.customerName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.text.bodyLarge!.copyWith(
-                  color: const Color(0xFF6F4627),
-                ),
+                style: context.text.bodyMedium,
               ),
             ],
           ),

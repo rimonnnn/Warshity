@@ -390,7 +390,14 @@
   "enter_paid_amount": "Enter Paid Amount",
   "remaining_amount": "Remaining Amount",
   "enter_remaining_amount": "Enter Remaining Amount",
-  "Are you sure you want to delete this invoice?" : "Are you sure you want to delete this invoice?"
+  "Are you sure you want to delete this invoice?" : "Are you sure you want to delete this invoice?",
+    "share_invoice": "Share Invoice",
+  "share_as_pdf": "Share as PDF",
+  "share_as_image": "Share as Image",
+  "share": "Share",
+  "developed_by": "Developed by",
+  "developer_names": "Eng. Rimon Abdelmasih & Eng. Kirollos Emad"
+
 }
 
 
