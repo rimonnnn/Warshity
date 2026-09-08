@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/AddProduct/presentation/screens/addproduct_screen.dart';
+import 'package:warshity/features/ClientDetails/presentation/pages/all_client_invoices.dart';
 import 'package:warshity/features/ClientDetails/presentation/screens/customerdetails_screen.dart';
 import 'package:warshity/features/add_invoices/presentation/screens/add_invoice.dart';
 import 'package:warshity/features/auth/access_password/presentation/screens/access_pass_screen.dart';
@@ -112,6 +113,15 @@ class RouterGeneratorConfig {
           final customerId = state.extra as String;
 
           return CustomerdetailsScreen(customerId: customerId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.allClientInvoicesScreen,
+        name: AppRoutes.allClientInvoicesScreen,
+        builder: (context, state) {
+          final customerId = state.extra as String;
+
+          return AllClientInvoices(customerId: customerId);
         },
       ),
 

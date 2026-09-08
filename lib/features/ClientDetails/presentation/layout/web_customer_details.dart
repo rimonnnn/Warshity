@@ -16,7 +16,10 @@ import 'package:warshity/features/ClientDetails/presentation/widgets/decrease_de
 import 'package:warshity/features/ClientDetails/presentation/widgets/invoice_list.dart';
 
 class WebCustomerDetails extends StatelessWidget {
-  const WebCustomerDetails({super.key, required this.customerId});
+  const WebCustomerDetails({
+    super.key,
+    required this.customerId,
+  });
 
   final String customerId;
 
@@ -28,24 +31,32 @@ class WebCustomerDetails extends StatelessWidget {
       stream: repository.watchClient(customerId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(child: Text('something_error'.tr()));
+          return Center(
+            child: Text('something_error'.tr()),
+          );
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: AppLoadingIndicator(size: 32));
+          return const Center(
+            child: AppLoadingIndicator(size: 32),
+          );
         }
 
         final customer = snapshot.data;
 
         if (customer == null) {
-          return Center(child: Text('something_error'.tr()));
+          return Center(
+            child: Text('something_error'.tr()),
+          );
         }
 
         return SingleChildScrollView(
           padding: EdgeInsets.all(32.w),
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1200),
+              constraints: const BoxConstraints(
+                maxWidth: 1200,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -78,16 +89,19 @@ class WebCustomerDetails extends StatelessWidget {
 
                       Expanded(
                         child: CustomerDebtCard(
-                          amount: customer.balance?.toString() ?? '0',
+                          amount:
+                              customer.balance?.toString() ?? '0',
                           onPayDebt: () {
                             showDialog(
                               context: context,
                               builder: (_) {
                                 return BlocProvider(
-                                  create: (_) => getIt<DebtCubit>(),
+                                  create: (_) =>
+                                      getIt<DebtCubit>(),
                                   child: DecreaseDebtDialog(
                                     clientId: customer.id!,
-                                    currentBalance: customer.balance ?? 0,
+                                    currentBalance:
+                                        customer.balance ?? 0,
                                   ),
                                 );
                               },
@@ -119,7 +133,9 @@ class WebCustomerDetails extends StatelessWidget {
 
                   HeightSpace(12),
 
-                  InvoiceList(invoices: customer.invoices),
+                  InvoiceList(
+                    customerId: customer.id!,
+                  ),
 
                   HeightSpace(24),
 
@@ -128,7 +144,8 @@ class WebCustomerDetails extends StatelessWidget {
                       Expanded(
                         child: CustomerStatCard(
                           title: 'total_purchases'.tr(),
-                          value: customer.totalPurchases.toString(),
+                          value:
+                              customer.totalPurchases.toString(),
                           icon: Icons.trending_up,
                         ),
                       ),
@@ -138,7 +155,8 @@ class WebCustomerDetails extends StatelessWidget {
                       Expanded(
                         child: CustomerStatCard(
                           title: 'order_count'.tr(),
-                          value: customer.orderCount.toString(),
+                          value:
+                              customer.orderCount.toString(),
                           icon: Icons.shopping_bag_outlined,
                         ),
                       ),

@@ -333,7 +333,7 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
                             if (state is InvoiceError) {
                               showAnimatedSnackDialog(
                                 context,
-                                message: state.message,
+                                message: state.message.replaceFirst('Exception: ', ''),
                                 type: AnimatedSnackBarType.error,
                               );
                             }
@@ -341,7 +341,7 @@ class _WebAddInvoiceState extends State<WebAddInvoice> {
                             if (state is InvoiceSuccess) {
 
 
-                              context.pushReplacementNamed(
+                              context.pushNamed(
                                 AppRoutes.checkInvoiceScreen,
                               );
                             }

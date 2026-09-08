@@ -1,9 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/constants/app_padding.dart';
 import 'package:warshity/core/constants/app_radius.dart';
+
 import 'invoice_status_badge.dart';
 import 'invoice_popup_menu.dart';
 
@@ -16,7 +18,11 @@ class InvoiceCard extends StatelessWidget {
     required this.paymentMethod,
     required this.itemCount,
     required this.totalPrice,
-    required this.status, required this.onPrint, required this.onExport, required this.onDelete,
+    required this.status,
+    required this.onPrint,
+    required this.onExport,
+    required this.onExportImage,
+    required this.onDelete,
   });
 
   final String invoiceNumber;
@@ -26,8 +32,10 @@ class InvoiceCard extends StatelessWidget {
   final int itemCount;
   final String totalPrice;
   final String status;
-    final VoidCallback onPrint;
+
+  final VoidCallback onPrint;
   final VoidCallback onExport;
+  final VoidCallback onExportImage;
   final VoidCallback onDelete;
 
   @override
@@ -49,22 +57,35 @@ class InvoiceCard extends StatelessWidget {
               children: [
                 Text(
                   '#$invoiceNumber',
-                  style: context.text.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 InvoiceStatusBadge(status: status),
               ],
             ),
+
             SizedBox(height: 8.h),
+
             Text(
               customerName,
-              style: context.text.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+              style: context.text.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
+
             SizedBox(height: 4.h),
+
             Text(
               date,
-              style: context.text.bodyMedium?.copyWith(color: context.colors.onSurfaceVariant),
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
             ),
+
             const Divider(),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -73,35 +94,46 @@ class InvoiceCard extends StatelessWidget {
                   children: [
                     Text(
                       'item_count'.tr(),
-                      style: context.text.labelLarge?.copyWith(color: context.colors.onSurfaceVariant),
+                      style: context.text.labelLarge?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
                     ),
                     Text('$itemCount Items', style: context.text.bodyMedium),
                   ],
                 ),
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
                       'total_price'.tr(),
-                      style: context.text.labelLarge?.copyWith(color: context.colors.primary),
+                      style: context.text.labelLarge?.copyWith(
+                        color: context.colors.primary,
+                      ),
                     ),
                     Text(
                       totalPrice,
-                      style: context.text.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                      style: context.text.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(paymentMethod),
+
                 const SizedBox(width: 8),
-                 InvoicePopupMenuItem(
-                  onDelete: onDelete,
-                  onExport: onExport,
+
+                InvoicePopupMenuItem(
                   onPrint: onPrint,
+                  onExport: onExport,
+                  onExportImage: onExportImage,
+                  onDelete: onDelete,
                 ),
               ],
             ),

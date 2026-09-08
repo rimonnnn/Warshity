@@ -7,11 +7,13 @@ class InvoicePopupMenuItem extends StatelessWidget {
     super.key,
     required this.onPrint,
     required this.onExport,
+    required this.onExportImage,
     required this.onDelete,
   });
 
   final VoidCallback onPrint;
   final VoidCallback onExport;
+  final VoidCallback onExportImage;
   final VoidCallback onDelete;
 
   @override
@@ -23,9 +25,15 @@ class InvoicePopupMenuItem extends StatelessWidget {
           case 'print':
             onPrint();
             break;
+
           case 'export':
             onExport();
             break;
+
+          case 'export_image':
+            onExportImage();
+            break;
+
           case 'delete':
             onDelete();
             break;
@@ -39,6 +47,10 @@ class InvoicePopupMenuItem extends StatelessWidget {
         PopupMenuItem(
           value: 'export',
           child: Text('export_pdf'.tr()),
+        ),
+        PopupMenuItem(
+          value: 'export_image',
+          child: Text('export_image'.tr()),
         ),
         PopupMenuItem(
           value: 'delete',

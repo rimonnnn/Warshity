@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:warshity/core/constants/app_padding.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/widgets/quantity_bottom_sheet.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 
 class CartItem extends StatelessWidget {
@@ -30,6 +32,22 @@ class CartItem extends StatelessWidget {
     }
   }
 
+  Future<void> _showQuantityBottomSheet(
+    BuildContext context,
+  ) async {
+    if (onQuantityChanged == null) {
+      return;
+    }
+
+    await QuantityBottomSheet.show(
+      context: context,
+      quantity: quantity,
+      onQuantityChanged: (newQuantity) async {
+        onQuantityChanged?.call(newQuantity);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Container(
     padding: EdgeInsets.all(AppPadding.sm),
@@ -54,7 +72,9 @@ class CartItem extends StatelessWidget {
             color: context.colors.onPrimaryContainer,
           ),
         ),
+
         WidthSpace(AppPadding.sm),
+
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +97,9 @@ class CartItem extends StatelessWidget {
             ],
           ),
         ),
+
         WidthSpace(AppPadding.sm),
+
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
@@ -89,15 +111,36 @@ class CartItem extends StatelessWidget {
                 color: context.colors.primary,
               ),
             ),
+
             const HeightSpace(6),
-            _QuantityStepper(
-              quantity: quantity,
-              onIncrement: onQuantityChanged != null
-                  ? () => onQuantityChanged!(quantity + 1)
-                  : null,
-              onDecrement: onQuantityChanged != null || onDelete != null
-                  ? _handleDecrement
-                  : null,
+
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _QuantityStepper(
+                  quantity: quantity,
+                  onIncrement: onQuantityChanged != null
+                      ? () => onQuantityChanged!(quantity + 1)
+                      : null,
+                  onDecrement:
+                      onQuantityChanged != null || onDelete != null
+                      ? _handleDecrement
+                      : null,
+                ),
+
+                const SizedBox(width: 6),
+
+                GestureDetector(
+                  onTap: () {
+                    _showQuantityBottomSheet(context);
+                  },
+                  child: Icon(
+                    Icons.edit_outlined,
+                    size: 18,
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -126,20 +169,27 @@ class _QuantityStepper extends StatelessWidget {
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(
           AppRadius.sm,
-        ), // add `pill` to AppRadius, or use circular(20)
-        border: Border.all(color: context.colors.outlineVariant),
+        ),
+        border: Border.all(
+          color: context.colors.outlineVariant,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           _StepperButton(
-            icon: atMinimum ? Icons.delete_outline : Icons.remove,
-            tooltip: atMinimum ? 'Remove item' : 'Decrease quantity',
+            icon: atMinimum
+                ? Icons.delete_outline
+                : Icons.remove,
+            tooltip: atMinimum
+                ? 'Remove item'
+                : 'Decrease quantity',
             onPressed: onDecrement,
             foreground: atMinimum
                 ? context.colors.error
                 : context.colors.onSurfaceVariant,
           ),
+
           SizedBox(
             width: 22,
             child: Text(
@@ -150,6 +200,7 @@ class _QuantityStepper extends StatelessWidget {
               ),
             ),
           ),
+
           _StepperButton(
             icon: Icons.add_box,
             tooltip: 'Increase quantity',
@@ -198,10 +249,12 @@ class _StepperButton extends StatelessWidget {
               icon,
               size: 20,
               color: disabled
-                  ? context.colors.onSurfaceVariant.withValues(alpha: 0.35)
+                  ? context.colors.onSurfaceVariant
+                      .withValues(alpha: 0.35)
                   : filled
-                  ? context.colors.onPrimary
-                  : foreground ?? context.colors.onSurfaceVariant,
+                      ? context.colors.onPrimary
+                      : foreground ??
+                          context.colors.onSurfaceVariant,
             ),
           ),
         ),

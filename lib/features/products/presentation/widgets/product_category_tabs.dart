@@ -17,7 +17,7 @@ class ProductCategoryTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 38.h,
+      height: 50.h,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
@@ -29,10 +29,7 @@ class ProductCategoryTabs extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.r),
             onTap: () => onSelected(index),
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 18.w,
-                vertical: 8.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
               decoration: BoxDecoration(
                 color: isSelected
                     ? context.colors.primary

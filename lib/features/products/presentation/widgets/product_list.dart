@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:warshity/features/products/data/models/product_model.dart';
+import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 import 'package:warshity/features/products/presentation/widgets/product_card.dart';
 
 class ProductList extends StatelessWidget {
@@ -34,10 +36,6 @@ class ProductList extends StatelessWidget {
 
   final double? width;
 
-  // ============================================================
-  // DELETE CONFIRMATION
-  // ============================================================
-
   Future<void> _showDeleteConfirmation(
     BuildContext context,
     ProductModel product,
@@ -51,34 +49,24 @@ class ProductList extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text(
-                'Delete Product'.tr(),
-              ),
-
-              // ==================================================
-              // CONTENT
-              // ==================================================
+              title: Text('Delete Product'.tr()),
 
               content: isDeleting
                   ? SizedBox(
                       height: 80.h,
                       child: Center(
                         child: Column(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
                               width: 28.w,
                               height: 28.w,
-                              child:
-                                  const CircularProgressIndicator(),
+                              child: const CircularProgressIndicator(),
                             ),
 
                             SizedBox(height: 12.h),
 
-                            Text(
-                              'Deleting...'.tr(),
-                            ),
+                            Text('Deleting...'.tr()),
                           ],
                         ),
                       ),
@@ -88,22 +76,14 @@ class ProductList extends StatelessWidget {
                       '${product.name}?',
                     ),
 
-              // ==================================================
-              // ACTIONS
-              // ==================================================
-
               actions: isDeleting
                   ? []
                   : [
                       TextButton(
                         onPressed: () {
-                          Navigator.of(
-                            dialogContext,
-                          ).pop(false);
+                          Navigator.of(dialogContext).pop(false);
                         },
-                        child: Text(
-                          'Cancel'.tr(),
-                        ),
+                        child: Text('Cancel'.tr()),
                       ),
 
                       FilledButton(
@@ -127,9 +107,7 @@ class ProductList extends StatelessWidget {
                               return;
                             }
 
-                            Navigator.of(
-                              dialogContext,
-                            ).pop(true);
+                            Navigator.of(dialogContext).pop(true);
                           } catch (e) {
                             if (!dialogContext.mounted) {
                               return;
@@ -139,21 +117,15 @@ class ProductList extends StatelessWidget {
                               isDeleting = false;
                             });
 
-                            ScaffoldMessenger.of(
-                              dialogContext,
-                            ).showSnackBar(
+                            ScaffoldMessenger.of(dialogContext).showSnackBar(
                               SnackBar(
-                                content: Text(
-                                  'Failed to delete product'.tr(),
-                                ),
+                                content: Text('Failed to delete product'.tr()),
                               ),
                             );
                           }
                         },
 
-                        child: Text(
-                          'Delete'.tr(),
-                        ),
+                        child: Text('Delete'.tr()),
                       ),
                     ],
             );
@@ -162,10 +134,6 @@ class ProductList extends StatelessWidget {
       },
     );
   }
-
-  // ============================================================
-  // BUILD
-  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -187,10 +155,6 @@ class ProductList extends StatelessWidget {
 
         return Stack(
           children: [
-            // ====================================================
-            // PRODUCT CARD
-            // ====================================================
-
             ProductCard(
               productName: product.name,
 
@@ -199,19 +163,31 @@ class ProductList extends StatelessWidget {
               price: product.price,
 
               quantity: product.quantity,
+               onIncrease: () {
+    context.read<ProductsCubit>().increaseQuantity(
+      product.id,
+    );
+  },
+
+  onDecrease: () {
+    context.read<ProductsCubit>().decreaseQuantity(
+      product.id,
+    );
+  },
+
+  onQuantityChanged: (quantity) {
+    return context.read<ProductsCubit>().updateQuantity(
+      productId: product.id,
+      quantity: quantity,
+    );
+  },
 
               image: product.imageUrl.isNotEmpty
                   ? Image.network(
                       product.imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (
-                        context,
-                        error,
-                        stackTrace,
-                      ) {
-                        return const Icon(
-                          Icons.image_not_supported_outlined,
-                        );
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.image_not_supported_outlined);
                       },
                     )
                   : null,
@@ -225,16 +201,9 @@ class ProductList extends StatelessWidget {
               height: height,
             ),
 
-            // ====================================================
-            // DELETE BUTTON
-            // ====================================================
-
             if (onDelete != null)
               Positioned(
-                left:
-                    context.locale.languageCode == "ar"
-                        ? 320.w
-                        : 10.w,
+                left: context.locale.languageCode == "ar" ? 320.w : 10.w,
 
                 top: 10.h,
 
@@ -242,14 +211,10 @@ class ProductList extends StatelessWidget {
                   color: Colors.transparent,
 
                   child: InkWell(
-                    borderRadius:
-                        BorderRadius.circular(18.r),
+                    borderRadius: BorderRadius.circular(18.r),
 
                     onTap: () {
-                      _showDeleteConfirmation(
-                        context,
-                        product,
-                      );
+                      _showDeleteConfirmation(context, product);
                     },
 
                     child: Container(
@@ -264,8 +229,7 @@ class ProductList extends StatelessWidget {
 
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black
-                                .withValues(alpha: 0.12),
+                            color: Colors.black.withValues(alpha: 0.12),
 
                             blurRadius: 4,
 
