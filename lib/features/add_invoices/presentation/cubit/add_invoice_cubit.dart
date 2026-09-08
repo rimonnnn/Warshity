@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_state.dart';
 import 'package:warshity/features/check_invoice/data/invoice_pdf_data.dart';
@@ -259,37 +258,37 @@ class InvoiceCubit extends Cubit<InvoiceState> {
 
       final createdAt = DateTime.now().toIso8601String();
 
-     final invoice = InvoiceModel(
-  invoiceId: invoiceId,
-  customerId: currentState.selectedCustomerId!,
-  customerName: currentState.selectedCustomerName!,
-  createdAt: createdAt,
-  items: currentState.cartItems,
-  subtotal: currentState.subtotal,
-  discount: currentState.discount,
-  total: currentState.total,
-  paidAmount: currentState.paidAmount,
-  remainingAmount: currentState.remainingAmount,
-);
+      final invoice = InvoiceModel(
+        invoiceId: invoiceId,
+        customerId: currentState.selectedCustomerId!,
+        customerName: currentState.selectedCustomerName!,
+        createdAt: createdAt,
+        items: currentState.cartItems,
+        subtotal: currentState.subtotal,
+        discount: currentState.discount,
+        total: currentState.total,
+        paidAmount: currentState.paidAmount,
+        remainingAmount: currentState.remainingAmount,
+      );
 
-await invoicesRepository.checkStock(invoice);
+      await invoicesRepository.checkStock(invoice);
 
-emit(
-  InvoiceSuccess(
-    message: 'Invoice ready',
-    invoice: invoice,
-    invoiceId: invoice.invoiceId,
-    createdAt: invoice.createdAt,
-    selectedCustomerId: currentState.selectedCustomerId,
-    selectedCustomerName: currentState.selectedCustomerName,
-    cartItems: currentState.cartItems,
-    discount: currentState.discount,
-    subtotal: currentState.subtotal,
-    total: currentState.total,
-    paidAmount: currentState.paidAmount,
-    remainingAmount: currentState.remainingAmount,
-  ),
-);
+      emit(
+        InvoiceSuccess(
+          message: 'Invoice ready',
+          invoice: invoice,
+          invoiceId: invoice.invoiceId,
+          createdAt: invoice.createdAt,
+          selectedCustomerId: currentState.selectedCustomerId,
+          selectedCustomerName: currentState.selectedCustomerName,
+          cartItems: currentState.cartItems,
+          discount: currentState.discount,
+          subtotal: currentState.subtotal,
+          total: currentState.total,
+          paidAmount: currentState.paidAmount,
+          remainingAmount: currentState.remainingAmount,
+        ),
+      );
     } catch (e) {
       emit(
         InvoiceError(

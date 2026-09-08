@@ -16,36 +16,19 @@ class TotalPrice extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "total_price".tr(),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
-            ),
+            Text("total_price".tr(), style: context.text.bodyMedium),
             const SizedBox(height: 16),
-            Text(
-              "discount".tr(),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
-            ),
+            Text("discount".tr(), style: context.text.bodyLarge),
           ],
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              subtotal.toStringAsFixed(2),
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
-            ),
+            Text(subtotal.toStringAsFixed(2), style: context.text.bodyMedium),
             const SizedBox(height: 16),
             Text(
               "${discount.toStringAsFixed(0)} ج.م",
-              style: context.text.bodyLarge!.copyWith(
-                color: const Color(0xFF6F4627),
-              ),
+              style: context.text.bodyLarge,
             ),
           ],
         ),

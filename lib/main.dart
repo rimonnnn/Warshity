@@ -29,7 +29,7 @@ Future<void> main() async {
       version: 'v23.0',
     );
   }
-    await Supabase.initialize(
+  await Supabase.initialize(
     url: 'https://jcyynfpomdtlyrnrmrng.supabase.co',
     publishableKey: 'sb_publishable_wc2dfa0re-gDJ23MJw7hTA_QdWZxwNj',
   );
