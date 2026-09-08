@@ -71,4 +71,15 @@ class InvoiceActionsService {
       ),
     );
   }
+  Future<void> exportImage({
+  required GlobalKey boundaryKey,
+  required String filename,
+}) async {
+  final imageBytes = await captureAsImage(boundaryKey);
+
+  await shareImage(
+    imageBytes: imageBytes,
+    filename: filename,
+  );
+}
 }

@@ -401,7 +401,18 @@
   "share_as_image": "مشاركة كصورة",
   "share": "مشاركة",
   "developed_by": "تم التطوير بواسطة",
-  "developer_names": "م. ريمون عبد المسيح و م. كيرلس عماد"
+  "developer_names": "م. ريمون عبد المسيح و م. كيرلس عماد",
+   "quantity": "الكمية",
+  "increase": "زيادة",
+  "decrease": "نقصان",
+  "enter_quantity": "اكتب الكمية",
+  "confirm": "تأكيد",
+  "not_enough_quantity": "لا يوجد كمية كافية",
+  "quantity_increased_successfully": "تم زيادة الكمية بنجاح",
+  "quantity_decreased_successfully": "تم نقص الكمية بنجاح",
+  "Not enough stock. Available:" : "لا يوجد كمية كافية. متوفرة:",
+  "Requested:" : "مطلوبة:",
+  "export_image": "تصدير الصورة"
 }
 
 

@@ -315,13 +315,13 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                       if (state is InvoiceError) {
                         showAnimatedSnackDialog(
                           context,
-                          message: state.message,
+                          message: state.message.replaceFirst('Exception: ', ''),
                           type: AnimatedSnackBarType.error,
                         );
                       }
 
                       if (state is InvoiceSuccess) {
-                        context.pushReplacementNamed(
+                        context.pushNamed(
                           AppRoutes.checkInvoiceScreen,
                           extra: state.invoice,
                         );

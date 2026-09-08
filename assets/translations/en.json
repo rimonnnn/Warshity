@@ -396,7 +396,18 @@
   "share_as_image": "Share as Image",
   "share": "Share",
   "developed_by": "Developed by",
-  "developer_names": "Eng. Rimon Abdelmasih & Eng. Kirollos Emad"
+  "developer_names": "Eng. Rimon Abdelmasih & Eng. Kirollos Emad",
+  "increase": "Increase",
+  "decrease": "Decrease",
+  "enter_quantity": "Enter quantity",
+  "confirm": "Confirm",
+  "not_enough_quantity": "Not enough quantity",
+  "quantity_increased_successfully": "Quantity increased successfully",
+  "quantity_decreased_successfully": "Quantity decreased successfully",
+  "Not enough stock. Available:" : "Not enough stock. Available:",
+  "Requested:" : "Requested:",
+  "export_image" : "Export as Image"
+
 
 }
 

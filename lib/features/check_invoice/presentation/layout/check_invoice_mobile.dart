@@ -2,6 +2,7 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:warshity/core/constants/app_padding.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
@@ -91,10 +92,8 @@ class _CheckInvoiceMobileState extends State<CheckInvoiceMobile> {
 
   Future<void> _shareImage() async {
     try {
-      final imageBytes = await _actions.captureAsImage(_invoiceKey);
-
-      await _actions.shareImage(
-        imageBytes: imageBytes,
+      await _actions.exportImage(
+        boundaryKey: _invoiceKey,
         filename: '${widget.invoice.invoiceId}.png',
       );
     } catch (e) {
@@ -114,6 +113,17 @@ class _CheckInvoiceMobileState extends State<CheckInvoiceMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (_invoiceSaved) {
+              context.pop();
+              context.pop();
+            } else {
+              context.pop();
+            }
+          },
+        ),
         title: Text('check_invoice'.tr(), style: context.text.headlineMedium),
       ),
       body: Padding(

@@ -18,6 +18,7 @@ class InvoicesRepository {
     return remoteDataSource.watchInvoices();
   }
 
+
   Future<InvoiceModel?> getInvoice(String invoiceId) async {
     return await remoteDataSource.getInvoice(invoiceId);
   }
@@ -26,5 +27,19 @@ class InvoicesRepository {
 }
 Future<void> deleteInvoice(String invoiceId) async {
   await remoteDataSource.deleteInvoice(invoiceId);
+}
+Stream<List<InvoiceModel>> watchClientInvoices(
+  String customerId,
+) {
+  return remoteDataSource.watchClientInvoices(
+    customerId,
+  );
+}
+Stream<List<InvoiceModel>> watchAllClientInvoices(
+  String customerId,
+) {
+  return remoteDataSource.watchAllClientInvoices(
+    customerId,
+  );
 }
 }

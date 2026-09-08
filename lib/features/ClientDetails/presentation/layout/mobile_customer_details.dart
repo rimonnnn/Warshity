@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/widgets/app_loading_indicator.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/Cleints/data/model/customer_model.dart';
@@ -50,8 +52,6 @@ class MobileCustomerDetails extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  
                   CustomerHeaderCard(
                     name: customer.name ?? '',
                     phone: customer.phone ?? '',
@@ -91,7 +91,12 @@ class MobileCustomerDetails extends StatelessWidget {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.pushNamed(
+                            AppRoutes.allClientInvoicesScreen,
+                            extra: customer.id,
+                          );
+                        },
                         child: Text('show_all'.tr()),
                       ),
                     ],
@@ -99,7 +104,7 @@ class MobileCustomerDetails extends StatelessWidget {
 
                   HeightSpace(12.h),
 
-                  InvoiceList(invoices: customer.invoices),
+                  InvoiceList(customerId: customer.id!),
 
                   HeightSpace(20.h),
 

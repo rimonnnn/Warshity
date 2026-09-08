@@ -66,8 +66,83 @@ class ClientsRemoteDataSource {
   }
 
   Future<void> removeClient(String clientId) async {
-    await firestore.collection("clients").doc(clientId).delete();
+  final invoicesRef = firestore.collection('invoices');
+  final clientRef = firestore.collection('clients').doc(clientId);
+
+  while (true) {
+    // نجيب 400 فاتورة في كل مرة
+    final snapshot = await invoicesRef
+        .where('customerId', isEqualTo: clientId)
+        .limit(400)
+        .get();
+
+    // مفيش فواتير تاني
+    if (snapshot.docs.isEmpty) {
+      break;
+    }
+
+    // نجمع كميات المنتجات اللي لازم ترجع للمخزون
+    final Map<String, int> quantities = {};
+
+    for (final invoiceDoc in snapshot.docs) {
+      final data = invoiceDoc.data();
+
+      final stockDeducted =
+          data['stockDeducted'] == true;
+
+      // لو الفاتورة كانت finalized
+      if (stockDeducted) {
+        final items = data['items'];
+
+        if (items is List) {
+          for (final item in items) {
+            if (item is! Map) continue;
+
+            final productId =
+                item['productId']?.toString() ?? '';
+
+            final quantity =
+                (item['quantity'] as num?)?.toInt() ?? 0;
+
+            if (productId.isEmpty || quantity <= 0) {
+              continue;
+            }
+
+            quantities[productId] =
+                (quantities[productId] ?? 0) + quantity;
+          }
+        }
+      }
+    }
+
+    // Batch واحد لكل دفعة
+    final batch = firestore.batch();
+
+    // حذف الفواتير
+    for (final invoiceDoc in snapshot.docs) {
+      batch.delete(invoiceDoc.reference);
+    }
+
+    // إرجاع المنتجات للمخزون
+    for (final entry in quantities.entries) {
+      final productRef = firestore
+          .collection('products')
+          .doc(entry.key);
+
+      batch.update(
+        productRef,
+        {
+          'quantity': FieldValue.increment(entry.value),
+        },
+      );
+    }
+
+    await batch.commit();
   }
+
+  // بعد حذف كل الفواتير نحذف العميل
+  await clientRef.delete();
+}
   Future<void> increaseDebt({
   required String clientId,
   required num amount,
