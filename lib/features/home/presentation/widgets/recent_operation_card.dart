@@ -44,20 +44,17 @@ class RecentOperationCard extends StatelessWidget {
           vertical: verticalPadding ?? 14.h,
         ),
         decoration: BoxDecoration(
-          color: backgroundColor ?? context.colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(
-            borderradius ?? AppRadius.lg,
-          ),
-          border: Border.all(
-            color: context.colors.outlineVariant,
-          ),
+          color: backgroundColor ?? context.colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(borderradius ?? AppRadius.lg),
+          border: Border.all(color: context.colors.outlineVariant),
         ),
         child: Row(
           children: [
             CircleAvatar(
               radius: 22.r,
               backgroundColor: const Color(0xffD8F0A7),
-              child: avatar ??
+              child:
+                  avatar ??
                   Icon(
                     Icons.person_outline,
                     color: const Color(0xff5B7F22),

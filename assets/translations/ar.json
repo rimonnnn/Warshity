@@ -97,7 +97,7 @@
     "recent_operations": "العمليات الأخيرة",
     "currency": "ج.م",
     "unit": "قطعة",
-    "welcome_actor" : "أهلاً بك يا فنان!",
+    "welcome_actor" : "أهلاً!",
     "welcome_message" : "نظرة عامة على ورشتك اليوم وجاهزية المخزون.",
     "total_clients" : "اجمالي العملاء",
     "number_of_clients" : "85 عميل",
@@ -434,7 +434,10 @@
 "password_changed_successfully": "تم تغيير كلمة المرور بنجاح",
 "current_password_incorrect": "كلمة المرور الحالية غير صحيحة",
 "password_too_weak": "كلمة المرور ضعيفة",
-"logout_confirmation": "هل تريد تسجيل الخروج؟"
+"logout_confirmation": "هل تريد تسجيل الخروج؟",
+"invoice": "فاتورة",
+"client": "عملاء",
+"product": "منتجات"
 }
 
 

@@ -37,7 +37,7 @@ class ContainerWidget extends StatelessWidget {
           width: width ?? double.infinity,
           height: height ?? (isDesktop ? 220 : 150),
           decoration: BoxDecoration(
-            color: color ?? context.colors.primary,
+            color: color ?? context.colors.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.md),
           ),
           child: Stack(
@@ -50,11 +50,11 @@ class ContainerWidget extends StatelessWidget {
                 bottom: 0,
                 child: Center(
                   child: Image.asset(
-                    AppAssets.homeicon,
+                    AppAssets.logo,
                     width: imageSize,
                     height: imageSize,
-                    fit: BoxFit.contain,
-                    color: context.colors.onPrimary,
+                    fit: BoxFit.cover,
+                    // color: context.colors.primaryContainer.withOpacity(0.5),
                   ),
                 ),
               ),
@@ -94,7 +94,7 @@ class ContainerWidget extends StatelessWidget {
                                         ? context.text.headlineMedium
                                         : context.text.headlineSmall)
                                     ?.copyWith(
-                                      color: context.colors.onPrimary,
+                                      color: context.colors.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
                           );
@@ -111,7 +111,7 @@ class ContainerWidget extends StatelessWidget {
                             (isDesktop
                                     ? context.text.bodyLarge
                                     : context.text.bodyMedium)
-                                ?.copyWith(color: context.colors.onPrimary),
+                                ?.copyWith(color: context.colors.primary),
                       ),
                     ],
                   ),

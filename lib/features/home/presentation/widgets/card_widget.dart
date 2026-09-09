@@ -41,21 +41,15 @@ class CardWidget extends StatelessWidget {
 
         return InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(
-            borderRadius ?? AppRadius.md,
-          ),
+          borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.md),
           child: Container(
             width: width,
             height: height,
             decoration: BoxDecoration(
-              color: color ?? context.colors.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(
-                borderRadius ?? AppRadius.md,
-              ),
+              color: color ?? context.colors.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.md),
             ),
-            padding: EdgeInsets.all(
-              padding ?? (isMobile ? 12.sp : 16.sp),
-            ),
+            padding: EdgeInsets.all(padding ?? (isMobile ? 12.sp : 16.sp)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -93,13 +87,14 @@ class CardWidget extends StatelessWidget {
                       child: Text(
                         value ?? "0",
                         maxLines: 2,
-                        style: (isMobile
-                                ? context.text.headlineSmall
-                                : context.text.headlineMedium)
-                            ?.copyWith(
-                          color: context.colors.onSurface,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            (isMobile
+                                    ? context.text.headlineSmall
+                                    : context.text.headlineMedium)
+                                ?.copyWith(
+                                  color: context.colors.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                     ),
                   ),

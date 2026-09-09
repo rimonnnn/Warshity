@@ -52,15 +52,11 @@ class MobileHome extends StatelessWidget {
       body: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is HomeError) {
-            return Center(
-              child: Text(state.message),
-            );
+            return Center(child: Text(state.message));
           }
 
           if (state is! HomeLoaded) {
@@ -71,22 +67,22 @@ class MobileHome extends StatelessWidget {
             (
               'daily_sales'.tr(),
               Icons.trending_up_outlined,
-              'EGP ${state.todaySales.toStringAsFixed(2)}',
+              (state.todaySales.toStringAsFixed(2)),
             ),
             (
               'number_of_Invoices'.tr(),
               Icons.receipt_long_outlined,
-              '${state.invoiceCount} ${'invoices'.tr()}',
+              '${state.invoiceCount} ${'invoice'.tr()}',
             ),
             (
               'total_clients'.tr(),
               Icons.group_outlined,
-              '${state.clientCount} ${'clients'.tr()}',
+              '${state.clientCount} ${'client'.tr()}',
             ),
             (
               'total_products'.tr(),
               Icons.inventory_2_outlined,
-              '${state.productCount} ${'products'.tr()}',
+              '${state.productCount} ${'product'.tr()}',
             ),
           ];
 
@@ -106,8 +102,7 @@ class MobileHome extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: statistics.length,
 
-                    gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 16.w,
                       mainAxisSpacing: 16.h,
@@ -134,8 +129,7 @@ class MobileHome extends StatelessWidget {
                         .map(
                           (product) => LowStockItem(
                             productName: product.name,
-                            remainText:
-                                '${product.quantity} ${product.unit}',
+                            remainText: '${product.quantity} ${product.unit}',
                             onPressed: () {},
                           ),
                         )
@@ -149,19 +143,15 @@ class MobileHome extends StatelessWidget {
                     actionText: 'Show All'.tr(),
 
                     onActionPressed: () {
-                      context.pushNamed(
-                        AppRoutes.invoiceScreen,
-                      );
+                      context.pushNamed(AppRoutes.invoiceScreen);
                     },
                   ),
 
                   HeightSpace(16.h),
 
                   RecentOperationList(
-                    operations:
-                        state.recentInvoices.map((invoice) {
-                      final date =
-                          DateTime.tryParse(invoice.createdAt);
+                    operations: state.recentInvoices.map((invoice) {
+                      final date = DateTime.tryParse(invoice.createdAt);
 
                       String formattedDate;
 
@@ -175,17 +165,14 @@ class MobileHome extends StatelessWidget {
                         ).tryParse(invoice.createdAt);
 
                         formattedDate = oldDate != null
-                            ? DateFormat(
-                                'dd/MM/yyyy',
-                              ).format(oldDate)
+                            ? DateFormat('dd/MM/yyyy').format(oldDate)
                             : invoice.createdAt;
                       }
 
                       return RecentOperationModel(
                         customerName: invoice.customerName,
                         time: formattedDate,
-                        price:
-                            invoice.total.toStringAsFixed(2),
+                        price: invoice.total.toStringAsFixed(2),
                       );
                     }).toList(),
 

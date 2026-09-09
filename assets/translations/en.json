@@ -428,7 +428,11 @@
 "password_changed_successfully": "Password changed successfully",
 "current_password_incorrect": "Current password is incorrect",
 "password_too_weak": "Password is too weak",
-"logout_confirmation": "Are you sure you want to logout?"
+"logout_confirmation": "Are you sure you want to logout?",
+"invoice": "Invoice",
+"client": "Clients",
+"product": "Products"
+
 }
 
 
