@@ -406,9 +406,29 @@
   "quantity_decreased_successfully": "Quantity decreased successfully",
   "Not enough stock. Available:" : "Not enough stock. Available:",
   "Requested:" : "Requested:",
-  "export_image" : "Export as Image"
-
-
+  "export_image" : "Export as Image",
+  "add_new_category": "Add New Category",
+"enter_category_name_description": "Enter the name of the new category",
+"add_category": "Add Category",
+"enter_category_name": "Please enter the category name",
+"category_already_exists": "Category name already exists",
+"category_added_successfully": "Category added successfully",
+"something_went_wrong": "Something went wrong",
+"activity" : "Activity",
+"trades" : "Trades",
+"no_current_user" : "No current user",
+"email_not_found" : "Email not found",
+"change_password_description": "Enter your current password and then your new password",
+"current_password": "Current Password",
+"new_password": "New Password",
+"confirm_new_password": "Confirm New Password",
+"enter_current_password": "Please enter your current password",
+"enter_new_password": "Please enter your new password",
+"passwords_do_not_match": "Passwords do not match",
+"password_changed_successfully": "Password changed successfully",
+"current_password_incorrect": "Current password is incorrect",
+"password_too_weak": "Password is too weak",
+"logout_confirmation": "Are you sure you want to logout?"
 }
 
 

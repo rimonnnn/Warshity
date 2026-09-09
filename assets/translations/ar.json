@@ -412,7 +412,29 @@
   "quantity_decreased_successfully": "تم نقص الكمية بنجاح",
   "Not enough stock. Available:" : "لا يوجد كمية كافية. متوفرة:",
   "Requested:" : "مطلوبة:",
-  "export_image": "تصدير الصورة"
+  "export_image": "تصدير الصورة",
+  "add_new_category": "إضافة قسم جديد",
+"enter_category_name_description": "أدخل اسم القسم الجديد",
+"add_category": "إضافة القسم",
+"enter_category_name": "من فضلك أدخل اسم القسم",
+"category_already_exists": "اسم القسم موجود بالفعل",
+"category_added_successfully": "تم إضافة القسم بنجاح",
+"something_went_wrong": "حدث خطأ ما",
+"activity" : "النشاط",
+"trades" : "التجارة",
+"no_current_user" : "لا يوجد مستخدم حالي",
+"email_not_found" : "البريد الالكتروني غير موجود",
+"change_password_description": "أدخل كلمة المرور الحالية ثم كلمة المرور الجديدة",
+"current_password": "كلمة المرور الحالية",
+"new_password": "كلمة المرور الجديدة",
+"confirm_new_password": "تأكيد كلمة المرور الجديدة",
+"enter_current_password": "أدخل كلمة المرور الحالية",
+"enter_new_password": "أدخل كلمة المرور الجديدة",
+"passwords_do_not_match": "كلمتا المرور غير متطابقتين",
+"password_changed_successfully": "تم تغيير كلمة المرور بنجاح",
+"current_password_incorrect": "كلمة المرور الحالية غير صحيحة",
+"password_too_weak": "كلمة المرور ضعيفة",
+"logout_confirmation": "هل تريد تسجيل الخروج؟"
 }
 
 

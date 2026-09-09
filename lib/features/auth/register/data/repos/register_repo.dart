@@ -7,6 +7,12 @@ abstract class RegisterRepo {
     required String password,
   });
 
+  /// إضافة Business Activity جديدة
+  Future<void> addCategory(String categoryName);
+
+  /// جلب Business Activities من Firestore
+  Stream<List<String>> watchCategories();
+
   /// إرسال رسالة تفعيل إلى البريد الإلكتروني
   Future<void> sendEmailVerification();
 

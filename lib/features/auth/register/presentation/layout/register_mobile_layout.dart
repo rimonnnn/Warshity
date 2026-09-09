@@ -39,11 +39,16 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
     "activities.blacksmith".tr(),
     "activities.ac".tr(),
   ];
+
   String? selectedActivity;
+
   bool isvisible = true;
   bool isvisible2 = true;
   bool isChecked = false;
+
   final _formKey = GlobalKey<FormState>();
+
+  late final Stream<List<String>> categoriesStream;
 
   TextEditingController shopNameController = TextEditingController();
 
@@ -54,14 +59,18 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
   TextEditingController passwordController = TextEditingController();
 
   TextEditingController confirmPasswordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+
     shopNameController = TextEditingController();
     accountNameController = TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
     confirmPasswordController = TextEditingController();
+
+    categoriesStream = context.read<AuthCubit>().categoriesStream;
   }
 
   @override
@@ -71,6 +80,7 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+
     super.dispose();
   }
 
@@ -105,29 +115,31 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
               );
             }
           },
+
           builder: (context, state) {
-            if (state is AuthLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
             return SingleChildScrollView(
               child: Column(
                 children: [
                   HeightSpace(30.h),
+
                   CustomLogo(
                     width: 64.w,
                     height: 64.h,
                     borderRadius: AppRadius.lg,
                     logoPath: AppAssets.registerLogo,
                   ),
+
                   Text(
                     "create_account".tr(),
                     style: context.text.headlineLarge,
                   ),
+
                   Text(
                     "start".tr(),
                     style: context.text.bodyLarge,
                     textAlign: TextAlign.center,
                   ),
+
                   Form(
                     key: _formKey,
                     child: Container(
@@ -137,6 +149,7 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                       child: Column(
                         children: [
                           HeightSpace(24.h),
+
                           CustomTextField(
                             label: "labelname_of_shop".tr(),
                             hint: "hintname_of_shop".tr(),
@@ -145,7 +158,9 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                             controller: shopNameController,
                             validator: AppValidators.shopName,
                           ),
+
                           HeightSpace(16.h),
+
                           CustomTextField(
                             label: "accountname".tr(),
                             hint: "thirdname".tr(),
@@ -154,7 +169,9 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                             controller: accountNameController,
                             validator: AppValidators.accountName,
                           ),
+
                           HeightSpace(16.h),
+
                           CustomTextField(
                             label: "email".tr(),
                             hint: "email1".tr(),
@@ -162,24 +179,47 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                             controller: emailController,
                             validator: AppValidators.email,
                           ),
+
                           HeightSpace(16.h),
-                          CustomDropdown(
-                            label: "activetype".tr(),
-                            hint: "select_activity".tr(),
-                            validator: (value) => AppValidators.dropdown(
-                              value,
-                              'select_activity'.tr(),
-                            ),
-                            items: activities,
-                            selectedItem: selectedActivity,
-                            prefixIcon: AppAssets.activities,
-                            onSelected: (value) {
-                              setState(() {
-                                selectedActivity = value;
-                              });
+
+                          StreamBuilder<List<String>>(
+                            stream: categoriesStream,
+                            builder: (context, snapshot) {
+                              final firestoreCategories = snapshot.data ?? [];
+
+                              final allActivities = <String>{
+                                ...activities,
+                                ...firestoreCategories,
+                              }.toList();
+
+                              return CustomDropdown(
+                                label: "activetype".tr(),
+                                hint: "select_activity".tr(),
+                                validator: (value) => AppValidators.dropdown(
+                                  value,
+                                  'select_activity'.tr(),
+                                ),
+                                items: allActivities,
+                                selectedItem: selectedActivity,
+                                prefixIcon: AppAssets.activities,
+
+                                onSelected: (value) {
+                                  setState(() {
+                                    selectedActivity = value;
+                                  });
+                                },
+
+                                onAddCategory: (categoryName) async {
+                                  await context.read<AuthCubit>().addCategory(
+                                    categoryName,
+                                  );
+                                },
+                              );
                             },
                           ),
+
                           HeightSpace(16.h),
+
                           CustomTextField(
                             label: "password".tr(),
                             hint: "hash".tr(),
@@ -188,6 +228,7 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                             obscureText: isvisible,
                             controller: passwordController,
                             validator: AppValidators.password,
+
                             suffixIcon: IconButton(
                               icon: Icon(
                                 isvisible
@@ -201,7 +242,9 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                               },
                             ),
                           ),
+
                           HeightSpace(16.h),
+
                           CustomTextField(
                             label: "confirm_password".tr(),
                             hint: "hash".tr(),
@@ -213,6 +256,7 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                               passwordController.text,
                             ),
                             obscureText: isvisible2,
+
                             suffixIcon: IconButton(
                               icon: Icon(
                                 isvisible2
@@ -226,19 +270,23 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                               },
                             ),
                           ),
+
                           HeightSpace(16.h),
+
                           CheckboxWidget(
                             value: isChecked,
-
                             onChanged: (value) {
                               setState(() {
                                 isChecked = value ?? false;
                               });
                             },
                           ),
+
                           HeightSpace(40.h),
+
                           PrimaryButtonWidget(
                             buttonText: "create_account1".tr(),
+
                             onPress: () {
                               if (!_formKey.currentState!.validate()) {
                                 return;
@@ -252,6 +300,7 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                                     ),
                                   ),
                                 );
+
                                 return;
                               }
 
@@ -267,13 +316,18 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                                 user: user,
                                 password: passwordController.text.trim(),
                               );
+
                               shopNameController.clear();
                               accountNameController.clear();
                               emailController.clear();
                               passwordController.clear();
                               confirmPasswordController.clear();
-                              selectedActivity = null;
+
+                              setState(() {
+                                selectedActivity = null;
+                              });
                             },
+
                             suffixicon: true,
                             iconPath: "arrowpath".tr(),
                             borderRadius: AppRadius.sm,
@@ -283,14 +337,18 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                             height: 56.h,
                             width: 310.w,
                           ),
+
                           HeightSpace(40.h),
+
                           Dividerwidget(
                             child: Text(
-                                  "continue".tr(),
-                                  style: context.text.bodyLarge,
-                                ),
+                              "continue".tr(),
+                              style: context.text.bodyLarge,
+                            ),
                           ),
+
                           HeightSpace(16.h),
+
                           OutlinedButtonWidget(
                             buttonText: "google".tr(),
                             iconPath: AppAssets.google,
@@ -300,30 +358,39 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
                               context.read<AuthCubit>().signInWithGoogle();
                             },
                           ),
+
                           HeightSpace(16.h),
+
                           OutlinedButtonWidget(
                             buttonText: "facebook".tr(),
                             iconPath: AppAssets.facebook,
                             width: 310.w,
                             height: 50.h,
-                            onPressed: () => context.read<AuthCubit>().signInWithFacebook(),
+                            onPressed: () {
+                              context.read<AuthCubit>().signInWithFacebook();
+                            },
                           ),
                         ],
                       ),
                     ),
                   ),
+
                   HeightSpace(32.h),
-                 FooterWidget(text1: "have_account", text2: "login",onPress: () {
-                   context.pushNamed(AppRoutes.loginScreen);
-                 },),
-                  HeightSpace(24.h),
-                  Dividerwidget(
-                    child: Image.asset(
-                          AppAssets.footer,
-                          width: 24,
-                          height: 24,
-                        ),
+
+                  FooterWidget(
+                    text1: "have_account",
+                    text2: "login",
+                    onPress: () {
+                      context.pushNamed(AppRoutes.loginScreen);
+                    },
                   ),
+
+                  HeightSpace(24.h),
+
+                  Dividerwidget(
+                    child: Image.asset(AppAssets.footer, width: 24, height: 24),
+                  ),
+
                   HeightSpace(60.h),
                 ],
               ),
