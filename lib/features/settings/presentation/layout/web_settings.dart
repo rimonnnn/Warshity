@@ -12,7 +12,6 @@ import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_state.dart';
-import 'package:warshity/features/settings/presentation/widgets/custom_switch_tile.dart';
 import 'package:warshity/features/settings/presentation/widgets/info_item.dart';
 import 'package:warshity/features/settings/presentation/widgets/logout_button.dart';
 import 'package:warshity/features/settings/presentation/widgets/settings_section.dart';
@@ -78,17 +77,6 @@ class _WebSettingsScreenState extends State<WebSettingsScreen> {
                             title: "last_sync".tr(),
                             value: "times".tr(),
                             icon: Icons.cloud_done_outlined,
-                          ),
-                          CustomSwitchTile(
-                            title: "auto_sync".tr(),
-                            subtitle: "auto_sync_desc".tr(),
-                            value: autoSync,
-                            onChanged: (value) {
-                              setState(() {
-                                autoSync = value;
-                              });
-                            },
-                            showDivider: false,
                           ),
                           Padding(
                             padding: EdgeInsets.all(16.sp),

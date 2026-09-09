@@ -66,10 +66,13 @@ Future<void> setupDependencies() async {
     () => RegisterRepoImpl(getIt<FirebaseAuth>(), getIt<FirebaseFirestore>()),
   );
 
-  getIt.registerLazySingleton<AuthRepo>(
-    () => AuthRepoImpl(getIt<FirebaseAuth>(), getIt<GoogleSignIn>()),
-  );
-
+getIt.registerLazySingleton<AuthRepo>(
+  () => AuthRepoImpl(
+    getIt<FirebaseAuth>(),
+    getIt<GoogleSignIn>(),
+    getIt<FirebaseFirestore>(),
+  ),
+);
   getIt.registerFactory<AuthCubit>(
     () => AuthCubit(getIt<RegisterRepo>(), getIt<AuthRepo>()),
   );

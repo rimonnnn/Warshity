@@ -1,8 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/styling/app_assets.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/cubit/auth_state.dart';
 
 class ContainerWidget extends StatelessWidget {
   const ContainerWidget({
@@ -73,21 +76,30 @@ class ContainerWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-                      Text(
-                        "welcome_actor".tr(),
-                        textAlign: TextAlign.start,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            (isDesktop
-                                    ? context.text.headlineMedium
-                                    : context.text.headlineSmall)
-                                ?.copyWith(
-                                  color: context.colors.onPrimary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
+                      BlocBuilder<AuthCubit, AuthState>(
+                        builder: (context, authState) {
+                          String ownerName = '';
 
+                          if (authState is UserLoaded) {
+                            ownerName = authState.user.ownerName;
+                          }
+
+                          return Text(
+                            '${"welcome_actor".tr()} $ownerName',
+                            textAlign: TextAlign.start,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style:
+                                (isDesktop
+                                        ? context.text.headlineMedium
+                                        : context.text.headlineSmall)
+                                    ?.copyWith(
+                                      color: context.colors.onPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                          );
+                        },
+                      ),
                       SizedBox(height: isDesktop ? 10 : 6),
 
                       Text(

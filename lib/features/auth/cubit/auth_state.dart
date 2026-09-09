@@ -1,3 +1,5 @@
+import 'package:warshity/features/auth/register/data/models/user_model.dart';
+
 abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
@@ -12,8 +14,18 @@ class RegisterSuccess extends AuthState {
 
 class LoginSuccess extends AuthState {
   final String message;
+  final UserModel? user;
 
-  LoginSuccess(this.message);
+  LoginSuccess(
+    this.message, {
+    this.user,
+  });
+}
+
+class UserLoaded extends AuthState {
+  final UserModel user;
+
+  UserLoaded(this.user);
 }
 
 class EmailVerificationSent extends AuthState {
@@ -26,6 +38,11 @@ class AuthError extends AuthState {
   final String message;
 
   AuthError(this.message);
+}
+class PasswordChangedSuccess extends AuthState {
+  final String message;
+
+  PasswordChangedSuccess(this.message);
 }
 
 class ForgotPasswordSuccess extends AuthState {
