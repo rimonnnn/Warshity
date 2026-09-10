@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/extensions/context_extension.dart';
-import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/constants/app_padding.dart';
+import 'package:warshity/core/constants/app_radius.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 
 class InvoiceStatisticsCard extends StatelessWidget {
   final String title;
@@ -41,7 +41,7 @@ class InvoiceStatisticsCard extends StatelessWidget {
       width: 140.w,
       padding: EdgeInsets.all(AppPadding.md),
       decoration: BoxDecoration(
-        color: context.colors.surface,
+        color: context.colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.md),
         boxShadow: [
           BoxShadow(
