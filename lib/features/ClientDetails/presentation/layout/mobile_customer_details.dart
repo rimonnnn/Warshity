@@ -6,12 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-import 'package:warshity/core/widgets/app_loading_indicator.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/Cleints/data/model/customer_model.dart';
 import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/debt_cubit.dart';
 import 'package:warshity/features/ClientDetails/presentation/widgets/customer_debt_card.dart';
+import 'package:warshity/features/ClientDetails/presentation/widgets/customer_details_shimmer.dart';
 import 'package:warshity/features/ClientDetails/presentation/widgets/customer_header_card.dart';
 import 'package:warshity/features/ClientDetails/presentation/widgets/customer_stat_card.dart';
 import 'package:warshity/features/ClientDetails/presentation/widgets/decrease_debt_dialog.dart';
@@ -37,7 +37,7 @@ class MobileCustomerDetails extends StatelessWidget {
             }
 
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: AppLoadingIndicator());
+              return const Center(child: CustomerDetailsShimmer());
             }
 
             final customer = snapshot.data;

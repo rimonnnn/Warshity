@@ -82,13 +82,10 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w),
-            child: Text(
-              'add_invoice'.tr(),
-              style: context.text.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          title: Text(
+            'add_invoice'.tr(),
+            style: context.text.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
           ),
           foregroundColor: context.colors.primary,
@@ -315,7 +312,10 @@ class _MobileAddInvoiceState extends State<MobileAddInvoice> {
                       if (state is InvoiceError) {
                         showAnimatedSnackDialog(
                           context,
-                          message: state.message.replaceFirst('Exception: ', ''),
+                          message: state.message.replaceFirst(
+                            'Exception: ',
+                            '',
+                          ),
                           type: AnimatedSnackBarType.error,
                         );
                       }
