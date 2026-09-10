@@ -431,7 +431,13 @@
 "logout_confirmation": "Are you sure you want to logout?",
 "invoice": "Invoice",
 "client": "Clients",
-"product": "Products"
+"product": "Products",
+"no_invoice_found": "No invoices found",
+"no_client_found": "No clients found",
+"exit_app": "Exit App",
+"exit_app_message": "Are you sure you want to exit the app?",
+
+"exit": "Exit"
 
 }
 

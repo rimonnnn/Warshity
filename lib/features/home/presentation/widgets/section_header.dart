@@ -41,22 +41,15 @@ class SectionHeader extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: titleStyle ??
-                  context.text.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style:
+                  titleStyle ??
+                  context.text.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
 
-          if (trailing != null) ...[
-            SizedBox(width: 8.w),
-            trailing!,
-          ],
+          if (trailing != null) ...[SizedBox(width: 8.w), trailing!],
 
-          if (leading != null) ...[
-            SizedBox(width: 8.w),
-            leading!,
-          ],
+          if (leading != null) ...[SizedBox(width: 8.w), leading!],
 
           if (showAction && actionText != null) ...[
             SizedBox(width: 12.w),
@@ -66,8 +59,9 @@ class SectionHeader extends StatelessWidget {
                 actionText!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: actionStyle ??
-                    context.text.bodyMedium?.copyWith(
+                style:
+                    actionStyle ??
+                    context.text.bodySmall?.copyWith(
                       color: context.colors.primary,
                       fontWeight: FontWeight.w600,
                     ),

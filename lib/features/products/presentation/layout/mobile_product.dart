@@ -2,22 +2,20 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-
 import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_state.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/products_state.dart';
-
 import 'package:warshity/features/products/presentation/widgets/empty_products_widget.dart';
 import 'package:warshity/features/products/presentation/widgets/floating_add_product_button.dart';
 import 'package:warshity/features/products/presentation/widgets/product_category_tabs.dart';
 import 'package:warshity/features/products/presentation/widgets/product_list.dart';
 import 'package:warshity/features/products/presentation/widgets/product_search_widget.dart';
+import 'package:warshity/features/products/presentation/widgets/product_shimmer.dart';
 
 class MobileProduct extends StatefulWidget {
   const MobileProduct({super.key});
@@ -65,7 +63,7 @@ class _MobileProductsState extends State<MobileProduct> {
           final categoriesCubit = context.read<CategoriesCubit>();
 
           return Scaffold(
-            appBar: AppBar(title: Text('products'.tr()), centerTitle: true),
+            appBar: AppBar(title: Text('products'.tr()), centerTitle: false),
 
             floatingActionButton: FloatingAddProductButton(
               onPressed: () {
@@ -91,172 +89,169 @@ class _MobileProductsState extends State<MobileProduct> {
             body: Padding(
               padding: EdgeInsets.all(16.w),
 
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await Future<void>.delayed(const Duration(milliseconds: 300));
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
 
-                children: [
-                  ProductSearchWidget(controller: searchController),
+                  children: [
+                    ProductSearchWidget(controller: searchController),
 
-                  HeightSpace(16.h),
+                    HeightSpace(16.h),
 
-                  BlocBuilder<CategoriesCubit, CategoriesState>(
-                    builder: (context, categoryState) {
-                      if (categoryState is CategoriesLoading) {
-                        return SizedBox(
-                          height: 40.h,
-
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-
-                      if (categoryState is CategoriesLoaded) {
-                        final categories = categoryState.categories;
-
-                        final List<String> categoryNames = [
-                          'all'.tr(),
-
-                          ...categories.map((category) => category.name),
-                        ];
-
-                        final int safeSelectedCategory =
-                            selectedCategory >= 0 &&
-                                selectedCategory < categoryNames.length
-                            ? selectedCategory
-                            : 0;
-
-                        return ProductCategoryTabs(
-                          categories: categoryNames,
-
-                          selectedIndex: safeSelectedCategory,
-
-                          onSelected: (index) {
-                            if (index == selectedCategory) {
-                              return;
-                            }
-
-                            setState(() {
-                              selectedCategory = index;
-                            });
-                          },
-                        );
-                      }
-
-                      if (categoryState is CategoriesError) {
-                        return SizedBox(
-                          height: 40.h,
-
-                          child: Center(child: Text(categoryState.message)),
-                        );
-                      }
-
-                      return const SizedBox();
-                    },
-                  ),
-
-                  HeightSpace(20.h),
-
-                  Expanded(
-                    child: BlocBuilder<ProductsCubit, ProductsState>(
-                      builder: (context, productState) {
-                        if (productState is ProductsLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                    BlocBuilder<CategoriesCubit, CategoriesState>(
+                      builder: (context, categoryState) {
+                        if (categoryState is CategoriesLoading) {
+                          return SizedBox(height: 40.h);
                         }
 
-                        if (productState is ProductsError) {
-                          return Center(child: Text(productState.message));
-                        }
+                        if (categoryState is CategoriesLoaded) {
+                          final categories = categoryState.categories;
 
-                        if (productState is ProductsSuccess) {
-                          var products = List.of(productState.products);
+                          final List<String> categoryNames = [
+                            'all'.tr(),
 
-                          final String search = searchController.text
-                              .trim()
-                              .toLowerCase();
+                            ...categories.map((category) => category.name),
+                          ];
 
-                          if (search.isNotEmpty) {
-                            products = products.where((product) {
-                              final String productName = product.name
-                                  .toLowerCase();
+                          final int safeSelectedCategory =
+                              selectedCategory >= 0 &&
+                                  selectedCategory < categoryNames.length
+                              ? selectedCategory
+                              : 0;
 
-                              final String productBarcode = product.barcode
-                                  .toLowerCase();
+                          return ProductCategoryTabs(
+                            categories: categoryNames,
 
-                              return productName.contains(search) ||
-                                  productBarcode.contains(search);
-                            }).toList();
-                          }
+                            selectedIndex: safeSelectedCategory,
 
-                          if (selectedCategory != 0) {
-                            final categoryState = categoriesCubit.state;
-
-                            if (categoryState is CategoriesLoaded) {
-                              final categories = categoryState.categories;
-
-                              final int categoryIndex = selectedCategory - 1;
-
-                              if (categoryIndex >= 0 &&
-                                  categoryIndex < categories.length) {
-                                final String selectedCategoryName =
-                                    categories[categoryIndex].name;
-
-                                products = products.where((product) {
-                                  return product.category ==
-                                      selectedCategoryName;
-                                }).toList();
+                            onSelected: (index) {
+                              if (index == selectedCategory) {
+                                return;
                               }
-                            }
-                          }
 
-                          if (products.isEmpty) {
-                            return const EmptyProductsWidget();
-                          }
-
-                          return SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-
-                            child: ProductList(
-                              products: products,
-
-                              onDelete: (product) async {
-                                try {
-                                  await context
-                                      .read<ProductsCubit>()
-                                      .deleteProduct(product.id);
-
-                                  if (!context.mounted) return;
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        '${product.name} deleted successfully',
-                                      ),
-                                    ),
-                                  );
-                                } catch (e) {
-                                  if (!context.mounted) return;
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Failed to delete product: $e',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
+                              setState(() {
+                                selectedCategory = index;
+                              });
+                            },
                           );
                         }
 
-                        return const EmptyProductsWidget();
+                        if (categoryState is CategoriesError) {
+                          return SizedBox(
+                            height: 40.h,
+
+                            child: Center(child: Text(categoryState.message)),
+                          );
+                        }
+
+                        return const SizedBox();
                       },
                     ),
-                  ),
-                ],
+
+                    HeightSpace(20.h),
+
+                    Expanded(
+                      child: BlocBuilder<ProductsCubit, ProductsState>(
+                        builder: (context, productState) {
+                          if (productState is ProductsLoading) {
+                            return const ProductShimmer();
+                          }
+
+                          if (productState is ProductsError) {
+                            return Center(child: Text(productState.message));
+                          }
+
+                          if (productState is ProductsSuccess) {
+                            var products = List.of(productState.products);
+
+                            final String search = searchController.text
+                                .trim()
+                                .toLowerCase();
+
+                            if (search.isNotEmpty) {
+                              products = products.where((product) {
+                                final String productName = product.name
+                                    .toLowerCase();
+
+                                final String productBarcode = product.barcode
+                                    .toLowerCase();
+
+                                return productName.contains(search) ||
+                                    productBarcode.contains(search);
+                              }).toList();
+                            }
+
+                            if (selectedCategory != 0) {
+                              final categoryState = categoriesCubit.state;
+
+                              if (categoryState is CategoriesLoaded) {
+                                final categories = categoryState.categories;
+
+                                final int categoryIndex = selectedCategory - 1;
+
+                                if (categoryIndex >= 0 &&
+                                    categoryIndex < categories.length) {
+                                  final String selectedCategoryName =
+                                      categories[categoryIndex].name;
+
+                                  products = products.where((product) {
+                                    return product.category ==
+                                        selectedCategoryName;
+                                  }).toList();
+                                }
+                              }
+                            }
+
+                            if (products.isEmpty) {
+                              return const EmptyProductsWidget();
+                            }
+
+                            return SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+
+                              child: ProductList(
+                                products: products,
+
+                                onDelete: (product) async {
+                                  try {
+                                    await context
+                                        .read<ProductsCubit>()
+                                        .deleteProduct(product.id);
+
+                                    if (!context.mounted) return;
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '${product.name} deleted successfully',
+                                        ),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    if (!context.mounted) return;
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to delete product: $e',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            );
+                          }
+
+                          return const EmptyProductsWidget();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
+import 'package:warshity/core/helper/transition_helper.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-import 'package:warshity/features/AddProduct/presentation/screens/addproduct_screen.dart';
 import 'package:warshity/features/ClientDetails/presentation/pages/all_client_invoices.dart';
 import 'package:warshity/features/ClientDetails/presentation/screens/customerdetails_screen.dart';
 import 'package:warshity/features/add_invoices/presentation/screens/add_invoice.dart';
@@ -16,9 +16,7 @@ import 'package:warshity/features/auth/login/presentation/screens/login_screen.d
 import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/check_invoice/presentation/screens/check_invoice.dart';
-import 'package:warshity/features/home/presentation/screens/home_screen.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
-import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
 import 'package:warshity/features/main/presentation/screens/main_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
@@ -63,12 +61,6 @@ class RouterGeneratorConfig {
       ),
 
       GoRoute(
-        path: AppRoutes.homeScreen,
-        name: AppRoutes.homeScreen,
-        builder: (context, state) => const HomeScreen(),
-      ),
-
-      GoRoute(
         path: AppRoutes.mainScreen,
         name: AppRoutes.mainScreen,
         builder: (context, state) {
@@ -78,50 +70,49 @@ class RouterGeneratorConfig {
       ),
 
       GoRoute(
-        path: AppRoutes.invoiceScreen,
-        name: AppRoutes.invoiceScreen,
-        builder: (context, state) => const InvoicePages(),
-      ),
-
-      GoRoute(
         path: AppRoutes.addInvoicesScreen,
         name: AppRoutes.addInvoicesScreen,
-        builder: (context, state) => const AddInvoice(),
+        pageBuilder: (context, state) {
+          return fadeSlidePage(key: state.pageKey, child: const AddInvoice());
+        },
       ),
 
       GoRoute(
         path: AppRoutes.checkInvoiceScreen,
         name: AppRoutes.checkInvoiceScreen,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final invoice = state.extra as InvoiceModel;
 
-          return CheckInvoice(invoice: invoice);
+          return fadeSlidePage(
+            key: state.pageKey,
+            child: CheckInvoice(invoice: invoice),
+          );
         },
-      ),
-
-      GoRoute(
-        path: AppRoutes.addproductScreen,
-        name: AppRoutes.addproductScreen,
-        builder: (context, state) => const AddproductScreen(),
       ),
 
       GoRoute(
         path: AppRoutes.customerdetailsScreen,
         name: AppRoutes.customerdetailsScreen,
 
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final customerId = state.extra as String;
 
-          return CustomerdetailsScreen(customerId: customerId);
+          return fadeSlidePage(
+            key: state.pageKey,
+            child: CustomerdetailsScreen(customerId: customerId),
+          );
         },
       ),
       GoRoute(
         path: AppRoutes.allClientInvoicesScreen,
         name: AppRoutes.allClientInvoicesScreen,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final customerId = state.extra as String;
 
-          return AllClientInvoices(customerId: customerId);
+          return fadeSlidePage(
+            key: state.pageKey,
+            child: AllClientInvoices(customerId: customerId),
+          );
         },
       ),
 

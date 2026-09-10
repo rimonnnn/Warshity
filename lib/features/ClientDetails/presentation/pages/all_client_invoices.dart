@@ -1,12 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:warshity/core/di/injection.dart';
-import 'package:warshity/core/widgets/app_loading_indicator.dart';
+import 'package:warshity/features/ClientDetails/presentation/widgets/all_client_invoices_shimmer.dart';
+import 'package:warshity/features/ClientDetails/presentation/widgets/invoice_card.dart';
 import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
-import 'package:warshity/features/ClientDetails/presentation/widgets/invoice_card.dart';
 
 class AllClientInvoices extends StatelessWidget {
   const AllClientInvoices({super.key, required this.customerId});
@@ -21,7 +20,7 @@ class AllClientInvoices extends StatelessWidget {
         stream: getIt<InvoicesRepository>().watchAllClientInvoices(customerId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: AppLoadingIndicator());
+            return const Center(child: AllClientInvoicesShimmer());
           }
 
           if (snapshot.hasError) {
@@ -31,7 +30,7 @@ class AllClientInvoices extends StatelessWidget {
           final invoices = snapshot.data ?? [];
 
           if (invoices.isEmpty) {
-            return Center(child: Text('No invoices found'.tr()));
+            return Center(child: Text('no_invoice_found'.tr()));
           }
 
           return ListView.separated(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
@@ -13,7 +12,6 @@ import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
-
 import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_state.dart';
 import 'package:warshity/features/settings/presentation/widgets/change_password_bottom_sheet.dart';
@@ -167,7 +165,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
             VersionCard(
               image: AppAssets.logo,
-              title: "wershity".tr(),
+              title: "masiter".tr(),
               version: "version".tr(),
             ),
 
@@ -218,16 +216,30 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                               onPressed: () {
                                 Navigator.of(dialogContext).pop();
                               },
-                              child: Text("cancel".tr()),
+                              child: Text(
+                                "cancel".tr(),
+                                style: TextStyle(
+                                  color: context.colors.primary,
+                                  fontSize: 18.sp,
+                                ),
+                              ),
                             ),
+                            SizedBox(height: 16.h),
 
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(80.w, 40.h),
+                                backgroundColor: context.colors.error,
+                              ),
                               onPressed: () {
                                 Navigator.of(dialogContext).pop();
 
                                 context.read<SettingsCubit>().logOut();
                               },
-                              child: Text("logout".tr()),
+                              child: Text(
+                                "logout".tr(),
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ],
                         );

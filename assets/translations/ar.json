@@ -437,7 +437,13 @@
 "logout_confirmation": "هل تريد تسجيل الخروج؟",
 "invoice": "فاتورة",
 "client": "عملاء",
-"product": "منتجات"
+"product": "منتجات",
+"no_invoice_found": "لا توجد فواتير",
+"no_client_found": "لا يوجد عملاء",
+"exit_app": "الخروج من التطبيق",
+"exit_app_message": "هل أنت متأكد أنك تريد الخروج من التطبيق؟",
+
+"exit": "خروج"
 }
 
 

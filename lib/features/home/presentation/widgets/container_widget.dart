@@ -30,7 +30,7 @@ class ContainerWidget extends StatelessWidget {
         final isDesktop = constraints.maxWidth >= 900;
         final isArabic = context.locale.languageCode == "ar";
 
-        final imageSize = isDesktop ? 120.0 : 70.0;
+        final imageSize = isDesktop ? 120.0 : 80.0;
         final horizontalPadding = isDesktop ? 40.0 : 20.0;
 
         return Container(
@@ -92,10 +92,11 @@ class ContainerWidget extends StatelessWidget {
                             style:
                                 (isDesktop
                                         ? context.text.headlineMedium
-                                        : context.text.headlineSmall)
+                                        : context.text.bodyLarge)
                                     ?.copyWith(
                                       color: context.colors.primary,
                                       fontWeight: FontWeight.bold,
+                                      fontSize: isDesktop ? 24 : 18,
                                     ),
                           );
                         },

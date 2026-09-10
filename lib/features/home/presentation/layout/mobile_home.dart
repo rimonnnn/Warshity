@@ -13,6 +13,7 @@ import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
 import 'package:warshity/features/home/presentation/cubit/home_state.dart';
 import 'package:warshity/features/home/presentation/widgets/card_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/container_widget.dart';
+import 'package:warshity/features/home/presentation/widgets/home_shimmer.dart';
 import 'package:warshity/features/home/presentation/widgets/lowstackitem_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/lowstockcard_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/recent_operation_list.dart';
@@ -46,13 +47,13 @@ class MobileHome extends StatelessWidget {
           },
         ),
 
-        centerTitle: true,
+        centerTitle: false,
       ),
 
       body: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: HomeShimmer());
           }
 
           if (state is HomeError) {
@@ -89,100 +90,106 @@ class MobileHome extends StatelessWidget {
           return Padding(
             padding: EdgeInsets.all(16.sp),
 
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ContainerWidget(),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await Future<void>.delayed(const Duration(milliseconds: 300));
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ContainerWidget(),
 
-                  HeightSpace(32.h),
+                    HeightSpace(32.h),
 
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: statistics.length,
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: statistics.length,
 
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16.w,
-                      mainAxisSpacing: 16.h,
-                      mainAxisExtent: 160.h,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16.w,
+                        mainAxisSpacing: 16.h,
+                        mainAxisExtent: 160.h,
+                      ),
+
+                      itemBuilder: (context, index) {
+                        final item = statistics[index];
+
+                        return CardWidget(
+                          title: item.$1,
+                          icon: item.$2,
+                          value: item.$3,
+                        );
+                      },
                     ),
 
-                    itemBuilder: (context, index) {
-                      final item = statistics[index];
+                    HeightSpace(32.h),
 
-                      return CardWidget(
-                        title: item.$1,
-                        icon: item.$2,
-                        value: item.$3,
-                      );
-                    },
-                  ),
+                    LowStockCard(
+                      title: 'warning'.tr(),
 
-                  HeightSpace(32.h),
+                      children: state.lowStockProducts
+                          .map(
+                            (product) => LowStockItem(
+                              productName: product.name,
+                              remainText: '${product.quantity} ${product.unit}',
+                              onPressed: () {},
+                            ),
+                          )
+                          .toList(),
+                    ),
 
-                  LowStockCard(
-                    title: 'warning'.tr(),
+                    HeightSpace(32.h),
 
-                    children: state.lowStockProducts
-                        .map(
-                          (product) => LowStockItem(
-                            productName: product.name,
-                            remainText: '${product.quantity} ${product.unit}',
-                            onPressed: () {},
-                          ),
-                        )
-                        .toList(),
-                  ),
+                    SectionHeader(
+                      title: 'lastoperations'.tr(),
+                      actionText: 'Show All'.tr(),
 
-                  HeightSpace(32.h),
+                      onActionPressed: () {
+                        context.pushNamed(AppRoutes.invoiceScreen);
+                      },
+                    ),
 
-                  SectionHeader(
-                    title: 'lastoperations'.tr(),
-                    actionText: 'Show All'.tr(),
+                    HeightSpace(16.h),
 
-                    onActionPressed: () {
-                      context.pushNamed(AppRoutes.invoiceScreen);
-                    },
-                  ),
+                    RecentOperationList(
+                      operations: state.recentInvoices.map((invoice) {
+                        final date = DateTime.tryParse(invoice.createdAt);
 
-                  HeightSpace(16.h),
+                        String formattedDate;
 
-                  RecentOperationList(
-                    operations: state.recentInvoices.map((invoice) {
-                      final date = DateTime.tryParse(invoice.createdAt);
+                        if (date != null) {
+                          formattedDate = DateFormat(
+                            'dd/MM/yyyy - hh:mm a',
+                          ).format(date);
+                        } else {
+                          final oldDate = DateFormat(
+                            'dd/MM/yyyy',
+                          ).tryParse(invoice.createdAt);
 
-                      String formattedDate;
+                          formattedDate = oldDate != null
+                              ? DateFormat('dd/MM/yyyy').format(oldDate)
+                              : invoice.createdAt;
+                        }
 
-                      if (date != null) {
-                        formattedDate = DateFormat(
-                          'dd/MM/yyyy - hh:mm a',
-                        ).format(date);
-                      } else {
-                        final oldDate = DateFormat(
-                          'dd/MM/yyyy',
-                        ).tryParse(invoice.createdAt);
+                        return RecentOperationModel(
+                          customerName: invoice.customerName,
+                          time: formattedDate,
+                          price: invoice.total.toStringAsFixed(2),
+                        );
+                      }).toList(),
 
-                        formattedDate = oldDate != null
-                            ? DateFormat('dd/MM/yyyy').format(oldDate)
-                            : invoice.createdAt;
-                      }
-
-                      return RecentOperationModel(
-                        customerName: invoice.customerName,
-                        time: formattedDate,
-                        price: invoice.total.toStringAsFixed(2),
-                      );
-                    }).toList(),
-
-                    avatarSize: 22,
-                    widthbetween: 10,
-                    horzontalPadding: 16,
-                    verticalPadding: 14,
-                    borderRadius: 12,
-                  ),
-                ],
+                      avatarSize: 22,
+                      widthbetween: 10,
+                      horzontalPadding: 16,
+                      verticalPadding: 14,
+                      borderRadius: 12,
+                    ),
+                  ],
+                ),
               ),
             ),
           );
