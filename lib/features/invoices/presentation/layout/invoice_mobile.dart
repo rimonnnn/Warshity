@@ -31,21 +31,16 @@ class InvoiceMobile extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 8.w),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              await Future.delayed(const Duration(seconds: 300));
-            },
-            child: Column(
-              children: [
-                const InvoiceSearchBar(),
-                HeightSpace(8),
-                const InvoiceStatisticsSection(),
-                HeightSpace(8),
-                const InvoiceFilterChips(),
-                HeightSpace(24),
-                const Expanded(child: InvoiceList()),
-              ],
-            ),
+          child: Column(
+            children: [
+              const InvoiceSearchBar(),
+              HeightSpace(8),
+              const InvoiceStatisticsSection(),
+              HeightSpace(8),
+              const InvoiceFilterChips(),
+              HeightSpace(24),
+              const Expanded(child: InvoiceList()),
+            ],
           ),
         ),
       ),
