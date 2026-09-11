@@ -9,25 +9,43 @@ import 'package:warshity/features/auth/register/data/models/user_model.dart';
 import 'auth_repo.dart';
 
 class AuthRepoImpl implements AuthRepo {
-  AuthRepoImpl(
-    this._auth,
-    this._googleSignIn,
-    this._firestore,
-  );
+  AuthRepoImpl(this._auth, this._googleSignIn, this._firestore);
 
   final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
   final FirebaseFirestore _firestore;
+
+  Future<void> _ensureUserDocument(User user) async {
+    final userRef = _firestore.collection('users').doc(user.uid);
+
+    final snapshot = await userRef.get();
+
+    if (snapshot.exists) {
+      return;
+    }
+
+    await userRef.set({
+      'uid': user.uid,
+      'email': user.email ?? '',
+      'ownerName': user.displayName ?? '',
+      'shopName': 'wershity'.tr(),
+      'activity': 'Trade'.tr(),
+    });
+  }
 
   @override
   Future<UserCredential> login({
     required String email,
     required String password,
   }) async {
-    return await _auth.signInWithEmailAndPassword(
+    final credential = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
+
+    await _ensureUserDocument(credential.user!);
+
+    return credential;
   }
 
   @override
@@ -37,10 +55,7 @@ class AuthRepoImpl implements AuthRepo {
 
   @override
   Future<void> logOut() async {
-    await Future.wait([
-      _auth.signOut(),
-      FacebookAuth.instance.logOut(),
-    ]);
+    await Future.wait([_auth.signOut(), FacebookAuth.instance.logOut()]);
   }
 
   @override
@@ -57,17 +72,13 @@ class AuthRepoImpl implements AuthRepo {
       return Stream.value(null);
     }
 
-    return _firestore
-        .collection('users')
-        .doc(uid)
-        .snapshots()
-        .map((snapshot) {
-          if (!snapshot.exists || snapshot.data() == null) {
-            return null;
-          }
+    return _firestore.collection('users').doc(uid).snapshots().map((snapshot) {
+      if (!snapshot.exists || snapshot.data() == null) {
+        return null;
+      }
 
-          return UserModel.fromMap(snapshot.data()!);
-        });
+      return UserModel.fromMap(snapshot.data()!);
+    });
   }
 
   @override
@@ -87,7 +98,11 @@ class AuthRepoImpl implements AuthRepo {
       idToken: googleAuth.idToken,
     );
 
-    return await _auth.signInWithCredential(credential);
+    final userCredential = await _auth.signInWithCredential(credential);
+
+    await _ensureUserDocument(userCredential.user!);
+
+    return userCredential;
   }
 
   @override
@@ -101,9 +116,7 @@ class AuthRepoImpl implements AuthRepo {
         throw Exception('facebook_sign_in_cancelled');
       }
 
-      throw Exception(
-        result.message ?? 'facebook_sign_in_failed',
-      );
+      throw Exception(result.message ?? 'facebook_sign_in_failed');
     }
 
     final accessToken = result.accessToken;
@@ -112,40 +125,39 @@ class AuthRepoImpl implements AuthRepo {
       throw Exception('facebook_sign_in_failed');
     }
 
-    final credential = FacebookAuthProvider.credential(
-      accessToken.tokenString,
+    final credential = FacebookAuthProvider.credential(accessToken.tokenString);
+
+    final userCredential = await _auth.signInWithCredential(credential);
+
+    await _ensureUserDocument(userCredential.user!);
+
+    return userCredential;
+  }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final user = _auth.currentUser;
+
+    if (user == null) {
+      throw Exception('no_current_user'.tr());
+    }
+
+    final email = user.email;
+
+    if (email == null || email.isEmpty) {
+      throw Exception('email_not_found'.tr());
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: email,
+      password: currentPassword,
     );
 
-    return await _auth.signInWithCredential(credential);
+    await user.reauthenticateWithCredential(credential);
+
+    await user.updatePassword(newPassword);
   }
-  @override
-Future<void> changePassword({
-  required String currentPassword,
-  required String newPassword,
-}) async {
-  final user = _auth.currentUser;
-
-  if (user == null) {
-    throw Exception('no_current_user'.tr());
-  }
-
-  final email = user.email;
-
-  if (email == null || email.isEmpty) {
-    throw Exception('email_not_found'.tr());
-  }
-
-  final credential = EmailAuthProvider.credential(
-    email: email,
-    password: currentPassword,
-  );
-
-  await user.reauthenticateWithCredential(
-    credential,
-  );
-
-  await user.updatePassword(
-    newPassword,
-  );
-}
 }

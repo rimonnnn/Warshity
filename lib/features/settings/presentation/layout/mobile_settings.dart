@@ -4,14 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/theme/cubit/theme_cubit.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+
+import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
+import 'package:warshity/features/account_sharing/presentation/widgets/received_invitations_bottom_sheet.dart';
+import 'package:warshity/features/account_sharing/presentation/widgets/send_invitation_bottom_sheet.dart';
+import 'package:warshity/features/account_sharing/presentation/screens/shared_accounts_screen.dart';
+
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
+
 import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_state.dart';
 import 'package:warshity/features/settings/presentation/widgets/change_password_bottom_sheet.dart';
@@ -30,6 +38,49 @@ class MobileSettingsScreen extends StatefulWidget {
 
 class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
   bool autoSync = true;
+
+  void _openSendInvitation() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return BlocProvider(
+          create: (_) => getIt<AccountSharingCubit>(),
+          child: const SendInvitationBottomSheet(),
+        );
+      },
+    );
+  }
+
+  void _openReceivedInvitations() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return BlocProvider(
+          create: (_) => getIt<AccountSharingCubit>(),
+          child: const ReceivedInvitationsBottomSheet(),
+        );
+      },
+    );
+  }
+
+  void _openSharedAccounts() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) {
+          return BlocProvider(
+            create: (_) => getIt<AccountSharingCubit>(),
+            child: const SharedAccountsScreen(),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +104,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
                     if (authState is UserLoaded) {
                       shopName = authState.user.shopName;
+                      shopName = shopName.isEmpty ? 'wershity'.tr() : shopName;
                     }
 
                     return InfoItem(
@@ -62,6 +114,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                     );
                   },
                 ),
+
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, authState) {
                     String activity = 'trades'.tr();
@@ -110,6 +163,27 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   },
                 ),
 
+                // إرسال دعوة
+                SettingsTile(
+                  title: "share_account".tr(),
+                  icon: Icons.share_outlined,
+                  onTap: _openSendInvitation,
+                ),
+
+                // الدعوات الواردة
+                SettingsTile(
+                  title: "account_invitations".tr(),
+                  icon: Icons.mail_outline,
+                  onTap: _openReceivedInvitations,
+                ),
+
+                // الحسابات المشتركة
+                SettingsTile(
+                  title: "shared_accounts".tr(),
+                  icon: Icons.people_outline,
+                  onTap: _openSharedAccounts,
+                ),
+
                 SettingsTile(
                   title: "language".tr(),
                   icon: Icons.language_outlined,
@@ -129,7 +203,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                       context.locale.languageCode == "en"
                           ? "English"
                           : "العربية",
-
                       style: TextStyle(color: context.colors.primary),
                     ),
                   ),
@@ -149,7 +222,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                       isDark
                           ? Icons.dark_mode_outlined
                           : Icons.light_mode_outlined,
-
                       color: context.colors.primary,
                     ),
 
@@ -216,6 +288,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                               onPressed: () {
                                 Navigator.of(dialogContext).pop();
                               },
+
                               child: Text(
                                 "cancel".tr(),
                                 style: TextStyle(
@@ -224,6 +297,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                                 ),
                               ),
                             ),
+
                             SizedBox(height: 16.h),
 
                             ElevatedButton(
@@ -231,15 +305,17 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                                 minimumSize: Size(80.w, 40.h),
                                 backgroundColor: context.colors.error,
                               ),
+
                               onPressed: () {
                                 Navigator.of(dialogContext).pop();
 
                                 context.read<SettingsCubit>().logOut();
                               },
-                              child: Text(
-                                "logout".tr(),
+
+                              child: const Text(
+                                "logout",
                                 style: TextStyle(color: Colors.white),
-                              ),
+                              ).tr(),
                             ),
                           ],
                         );

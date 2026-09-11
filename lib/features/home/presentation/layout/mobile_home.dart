@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
+import 'package:warshity/core/widgets/quantity_bottom_sheet.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
@@ -18,6 +19,7 @@ import 'package:warshity/features/home/presentation/widgets/lowstackitem_widget.
 import 'package:warshity/features/home/presentation/widgets/lowstockcard_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/recent_operation_list.dart';
 import 'package:warshity/features/home/presentation/widgets/section_header.dart';
+import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 
 class MobileHome extends StatelessWidget {
   const MobileHome({super.key});
@@ -136,7 +138,20 @@ class MobileHome extends StatelessWidget {
                             (product) => LowStockItem(
                               productName: product.name,
                               remainText: '${product.quantity} ${product.unit}',
-                              onPressed: () {},
+                              onPressed: () {
+                                QuantityBottomSheet.show(
+                                  context: context,
+                                  quantity: product.quantity,
+                                  onQuantityChanged: (newQuantity) async {
+                                    await context
+                                        .read<ProductsCubit>()
+                                        .updateQuantity(
+                                          productId: product.id,
+                                          quantity: newQuantity,
+                                        );
+                                  },
+                                );
+                              },
                             ),
                           )
                           .toList(),

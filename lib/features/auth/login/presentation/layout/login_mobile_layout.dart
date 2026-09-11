@@ -200,8 +200,12 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                                   ),
                                   const Spacer(),
                                   OutlinedButtonWidget(
-                                    iconPath: AppAssets.facebook,
                                     iconWidth: 35.w,
+                                    icon: Icon(
+                                      Icons.facebook_rounded,
+                                      size: 30.sp,
+                                      color: Colors.blue.shade900,
+                                    ),
                                     iconHeight: 35.h,
                                     width: 130.w,
                                     height: 48.h,

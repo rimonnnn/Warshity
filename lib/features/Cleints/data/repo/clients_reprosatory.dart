@@ -5,6 +5,7 @@ class ClientsRepository {
   final ClientsRemoteDataSource remoteDataSource;
 
   ClientsRepository(this.remoteDataSource);
+
   Stream<List<CustomerModel>> watchClients() {
     return remoteDataSource.watchClients();
   }
@@ -24,16 +25,14 @@ class ClientsRepository {
     await remoteDataSource.decreaseDebt(clientId: clientId, amount: amount);
   }
 
+  Future<void> increaseDebt({
+    required String clientId,
+    required num amount,
+  }) async {
+    await remoteDataSource.increaseDebt(clientId: clientId, amount: amount);
+  }
+
   Future<void> removeClient(String clientId) async {
     await remoteDataSource.removeClient(clientId);
   }
-  Future<void> increaseDebt({
-  required String clientId,
-  required num amount,
-}) async {
-  await remoteDataSource.increaseDebt(
-    clientId: clientId,
-    amount: amount,
-  );
-}
 }

@@ -46,11 +46,9 @@ class OutlinedButtonWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.labelLarge,
             ),
             SizedBox(width: 4),
-            Image.asset(
-              iconPath ?? "",
-              width: iconWidth ?? 24,
-              height: iconHeight ?? 24,
-            ),
+            iconPath != null
+                ? Image.asset(iconPath!, width: iconWidth, height: iconHeight)
+                : icon!
           ],
         ),
       ),
