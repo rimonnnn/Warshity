@@ -437,8 +437,41 @@
 "exit_app": "Exit App",
 "exit_app_message": "Are you sure you want to exit the app?",
 
-"exit": "Exit"
-
+"exit": "Exit",
+ "user_not_authenticated": "User is not authenticated",
+  "email_is_required": "Email is required",
+  "cannot_invite_yourself": "You cannot invite yourself",
+  "invitation_not_found": "Invitation not found",
+  "unauthorized_invitation": "You are not authorized to respond to this invitation",
+  "invitation_no_longer_pending": "This invitation is no longer pending",
+  "account_invitations": "Account Invitations",
+  "no_pending_invitations": "No pending invitations",
+  "account_share_invitation_description": "This account wants to share its data with you.",
+  "accept": "Accept",
+  "reject": "Reject",
+  "invitation_response_successfully": "Invitation response saved successfully",
+  "share_account": "Share Account",
+  "share_account_description": "Enter the email of the account you want to share your data with.",
+  "enter_account_email": "Enter account email",
+  "send_invitation": "Send Invitation",
+  "invitation_sent_successfully": "Invitation sent successfully",
+  "account_invitations_description": "Manage account sharing invitations.",
+  "no_invitations_description": "You don't have any account sharing invitations right now.",
+  "account_share_request": "Account Share Request",
+  "product_not_found": "Product not found",
+  "quantity_cannot_be_negative": "Quantity cannot be negative",
+  "category_name_required": "Category name is required",
+  "not_enough_stock": "Not enough stock",
+  "available": "Available",
+  "requested": "Requested",
+  "invoice_not_found": "Invoice not found",
+  "invoice_data_not_found": "Invoice data not found",
+  "shared_accounts": "Shared Accounts",
+  "shared_account_not_found": "Shared account not found",
+  "invalid_invitation": "Invalid invitation",
+  "already_connected_to_this_account": "You are already connected to this account.",
+  "delete_shared_account": "Delete Shared Account",
+  "delete_shared_account_confirmation": "Are you sure you want to stop sharing this account? Your own data will remain intact."
 }
 
 

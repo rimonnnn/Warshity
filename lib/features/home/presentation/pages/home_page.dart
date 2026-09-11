@@ -4,6 +4,7 @@ import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
 import 'package:warshity/features/home/presentation/screens/home_screen.dart';
+import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -13,8 +14,10 @@ class HomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => getIt<HomeCubit>()),
-        BlocProvider(create: (_) => getIt<AuthCubit>())
+        BlocProvider(create: (_) => getIt<AuthCubit>()),
+        BlocProvider(create: (_) => getIt<ProductsCubit>()),
       ],
-      child: const HomeScreen());
+      child: const HomeScreen(),
+    );
   }
 }

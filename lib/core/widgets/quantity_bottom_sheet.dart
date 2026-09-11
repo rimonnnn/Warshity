@@ -47,6 +47,7 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
   final TextEditingController controller = TextEditingController();
 
   bool increase = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -108,21 +109,9 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
       return;
     }
 
-    Navigator.pop(context);
-
-    if (!mounted) {
-      return;
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
       await widget.onQuantityChanged(newQuantity);
@@ -145,8 +134,6 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
         return;
       }
 
-      Navigator.pop(context);
-
       showAnimatedSnackDialog(
         context,
         message: e.toString().replaceFirst(
@@ -155,6 +142,12 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
             ),
         type: AnimatedSnackBarType.error,
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -225,8 +218,16 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _confirmQuantity,
-                  child: Text('confirm'.tr()),
+                  onPressed: _isLoading ? null : _confirmQuantity,
+                  child: _isLoading
+                      ? SizedBox(
+                          width: 20.w,
+                          height: 20.w,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text('confirm'.tr()),
                 ),
               ),
               SizedBox(height: 8.h),

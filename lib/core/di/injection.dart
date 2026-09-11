@@ -11,6 +11,9 @@ import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.da
 import 'package:warshity/features/Cleints/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/debt_cubit.dart';
 import 'package:warshity/features/Cleints/presentation/cubit/remove_clients_state.dart';
+import 'package:warshity/features/account_sharing/data/data_source/account_sharing_remote_data_source.dart';
+import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
+import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/add_invoices/data/data_source/add_invoice_remote_data.dart';
 import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_cubit.dart';
@@ -96,13 +99,13 @@ getIt.registerLazySingleton<AuthRepo>(
   );
 
   getIt.registerLazySingleton<ProductsRemoteDataSource>(
-    () => ProductsRemoteDataSource(
-      getIt<FirebaseFirestore>(),
-      getIt<SupabaseClient>(),
-    ),
-  );
-
-  getIt.registerLazySingleton<ProductsRepository>(
+  () => ProductsRemoteDataSource(
+    getIt<FirebaseFirestore>(),
+    getIt<SupabaseClient>(),
+    getIt<AccountSharingRepository>(),
+  ),
+);
+  getIt.registerFactory<ProductsRepository>(
     () => ProductsRepository(getIt<ProductsRemoteDataSource>()),
   );
 
@@ -173,5 +176,21 @@ getIt.registerFactory<HomeCubit>(
     invoicesRepository: getIt<InvoiceRepository>(),
   ),
 );
+getIt.registerLazySingleton<AccountSharingRemoteDataSource>(
+  () => AccountSharingRemoteDataSource(
+    getIt<FirebaseFirestore>(),
+    getIt<FirebaseAuth>(),
+  ),
+);
 
+getIt.registerLazySingleton<AccountSharingRepository>(
+  () => AccountSharingRepository(
+    getIt<AccountSharingRemoteDataSource>(),
+  ),
+);
+getIt.registerFactory<AccountSharingCubit>(
+  () => AccountSharingCubit(
+    getIt<AccountSharingRepository>(),
+  ),
+);
 }

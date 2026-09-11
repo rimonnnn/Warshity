@@ -443,7 +443,42 @@
 "exit_app": "الخروج من التطبيق",
 "exit_app_message": "هل أنت متأكد أنك تريد الخروج من التطبيق؟",
 
-"exit": "خروج"
+"exit": "خروج",
+"user_not_authenticated": "المستخدم غير مسجل الدخول",
+  "email_is_required": "البريد الإلكتروني مطلوب",
+  "cannot_invite_yourself": "لا يمكنك إرسال دعوة إلى حسابك",
+  "invitation_not_found": "الدعوة غير موجودة",
+  "unauthorized_invitation": "ليس لديك صلاحية للرد على هذه الدعوة",
+  "invitation_no_longer_pending": "هذه الدعوة لم تعد معلقة",
+  "account_invitations": "دعوات مشاركة الحساب",
+  "no_pending_invitations": "لا توجد دعوات معلقة",
+  "account_share_invitation_description": "هذا الحساب يريد مشاركة بياناته معك.",
+  "accept": "قبول",
+  "reject": "رفض",
+  "invitation_response_successfully": "تم حفظ الرد على الدعوة بنجاح",
+  "share_account": "مشاركة الحساب",
+  "share_account_description": "أدخل البريد الإلكتروني للحساب الذي تريد مشاركة بياناتك معه.",
+  "enter_account_email": "أدخل البريد الإلكتروني للحساب",
+  "send_invitation": "إرسال الدعوة",
+  "account_invitations_description": "إدارة دعوات مشاركة الحساب.",
+  "no_invitations_description": "لا توجد لديك أي دعوات لمشاركة الحساب حاليًا.",
+  "account_share_request": "طلب مشاركة حساب",
+  "product_not_found": "المنتج غير موجود",
+  "quantity_cannot_be_negative": "لا يمكن أن تكون الكمية سالبة",
+  "category_name_required": "اسم القسم مطلوب",
+  "not_enough_stock": "الكمية في المخزون غير كافية",
+  "available": "المتاح",
+  "requested": "المطلوب",
+  "invoice_not_found": "الفاتورة غير موجودة",
+  "invoice_data_not_found": "بيانات الفاتورة غير موجودة",
+  "shared_accounts": "الحسابات المشتركة",
+  "shared_account_not_found": "الحساب المشترك غير موجود",
+  "invalid_invitation": "دعوة غير صالحة",
+  "already_connected_to_this_account": "أنت مرتبط بالفعل بهذا الحساب.",
+  "delete_shared_account": "حذف الحساب المشترك",
+  "delete_shared_account_confirmation": "هل أنت متأكد أنك تريد إيقاف مشاركة هذا الحساب؟ ستظل بياناتك الخاصة محفوظة."
+
+
 }
 
 

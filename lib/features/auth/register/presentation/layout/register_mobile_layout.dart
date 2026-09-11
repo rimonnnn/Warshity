@@ -363,7 +363,11 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
 
                           OutlinedButtonWidget(
                             buttonText: "facebook".tr(),
-                            iconPath: AppAssets.facebook,
+                            icon: Icon(
+                              Icons.facebook_rounded,
+                              size: 40.sp,
+                              color: Colors.blue.shade900,
+                            ),
                             width: 310.w,
                             height: 50.h,
                             onPressed: () {
