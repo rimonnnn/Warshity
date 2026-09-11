@@ -63,11 +63,11 @@ class MyApp extends StatelessWidget {
           return BlocBuilder<ThemeCubit, ThemeState>(
             builder: (context, state) {
               return MaterialApp.router(
-                title: 'warshity',
+                title: 'Masiter',
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: state.themeMode,
+                // darkTheme: AppTheme.darkTheme,
+                // themeMode: state.themeMode,
                 localizationsDelegates: context.localizationDelegates,
                 supportedLocales: context.supportedLocales,
                 locale: context.locale,

@@ -7,7 +7,8 @@ class CheckboxWidget extends StatelessWidget {
     super.key,
     required this.value,
     required this.onChanged,
-    this.width, this.text,
+    this.width,
+    this.text,
   });
   final bool value;
   final void Function(bool?)? onChanged;
@@ -25,7 +26,7 @@ class CheckboxWidget extends StatelessWidget {
 
             style: Theme.of(
               context,
-            ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
       ],

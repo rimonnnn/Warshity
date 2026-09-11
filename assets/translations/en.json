@@ -471,7 +471,9 @@
   "invalid_invitation": "Invalid invitation",
   "already_connected_to_this_account": "You are already connected to this account.",
   "delete_shared_account": "Delete Shared Account",
-  "delete_shared_account_confirmation": "Are you sure you want to stop sharing this account? Your own data will remain intact."
+  "delete_shared_account_confirmation": "Are you sure you want to stop sharing this account? Your own data will remain intact.",
+  "enter_your_name": "Enter your name",
+  "enter_your_email": "Enter your email"
 }
 
 

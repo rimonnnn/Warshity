@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/widgets/spacing_widgets.dart';
 
 class PrimaryButtonWidget extends StatelessWidget {
   final void Function()? onPress;
@@ -63,33 +64,19 @@ class PrimaryButtonWidget extends StatelessWidget {
               ),
             )
           : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (prefixicon == true && iconPath != null)
-                  Expanded(
-                    child: Image.asset(
-                      iconPath!,
-                      width: 24.w,
-                      height: 24.h,
-                      color: textColor ?? context.colors.onPrimary,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                else if (iconData != null)
-                  Expanded(
-                    child: Icon(
-                      iconData,
-                      color: iconeColor ?? context.colors.onSurfaceVariant,
-                      size: iconSize ?? 20,
-                    ),
-                  ),
-                Expanded(
-                  child: Text(
-                    buttonText ?? "",
-                    style: context.text.titleMedium?.copyWith(
-                      color: textColor ?? context.colors.onPrimary,
-                      fontSize: fontSize ?? 16.sp,
-                    ),
+                Icon(
+                  iconData,
+                  color: iconeColor ?? context.colors.onSurfaceVariant,
+                  size: iconSize ?? 20,
+                ),
+                WidthSpace(12),
+                Text(
+                  buttonText ?? "",
+                  style: context.text.titleMedium?.copyWith(
+                    color: textColor ?? context.colors.onPrimary,
+                    fontSize: fontSize ?? 16.sp,
                   ),
                 ),
                 SizedBox(width: buttonspacing ?? 12.w),

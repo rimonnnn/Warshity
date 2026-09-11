@@ -74,10 +74,10 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                   children: [
                     HeightSpace(30),
                     CustomLogo(
-                      width: 50.w,
-                      height: 52.h,
-                      borderRadius: AppRadius.circular,
-                      logoPath: AppAssets.loginicon,
+                      width: 80.w,
+                      height: 80.h,
+
+                      logoPath: AppAssets.logo,
                     ),
                     HeightSpace(16.h),
                     Text("welcome".tr(), style: context.text.headlineLarge),
@@ -92,18 +92,19 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                       key: _formKey,
                       child: Container(
                         width: 358.w,
-                        height: 620.h,
+                        height: 560.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                          color: context.colors.surfaceContainerLow,
+                          color: context.colors.surfaceContainerHigh,
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(24.sp),
                           child: Column(
                             children: [
                               CustomTextField(
+                                prefixIconData: Icons.email_outlined,
                                 label: "email".tr(),
-                                hint: "email1".tr(),
+                                hint: "enter_your_email".tr(),
                                 borderRadius: AppRadius.sm,
                                 controller: emailController,
                                 validator: AppValidators.email,
@@ -115,7 +116,7 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                                 hint: "hash".tr(),
                                 borderRadius: AppRadius.sm,
                                 keyboardType: TextInputType.visiblePassword,
-                                prefixIcon: AppAssets.password,
+                                prefixIconData: Icons.lock_outline_rounded,
                                 obscureText: isvisible,
                                 controller: passwordController,
                                 validator: AppValidators.password,
@@ -157,10 +158,14 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                                 borderRadius: AppRadius.sm,
                                 buttonColor: context.colors.primary,
                                 textColor: context.colors.onPrimary,
-                                fontSize: context.text.titleLarge?.fontSize,
+                                fontSize: context.text.titleMedium?.fontSize,
+                                iconData: Icons.login_rounded,
+                                iconSize: 24.sp,
+                                iconeColor: context.colors.onPrimary,
                                 height: 56.h,
                                 width: 310.w,
                                 buttonText: "login".tr(),
+
                                 isLoading: isLoading,
                                 onPress: isLoading
                                     ? null
@@ -178,7 +183,7 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                               Dividerwidget(
                                 child: Text(
                                   "continue".tr(),
-                                  style: context.text.bodyLarge,
+                                  style: context.text.bodyMedium,
                                 ),
                               ),
                               HeightSpace(16),
@@ -203,7 +208,7 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                                     iconWidth: 35.w,
                                     icon: Icon(
                                       Icons.facebook_rounded,
-                                      size: 30.sp,
+                                      size: 35.sp,
                                       color: Colors.blue.shade900,
                                     ),
                                     iconHeight: 35.h,
@@ -224,7 +229,7 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                         ),
                       ),
                     ),
-                    HeightSpace(10.h),
+                    HeightSpace(15.h),
                     FooterWidget(
                       text1: "Don't_have_account",
                       text2: "create_account2",
@@ -239,13 +244,13 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                       padding: EdgeInsets.symmetric(horizontal: 22.sp),
                       child: Dividerwidget(
                         child: Image.asset(
-                          AppAssets.footer,
-                          width: 24,
-                          height: 24,
+                          AppAssets.logo,
+                          width: 30.w,
+                          height: 30.h,
                         ),
                       ),
                     ),
-                    HeightSpace(60),
+                    HeightSpace(40),
                   ],
                 ),
               ),

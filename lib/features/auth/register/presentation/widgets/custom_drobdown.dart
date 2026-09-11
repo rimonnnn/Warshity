@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/constants/app_radius.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 
 class CustomDropdown extends StatelessWidget {
@@ -14,7 +15,7 @@ class CustomDropdown extends StatelessWidget {
     required this.items,
     this.selectedItem,
     this.onSelected,
-    this.prefixIcon,
+    this.prefixIconData,
     this.width,
     this.height,
     this.borderRadius,
@@ -26,7 +27,7 @@ class CustomDropdown extends StatelessWidget {
   final String hint;
   final List<String> items;
   final String? selectedItem;
-  final String? prefixIcon;
+  final IconData? prefixIconData;
   final double? width;
   final double? height;
   final double? borderRadius;
@@ -66,11 +67,8 @@ class CustomDropdown extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: hint,
 
-                prefixIcon: prefixIcon != null
-                    ? Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Image.asset(prefixIcon!, width: 24, height: 24),
-                      )
+                prefixIcon: prefixIconData != null
+                    ? Icon(prefixIconData, color: context.colors.onSurface)
                     : null,
 
                 contentPadding: const EdgeInsets.symmetric(
@@ -344,7 +342,10 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
                 decoration: InputDecoration(
                   hintText: 'category_name'.tr(),
 
-                  prefixIcon: const Icon(Icons.category_outlined),
+                  prefixIcon: Icon(
+                    Icons.category_outlined,
+                    color: context.colors.onPrimary,
+                  ),
 
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppRadius.sm),

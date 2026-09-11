@@ -105,7 +105,7 @@ class _DecreaseDebtDialogState extends State<DecreaseDebtDialog> {
         ),
         backgroundColor: context.colors.surface,
         child: Padding(
-          padding: EdgeInsets.all(24.sp),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(

@@ -17,7 +17,7 @@
 
 
   "create_account": "إنشاء حساب",
-  "start": "ابدأ في إدارة ورشتك ومتجرك خلال دقائق",
+  "start": "ابدأ في إدارة متجرك خلال دقائق",
   "labelname_of_shop": "اسم الورشة / المتجر",
   "hintname_of_shop": "مثال: ورشة الحرف الذهبية",
   "accountname": "اسم صاحب الحساب",
@@ -48,8 +48,8 @@
   "login": "تسجيل الدخول",
   "account_created": "تم إنشاء الحساب بنجاح",
   "welcome" : "أهلاً بك مجدداً",
-  "startlogin" : "قم بتسجيل الدخول لمتابعة أعمال ورشتك"
-  ,
+  "startlogin" : "قم بتسجيل الدخول للمتابعة",
+  
   "forget" : "نسيت كلمة المرور؟",
   "Don't_have_account" : "لا يوجد لديك حساب؟",
   "create_account2" : "انشاء حساب",
@@ -476,7 +476,9 @@
   "invalid_invitation": "دعوة غير صالحة",
   "already_connected_to_this_account": "أنت مرتبط بالفعل بهذا الحساب.",
   "delete_shared_account": "حذف الحساب المشترك",
-  "delete_shared_account_confirmation": "هل أنت متأكد أنك تريد إيقاف مشاركة هذا الحساب؟ ستظل بياناتك الخاصة محفوظة."
+  "delete_shared_account_confirmation": "هل أنت متأكد أنك تريد إيقاف مشاركة هذا الحساب؟ ستظل بياناتك الخاصة محفوظة.",
+  "enter_your_name": "أدخل اسمك",
+  "enter_your_email": "أدخل بريدك الإلكتروني"
 
 
 }

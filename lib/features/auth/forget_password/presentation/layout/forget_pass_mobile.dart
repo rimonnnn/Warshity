@@ -86,10 +86,11 @@ class _ForgetPassMobileState extends State<ForgetPassMobile> {
                     HeightSpace(22),
                     CustomTextField(
                       label: "email".tr(),
-                      hint: "email1".tr(),
+                      hint: "enter_your_email".tr(),
                       keyboardType: TextInputType.emailAddress,
                       controller: emailController,
                       validator: AppValidators.email,
+                      prefixIconData: Icons.email,
                     ),
                     HeightSpace(22),
                     BlocBuilder<AuthCubit, AuthState>(
@@ -110,6 +111,9 @@ class _ForgetPassMobileState extends State<ForgetPassMobile> {
                                 },
                           buttonText: "send the link".tr(),
                           fontSize: 20.sp,
+                          iconData: Icons.send,
+                          iconSize: 24.sp,
+                          iconeColor: context.colors.onPrimary,
                         );
                       },
                     ),
@@ -121,10 +125,7 @@ class _ForgetPassMobileState extends State<ForgetPassMobile> {
                     TextButton(
                       onPressed: () =>
                           context.pushReplacementNamed(AppRoutes.loginScreen),
-                      child: Text(
-                        "login".tr(),
-                        style: context.text.headlineSmall,
-                      ),
+                      child: Text("login".tr(), style: context.text.bodyLarge),
                     ),
                     HeightSpace(12),
                   ],

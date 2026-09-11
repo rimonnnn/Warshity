@@ -14,7 +14,7 @@ class RememberPasswordWidget extends StatelessWidget {
           child: Divider(color: context.colors.onSurfaceVariant, thickness: 1),
         ),
         WidthSpace(4),
-        Text(text, style: context.text.bodyLarge),
+        Text(text, style: context.text.bodyMedium),
         WidthSpace(4),
         Expanded(
           child: Divider(color: context.colors.onSurfaceVariant, thickness: 1),
