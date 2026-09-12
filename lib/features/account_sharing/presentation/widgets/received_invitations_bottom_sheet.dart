@@ -28,18 +28,16 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
           );
         }
 
-        if (state is AccountInvitationResponded) {
-          showAnimatedSnackDialog(
-            context,
-            message: 'invitation_response_successfully'.tr(),
-            type: AnimatedSnackBarType.success,
-          );
-
-          await Future.delayed(const Duration(seconds: 1));
-
+        if (state is AccountInvitationAccepted) {
           if (!context.mounted) return;
-
+          Navigator.of(context).pop();
+          if (!context.mounted) return;
           context.goNamed(AppRoutes.splashScreen);
+        }
+
+        if (state is AccountInvitationRejected) {
+          if (!context.mounted) return;
+          Navigator.of(context).pop();
         }
       },
       child: Container(

@@ -117,6 +117,24 @@ class AccountSharingRemoteDataSource {
         });
   }
 
+  Stream<List<ShareInvitationModel>> watchSentInvitationsStatus() {
+    final currentUser = auth.currentUser;
+
+    if (currentUser == null) {
+      return Stream.value([]);
+    }
+
+    return firestore
+        .collection('account_shares')
+        .where('fromUid', isEqualTo: currentUser.uid)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) {
+            return ShareInvitationModel.fromMap(doc.id, doc.data());
+          }).toList();
+        });
+  }
+
   Future<void> respondToInvitation({
     required String invitationId,
     required bool accept,
@@ -297,32 +315,21 @@ class AccountSharingRemoteDataSource {
     final initialSnapshot = await ref.get();
 
     if (!initialSnapshot.exists || initialSnapshot.data() == null) {
-      print('SHARED ACCOUNT INITIAL => NULL');
       yield null;
     } else {
       final sharedAccountId = initialSnapshot
           .data()?['sharedAccountId']
           ?.toString();
-
-      print('SHARED ACCOUNT INITIAL => $sharedAccountId');
-
       yield sharedAccountId;
     }
 
-    await for (final snapshot in ref.snapshots(includeMetadataChanges: true)) {
+    await for (final snapshot in ref.snapshots()) {
       if (!snapshot.exists || snapshot.data() == null) {
-        print('SHARED ACCOUNT STREAM => NULL');
         yield null;
         continue;
       }
 
       final sharedAccountId = snapshot.data()?['sharedAccountId']?.toString();
-
-      print(
-        'SHARED ACCOUNT STREAM => $sharedAccountId '
-        'FROM CACHE: ${snapshot.metadata.isFromCache}',
-      );
-
       yield sharedAccountId;
     }
   }
@@ -367,6 +374,15 @@ class AccountSharingRemoteDataSource {
         .toSet()
         .toList();
 
+    for (final memberUid in members) {
+      await firestore
+          .collection('user_shared_accounts')
+          .doc(memberUid)
+          .delete();
+    }
+
+    await firestore.collection('shared_accounts').doc(sharedAccountId).delete();
+
     const collections = ['clients', 'products', 'categories', 'invoices'];
 
     for (final collectionName in collections) {
@@ -397,14 +413,5 @@ class AccountSharingRemoteDataSource {
         await batch.commit();
       }
     }
-
-    for (final memberUid in members) {
-      await firestore
-          .collection('user_shared_accounts')
-          .doc(memberUid)
-          .delete();
-    }
-
-    await firestore.collection('shared_accounts').doc(sharedAccountId).delete();
   }
 }

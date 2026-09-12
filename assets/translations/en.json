@@ -473,7 +473,15 @@
   "delete_shared_account": "Delete Shared Account",
   "delete_shared_account_confirmation": "Are you sure you want to stop sharing this account? Your own data will remain intact.",
   "enter_your_name": "Enter your name",
-  "enter_your_email": "Enter your email"
+  "enter_your_email": "Enter your email",
+  "No shared accounts" : "No shared accounts",
+  "Shared Account" : "Shared Account",
+  "Unknown account" : "Unknown account",
+  "Shared account deleted successfully" : "Shared account deleted successfully",
+  "Shared Accounts" : "Shared Accounts",
+  "invitation_accepted": "The invitation was accepted",
+  "invitation_rejected": "The invitation was rejected",
+  "shared_account_deleted": "The shared account was removed"
 }
 
 
