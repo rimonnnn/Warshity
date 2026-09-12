@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
 
@@ -94,76 +96,77 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
   }
 
   Future<void> _deleteSharedAccount() async {
-  await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) {
-      return AlertDialog(
-        title: Text(
-          'delete_shared_account'.tr(),
-        ),
-        content: Text(
-          'delete_shared_account_confirmation'.tr(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop(false);
-            },
-            child: Text(
-              'cancel'.tr(),
-              style: TextStyle(
-                color: context.colors.primary,
-                fontSize: 18.sp,
-              ),
-            ),
+    await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            'delete_shared_account'.tr(),
           ),
-
-          SizedBox(width: 8.w),
-
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(
-                80.w,
-                40.h,
-              ),
-              backgroundColor: context.colors.error,
-            ),
-            onPressed: () {
-              Navigator.of(dialogContext).pop(true);
-
-              context
-                  .read<AccountSharingCubit>()
-                  .deleteSharedAccount();
-            },
-            child: Text(
-              'delete'.tr(),
-              style: const TextStyle(
-                color: Colors.white,
-              ),
-            ),
+          content: Text(
+            'delete_shared_account_confirmation'.tr(),
           ),
-        ],
-      );
-    },
-  );
-}
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false);
+              },
+              child: Text(
+                'cancel'.tr(),
+                style: TextStyle(
+                  color: context.colors.primary,
+                  fontSize: 18.sp,
+                ),
+              ),
+            ),
+
+            SizedBox(width: 8.w),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(
+                  80.w,
+                  40.h,
+                ),
+                backgroundColor: context.colors.error,
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true);
+
+                context
+                    .read<AccountSharingCubit>()
+                    .deleteSharedAccount();
+              },
+              child: Text(
+                'delete'.tr(),
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Shared Accounts')),
+      appBar: AppBar(title: Text('Shared Accounts'.tr())),
       body: BlocListener<AccountSharingCubit, AccountSharingState>(
         listener: (context, state) {
           if (state is AccountSharedAccountDeleted) {
-            setState(() {
-              sharedAccountId = null;
-              otherUserEmail = null;
-            });
+            context.goNamed(AppRoutes.splashScreen);
+          }
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Shared account deleted successfully'),
-              ),
-            );
+          if (state is AccountSharingStatusChanged) {
+            if (state.sharedAccountId == null) {
+              setState(() {
+                sharedAccountId = null;
+                otherUserEmail = null;
+              });
+            }
           }
 
           if (state is AccountSharingError) {
@@ -183,8 +186,8 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
     }
 
     if (sharedAccountId == null) {
-      return const Center(
-        child: Text('No shared accounts', style: TextStyle(fontSize: 18)),
+      return Center(
+        child: Text('No shared accounts'.tr(), style: TextStyle(fontSize: 18)),
       );
     }
 
@@ -199,12 +202,12 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
               child: ListTile(
                 leading: const CircleAvatar(child: Icon(Icons.people)),
 
-                title: const Text('Shared Account'),
+                title: Text('Shared Account'.tr()),
 
                 subtitle: Text(
                   otherUserEmail?.isNotEmpty == true
                       ? otherUserEmail!
-                      : 'Unknown account',
+                      : 'Unknown account'.tr(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

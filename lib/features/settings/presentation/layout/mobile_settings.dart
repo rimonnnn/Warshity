@@ -46,8 +46,8 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (_) {
-        return BlocProvider(
-          create: (_) => getIt<AccountSharingCubit>(),
+        return BlocProvider.value(
+          value: getIt<AccountSharingCubit>(),
           child: const SendInvitationBottomSheet(),
         );
       },
@@ -61,8 +61,8 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (_) {
-        return BlocProvider(
-          create: (_) => getIt<AccountSharingCubit>(),
+        return BlocProvider.value(
+          value: getIt<AccountSharingCubit>(),
           child: const ReceivedInvitationsBottomSheet(),
         );
       },
@@ -73,8 +73,8 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) {
-          return BlocProvider(
-            create: (_) => getIt<AccountSharingCubit>(),
+          return BlocProvider.value(
+            value: getIt<AccountSharingCubit>(),
             child: const SharedAccountsScreen(),
           );
         },
@@ -163,21 +163,18 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   },
                 ),
 
-                // إرسال دعوة
                 SettingsTile(
                   title: "share_account".tr(),
                   icon: Icons.share_outlined,
                   onTap: _openSendInvitation,
                 ),
 
-                // الدعوات الواردة
                 SettingsTile(
                   title: "account_invitations".tr(),
                   icon: Icons.mail_outline,
                   onTap: _openReceivedInvitations,
                 ),
 
-                // الحسابات المشتركة
                 SettingsTile(
                   title: "shared_accounts".tr(),
                   icon: Icons.people_outline,

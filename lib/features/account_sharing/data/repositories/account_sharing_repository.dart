@@ -14,6 +14,10 @@ class AccountSharingRepository {
     return remoteDataSource.watchReceivedInvitations();
   }
 
+  Stream<List<ShareInvitationModel>> watchSentInvitationsStatus() {
+    return remoteDataSource.watchSentInvitationsStatus();
+  }
+
   Future<void> respondToInvitation({
     required String invitationId,
     required bool accept,

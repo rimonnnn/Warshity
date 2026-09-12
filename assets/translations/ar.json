@@ -478,10 +478,18 @@
   "delete_shared_account": "حذف الحساب المشترك",
   "delete_shared_account_confirmation": "هل أنت متأكد أنك تريد إيقاف مشاركة هذا الحساب؟ ستظل بياناتك الخاصة محفوظة.",
   "enter_your_name": "أدخل اسمك",
-  "enter_your_email": "أدخل بريدك الإلكتروني"
-
-
+  "enter_your_email": "أدخل بريدك الإلكتروني",
+   "No shared accounts" :  "لا يوجد حسابات مشتركة",
+  "Shared Account" : "الحساب المشترك",
+  "Unknown account" : "حساب غير معروف",
+  "Shared account deleted successfully" : "تم حذف الحساب المشترك بنجاح",
+  "Shared Accounts" : "الحسابات المشتركة",
+  "invitation_sent_successfully": "تم ارسال الدعوة بنجاح",
+  "invitation_accepted": "تم قبول الدعوة",
+  "invitation_rejected": "تم رفض الدعوة",
+  "shared_account_deleted": "تم حذف الحساب المشترك"
 }
+
 
 
 

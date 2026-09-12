@@ -188,7 +188,7 @@ getIt.registerLazySingleton<AccountSharingRepository>(
     getIt<AccountSharingRemoteDataSource>(),
   ),
 );
-getIt.registerFactory<AccountSharingCubit>(
+getIt.registerLazySingleton<AccountSharingCubit>(
   () => AccountSharingCubit(
     getIt<AccountSharingRepository>(),
   ),
