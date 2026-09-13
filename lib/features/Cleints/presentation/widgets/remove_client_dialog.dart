@@ -71,7 +71,7 @@ class RemoveClientDialog extends StatelessWidget {
           ),
           backgroundColor: context.colors.surface,
           child: Padding(
-            padding: EdgeInsets.all(24.sp),
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 24.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,8 +79,8 @@ class RemoveClientDialog extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      width: 44.w,
-                      height: 44.w,
+                      width: 60.w,
+                      height: 55.w,
                       decoration: BoxDecoration(
                         color: context.colors.errorContainer,
                         shape: BoxShape.circle,
@@ -95,7 +95,7 @@ class RemoveClientDialog extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'remove_client'.tr(),
-                        style: context.text.titleLarge?.copyWith(
+                        style: context.text.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),

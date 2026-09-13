@@ -85,7 +85,7 @@ class MobileCustomerDetails extends StatelessWidget {
                       Expanded(
                         child: Text(
                           'recent_invoices'.tr(),
-                          style: context.text.titleLarge?.copyWith(
+                          style: context.text.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
