@@ -1,34 +1,22 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:warshity/core/styling/app_assets.dart';
 
 class OnboardingModel {
-  final String image;
   final String title;
-  final String descreption;
-  OnboardingModel({
-    required this.image,
-    required this.title,
-    required this.descreption,
-  });
+  final String description;
+  OnboardingModel({required this.title, required this.description});
 }
 
 final List<OnboardingModel> onboardingItems = [
   OnboardingModel(
-    image: AppAssets.onboarding_1,
-    title: "sales management and invoice speed",
-    descreption:
-        "issue your cash and credit invoices in just a few seconds easily and without any hassle",
+    title: 'onboarding.manage_your_business.title',
+    description: 'onboarding.manage_your_business.description',
   ),
   OnboardingModel(
-    image: AppAssets.onboarding_2,
-    title: "close monitoring of inventory and the store",
-    descreption:
-        "instant alerts for low-stock products and wood material management",
+    title: 'onboarding.track_your_business.title',
+    description: 'onboarding.track_your_business.description',
   ),
   OnboardingModel(
-    image: AppAssets.onboarding_3,
-    title: "all your adta is safe and secure",
-    descreption:
-        "keep working without the internet, and your data will sync automatically later",
+    title: 'onboarding.your_data_is_safe.title',
+    description: 'onboarding.your_data_is_safe.description',
   ),
 ];
