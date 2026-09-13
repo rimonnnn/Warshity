@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
+import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/onboarding/data/models/onboarding_model.dart';
@@ -60,9 +61,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              isDark
-                  ? 'assets/images/dark_onboarding.jpg'
-                  : 'assets/images/light_onboarding.jpg',
+              isDark ? AppAssets.darkOnboarding : AppAssets.lightOnboarding,
               fit: BoxFit.cover,
             ),
           ),
