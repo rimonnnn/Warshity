@@ -8,12 +8,9 @@ class TopText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topRight,
-      child: TextButton(
-        onPressed: onTap,
-        child: Text(text, style: context.text.bodyLarge),
-      ),
+    return TextButton(
+      onPressed: onTap,
+      child: Text(text, style: context.text.bodyLarge),
     );
   }
 }

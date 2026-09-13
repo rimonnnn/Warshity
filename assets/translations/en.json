@@ -481,7 +481,26 @@
   "Shared Accounts" : "Shared Accounts",
   "invitation_accepted": "The invitation was accepted",
   "invitation_rejected": "The invitation was rejected",
-  "shared_account_deleted": "The shared account was removed"
+  "shared_account_deleted": "The shared account was removed",
+
+
+  "onboarding": {
+    "manage_your_business": {
+      "title": "Manage your business with ease",
+      "description": "Keep your customers, products, invoices, and business details organized in one place."
+    },
+    "track_your_business": {
+      "title": "Stay in control of your business",
+      "description": "Track your sales, expenses, outstanding payments, and product activity to always know how your business is doing."
+    },
+    "your_data_is_safe": {
+      "title": "Your data is always with you",
+      "description": "Keep your business data secure, work even without an internet connection, and sync your data automatically when you're back online."
+    }
+  }
 }
+
+
+
 
 

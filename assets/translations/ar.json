@@ -487,8 +487,26 @@
   "invitation_sent_successfully": "تم ارسال الدعوة بنجاح",
   "invitation_accepted": "تم قبول الدعوة",
   "invitation_rejected": "تم رفض الدعوة",
-  "shared_account_deleted": "تم حذف الحساب المشترك"
+  "shared_account_deleted": "تم حذف الحساب المشترك",
+
+  "onboarding": {
+    "manage_your_business": {
+      "title": "أدر مشروعك بسهولة",
+      "description": "نظّم عملاءك ومنتجاتك وفواتيرك وتفاصيل مشروعك بالكامل من مكان واحد."
+    },
+    "track_your_business": {
+      "title": "خليك دايمًا مسيطر على مشروعك",
+      "description": "تابع مبيعاتك ومصروفاتك ومستحقاتك وحركة منتجاتك، واعرف دائمًا وضع مشروعك."
+    },
+    "your_data_is_safe": {
+      "title": "بياناتك معاك دائمًا",
+      "description": "احفظ بيانات مشروعك بأمان، واعمل حتى بدون إنترنت، وتتم مزامنة بياناتك تلقائيًا عند عودة الاتصال."
+    }
+  }
 }
+
+
+
 
 
 

@@ -31,4 +31,6 @@ class AppAssets {
   static const product3 = "assets/images/product3.png";
   static const map = "assets/images/map.png";
   static const person1 = "assets/images/person1.png";
+  static const lightOnboarding = "assets/images/light_onboarding.png";
+  static const darkOnboarding = "assets/images/dark_onboarding.png";
 }
