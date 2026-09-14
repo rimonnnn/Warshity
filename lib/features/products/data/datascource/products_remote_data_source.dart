@@ -33,19 +33,45 @@ class ProductsRemoteDataSource {
     return accountSharingRepository.getSharedAccountId();
   }
 
+  Future<List<String>> _getUserIds() async {
+    final uid = _currentUserId;
+    final sharedAccountId = await _getSharedAccountId();
+
+    if (sharedAccountId == null || sharedAccountId.isEmpty) {
+      return [uid];
+    }
+
+    final sharedAccountSnapshot = await firestore
+        .collection('shared_accounts')
+        .doc(sharedAccountId)
+        .get();
+
+    if (!sharedAccountSnapshot.exists) {
+      return [uid];
+    }
+
+    final data = sharedAccountSnapshot.data() ?? {};
+    final members =
+        (data['members'] as List?)
+            ?.map((e) => e.toString())
+            .where((e) => e.isNotEmpty)
+            .toList() ??
+        [];
+
+    if (!members.contains(uid)) {
+      members.add(uid);
+    }
+
+    return members.toSet().toList();
+  }
+
   Stream<List<ProductModel>> watchProducts() {
     final uid = _currentUserId;
 
-    return accountSharingRepository.watchSharedAccountId().asyncExpand((
-      sharedAccountId,
-    ) {
-      Query<Map<String, dynamic>> query = firestore.collection('products');
-
-      if (sharedAccountId == null || sharedAccountId.isEmpty) {
-        query = query.where('userId', isEqualTo: uid);
-      } else {
-        query = query.where('sharedAccountId', isEqualTo: sharedAccountId);
-      }
+    return accountSharingRepository.watchSharedAccountId().asyncExpand((_) {
+      final query = firestore
+          .collection('products')
+          .where('userIds', arrayContains: uid);
 
       return query.snapshots().map((snapshot) {
         return snapshot.docs
@@ -79,29 +105,31 @@ class ProductsRemoteDataSource {
     return supabase.storage.from('products').getPublicUrl(filePath);
   }
 
-  Future<void> addProduct(ProductModel product) async {
-    final uid = _currentUserId;
+ Future<void> addProduct(ProductModel product) async {
+  final uid = _currentUserId;
+  final sharedAccountId = await _getSharedAccountId();
+  final userIds = await _getUserIds();
 
-    final sharedAccountId = await _getSharedAccountId();
+  final data = product.toFirestore();
 
-    final data = product.toFirestore();
+  data['userId'] = uid;
+  data['userIds'] = userIds;
 
-    data['userId'] = uid;
+  final ref = firestore.collection('products').doc();
 
-    if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-      data['sharedAccountId'] = sharedAccountId;
-    } else {
-      data.remove('sharedAccountId');
-    }
+  data['sharedDataId'] = ref.id;
 
-    await firestore.collection('products').add(data);
+  if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
+    data['sharedAccountId'] = sharedAccountId;
+  } else {
+    data.remove('sharedAccountId');
   }
+
+  await ref.set(data);
+}
 
   Future<void> deleteProduct(String productId) async {
     final uid = _currentUserId;
-
-    final sharedAccountId = await _getSharedAccountId();
-
     final productRef = firestore.collection('products').doc(productId);
 
     await firestore.runTransaction((transaction) async {
@@ -113,22 +141,16 @@ class ProductsRemoteDataSource {
 
       final data = snapshot.data() ?? {};
 
+      final userIds = (data['userIds'] as List?)
+          ?.map((e) => e.toString())
+          .toList();
+
       final ownerUid = data['userId']?.toString();
 
-      if (ownerUid == null || ownerUid.isEmpty) {
+      final hasAccess = userIds?.contains(uid) == true || ownerUid == uid;
+
+      if (!hasAccess) {
         throw Exception('product_not_found'.tr());
-      }
-
-      if (sharedAccountId == null || sharedAccountId.isEmpty) {
-        if (ownerUid != uid) {
-          throw Exception('product_not_found'.tr());
-        }
-      } else {
-        final documentSharedId = data['sharedAccountId']?.toString();
-
-        if (documentSharedId != sharedAccountId) {
-          throw Exception('product_not_found'.tr());
-        }
       }
 
       transaction.delete(productRef);
@@ -136,15 +158,67 @@ class ProductsRemoteDataSource {
   }
 
   Future<void> increaseProductQuantity(String productId) async {
+    final uid = _currentUserId;
     final productRef = firestore.collection('products').doc(productId);
 
-    await productRef.update({'quantity': FieldValue.increment(1)});
+    await firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(productRef);
+
+      if (!snapshot.exists) {
+        throw Exception('product_not_found'.tr());
+      }
+
+      final data = snapshot.data() ?? {};
+
+      final userIds = (data['userIds'] as List?)
+          ?.map((e) => e.toString())
+          .toList();
+
+      final ownerUid = data['userId']?.toString();
+
+      final hasAccess = userIds?.contains(uid) == true || ownerUid == uid;
+
+      if (!hasAccess) {
+        throw Exception('product_not_found'.tr());
+      }
+
+      transaction.update(productRef, {'quantity': FieldValue.increment(1)});
+    });
   }
 
   Future<void> decreaseProductQuantity(String productId) async {
+    final uid = _currentUserId;
     final productRef = firestore.collection('products').doc(productId);
 
-    await productRef.update({'quantity': FieldValue.increment(-1)});
+    await firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(productRef);
+
+      if (!snapshot.exists) {
+        throw Exception('product_not_found'.tr());
+      }
+
+      final data = snapshot.data() ?? {};
+
+      final userIds = (data['userIds'] as List?)
+          ?.map((e) => e.toString())
+          .toList();
+
+      final ownerUid = data['userId']?.toString();
+
+      final hasAccess = userIds?.contains(uid) == true || ownerUid == uid;
+
+      if (!hasAccess) {
+        throw Exception('product_not_found'.tr());
+      }
+
+      final currentQuantity = (data['quantity'] as num?)?.toInt() ?? 0;
+
+      if (currentQuantity <= 0) {
+        return;
+      }
+
+      transaction.update(productRef, {'quantity': currentQuantity - 1});
+    });
   }
 
   Future<void> setProductQuantity({
@@ -156,9 +230,6 @@ class ProductsRemoteDataSource {
     }
 
     final uid = _currentUserId;
-
-    final sharedAccountId = await _getSharedAccountId();
-
     final productRef = firestore.collection('products').doc(productId);
 
     await firestore.runTransaction((transaction) async {
@@ -170,22 +241,16 @@ class ProductsRemoteDataSource {
 
       final data = snapshot.data() ?? {};
 
+      final userIds = (data['userIds'] as List?)
+          ?.map((e) => e.toString())
+          .toList();
+
       final ownerUid = data['userId']?.toString();
 
-      if (ownerUid == null || ownerUid.isEmpty) {
+      final hasAccess = userIds?.contains(uid) == true || ownerUid == uid;
+
+      if (!hasAccess) {
         throw Exception('product_not_found'.tr());
-      }
-
-      if (sharedAccountId == null || sharedAccountId.isEmpty) {
-        if (ownerUid != uid) {
-          throw Exception('product_not_found'.tr());
-        }
-      } else {
-        final documentSharedId = data['sharedAccountId']?.toString();
-
-        if (documentSharedId != sharedAccountId) {
-          throw Exception('product_not_found'.tr());
-        }
       }
 
       transaction.update(productRef, {'quantity': quantity});

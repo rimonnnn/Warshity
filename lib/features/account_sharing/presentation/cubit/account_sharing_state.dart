@@ -20,10 +20,14 @@ class AccountSharedAccountDeletedRemotely extends AccountSharingState {}
 
 class AccountSharingError extends AccountSharingState {
   final String message;
+
   AccountSharingError(this.message);
 }
 
 class AccountSharingStatusChanged extends AccountSharingState {
   final String? sharedAccountId;
-  AccountSharingStatusChanged({required this.sharedAccountId});
+
+  AccountSharingStatusChanged({
+    required this.sharedAccountId,
+  });
 }

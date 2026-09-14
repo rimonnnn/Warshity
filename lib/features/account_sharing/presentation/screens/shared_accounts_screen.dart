@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,9 +8,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
+import 'package:warshity/features/account_sharing/presentation/widgets/account_history_card_widget.dart';
+import 'package:warshity/features/account_sharing/presentation/widgets/connected_account_card_widget.dart';
+import 'package:warshity/features/account_sharing/presentation/widgets/empty_shared_accounts_widget.dart';
+import 'package:warshity/features/account_sharing/presentation/widgets/pending_invitation_card_widget.dart';
 
 class SharedAccountsScreen extends StatefulWidget {
   const SharedAccountsScreen({super.key});
@@ -18,94 +25,363 @@ class SharedAccountsScreen extends StatefulWidget {
 }
 
 class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
-  String? sharedAccountId;
-  String? otherUserEmail;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _sentSubscription;
 
-  bool isLoading = true;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+  _receivedSubscription;
 
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+  _mappingSubscription;
+
+  bool _isLoading = true;
+
+  List<Map<String, dynamic>> _allInvitations = [];
   @override
   void initState() {
     super.initState();
-    _loadSharedAccount();
+    _startRealtimeWatchers();
   }
 
-  Future<void> _loadSharedAccount() async {
-    final cubit = context.read<AccountSharingCubit>();
+  @override
+  void dispose() {
+    _sentSubscription?.cancel();
+    _receivedSubscription?.cancel();
+    _mappingSubscription?.cancel();
 
-    try {
-      final id = await cubit.getSharedAccountId();
+    super.dispose();
+  }
 
-      if (!mounted) return;
+  void _startRealtimeWatchers() {
+    final user = FirebaseAuth.instance.currentUser;
 
-      if (id == null || id.isEmpty) {
+    if (user == null) {
+      if (mounted) {
         setState(() {
-          sharedAccountId = null;
-          otherUserEmail = null;
-          isLoading = false;
+          _isLoading = false;
         });
-
-        return;
       }
 
-      final invitationSnapshot = await FirebaseFirestore.instance
-          .collection('account_shares')
-          .doc(id)
-          .get();
+      return;
+    }
 
+    final email = user.email?.trim().toLowerCase();
+
+    if (email == null || email.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+
+      return;
+    }
+
+    _sentSubscription = FirebaseFirestore.instance
+        .collection('account_shares')
+        .where('fromUid', isEqualTo: user.uid)
+        .snapshots()
+        .listen((_) {
+          _reloadData();
+        });
+
+    _receivedSubscription = FirebaseFirestore.instance
+        .collection('account_shares')
+        .where('toEmail', isEqualTo: email)
+        .snapshots()
+        .listen((_) {
+          _reloadData();
+        });
+
+    _mappingSubscription = FirebaseFirestore.instance
+        .collection('user_shared_accounts')
+        .doc(user.uid)
+        .snapshots()
+        .listen((_) {
+          _reloadData();
+        });
+
+    _reloadData();
+  }
+
+  Future<void> _reloadData() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
       if (!mounted) return;
 
-      String? email;
+      setState(() {
+        _allInvitations = [];
+        _isLoading = false;
+      });
 
-      if (invitationSnapshot.exists) {
-        final data = invitationSnapshot.data();
+      return;
+    }
 
-        final fromEmail = data?['fromEmail']?.toString().trim().toLowerCase();
-        final toEmail = data?['toEmail']?.toString().trim().toLowerCase();
+    final email = user.email?.trim().toLowerCase();
 
-        final currentEmail = FirebaseAuth.instance.currentUser?.email
-            ?.trim()
-            .toLowerCase();
+    if (email == null || email.isEmpty) {
+      if (!mounted) return;
 
-        if (fromEmail != null &&
-            fromEmail.isNotEmpty &&
-            fromEmail != currentEmail) {
-          email = fromEmail;
-        } else if (toEmail != null &&
-            toEmail.isNotEmpty &&
-            toEmail != currentEmail) {
-          email = toEmail;
+      setState(() {
+        _allInvitations = [];
+        _isLoading = false;
+      });
+
+      return;
+    }
+
+    try {
+      final sentSnapshot = await FirebaseFirestore.instance
+          .collection('account_shares')
+          .where('fromUid', isEqualTo: user.uid)
+          .get();
+
+      final receivedSnapshot = await FirebaseFirestore.instance
+          .collection('account_shares')
+          .where('toEmail', isEqualTo: email)
+          .get();
+
+      final Map<String, Map<String, dynamic>> invitationsById = {};
+
+      for (final doc in sentSnapshot.docs) {
+        invitationsById[doc.id] = {'id': doc.id, ...doc.data()};
+      }
+
+      for (final doc in receivedSnapshot.docs) {
+        invitationsById[doc.id] = {'id': doc.id, ...doc.data()};
+      }
+
+      Map<String, dynamic>? currentSharedAccount;
+
+      final mappingSnapshot = await FirebaseFirestore.instance
+          .collection('user_shared_accounts')
+          .doc(user.uid)
+          .get();
+
+      if (mappingSnapshot.exists && mappingSnapshot.data() != null) {
+        final mappingData = mappingSnapshot.data()!;
+
+        final sharedAccountId = mappingData['sharedAccountId']?.toString();
+
+        if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
+          final sharedSnapshot = await FirebaseFirestore.instance
+              .collection('shared_accounts')
+              .doc(sharedAccountId)
+              .get();
+
+          if (sharedSnapshot.exists && sharedSnapshot.data() != null) {
+            currentSharedAccount = {
+              'id': sharedAccountId,
+              ...sharedSnapshot.data()!,
+            };
+          }
         }
       }
 
+      final allInvitations = invitationsById.values.toList();
+
+      final Map<String, List<Map<String, dynamic>>> groupedByEmail = {};
+
+      for (final invitation in allInvitations) {
+        final otherEmail = _getOtherEmail(invitation);
+
+        if (otherEmail.isEmpty) {
+          continue;
+        }
+
+        groupedByEmail.putIfAbsent(otherEmail, () => []).add(invitation);
+      }
+
+      final List<Map<String, dynamic>> visibleItems = [];
+
+      for (final entry in groupedByEmail.entries) {
+        final otherEmail = entry.key;
+
+        final invitations = entry.value;
+
+        if (_isCurrentConnectionForEmail(
+          otherEmail: otherEmail,
+          currentSharedAccount: currentSharedAccount,
+        )) {
+          visibleItems.add({
+            'type': 'connected',
+            'email': otherEmail,
+            'status': 'connected',
+          });
+
+          continue;
+        }
+
+        final pendingInvitations = invitations
+            .where((invitation) => _getStatus(invitation) == 'pending')
+            .toList();
+
+        if (pendingInvitations.isNotEmpty) {
+          pendingInvitations.sort((a, b) {
+            return _toDateTime(
+              b['createdAt'],
+            ).compareTo(_toDateTime(a['createdAt']));
+          });
+
+          visibleItems.add({
+            'type': 'pending',
+            'email': otherEmail,
+            'status': 'pending',
+          });
+
+          continue;
+        }
+
+        invitations.sort((a, b) {
+          return _toDateTime(
+            b['createdAt'],
+          ).compareTo(_toDateTime(a['createdAt']));
+        });
+
+        final latest = invitations.first;
+
+        final latestStatus = _getStatus(latest);
+
+        if (latestStatus == 'rejected') {
+          visibleItems.add({
+            'type': 'history',
+            'email': otherEmail,
+            'status': 'rejected',
+          });
+
+          continue;
+        }
+
+        if (latestStatus == 'accepted') {
+          visibleItems.add({
+            'type': 'history',
+            'email': otherEmail,
+            'status': 'disconnected',
+          });
+        }
+      }
+
+      visibleItems.sort((a, b) {
+        final priorityA = _getTypePriority(a['type']?.toString());
+
+        final priorityB = _getTypePriority(b['type']?.toString());
+
+        if (priorityA != priorityB) {
+          return priorityA.compareTo(priorityB);
+        }
+
+        return a['email'].toString().toLowerCase().compareTo(
+          b['email'].toString().toLowerCase(),
+        );
+      });
+
+      if (!mounted) return;
+
       setState(() {
-        sharedAccountId = id;
-        otherUserEmail = email;
-        isLoading = false;
+        _allInvitations = visibleItems;
+        _isLoading = false;
       });
     } catch (e) {
       if (!mounted) return;
 
       setState(() {
-        isLoading = false;
+        _isLoading = false;
       });
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${'failed_to_load_shared_accounts'.tr()}: $e')),
+      );
     }
   }
 
+  int _getTypePriority(String? type) {
+    switch (type) {
+      case 'connected':
+        return 0;
+
+      case 'pending':
+        return 1;
+
+      case 'history':
+        return 2;
+
+      default:
+        return 3;
+    }
+  }
+
+  bool _isCurrentConnectionForEmail({
+    required String otherEmail,
+    required Map<String, dynamic>? currentSharedAccount,
+  }) {
+    if (currentSharedAccount == null) {
+      return false;
+    }
+
+    final emailsData = currentSharedAccount['emails'];
+
+    if (emailsData is! List) {
+      return false;
+    }
+
+    final emails = emailsData
+        .map((e) => e.toString().trim().toLowerCase())
+        .toList();
+
+    return emails.contains(otherEmail.trim().toLowerCase());
+  }
+
+  String _getOtherEmail(Map<String, dynamic> invitation) {
+    final currentEmail = FirebaseAuth.instance.currentUser?.email
+        ?.trim()
+        .toLowerCase();
+
+    final fromEmail = invitation['fromEmail']?.toString().trim().toLowerCase();
+
+    final toEmail = invitation['toEmail']?.toString().trim().toLowerCase();
+
+    if (fromEmail != null &&
+        fromEmail.isNotEmpty &&
+        fromEmail != currentEmail) {
+      return fromEmail;
+    }
+
+    if (toEmail != null && toEmail.isNotEmpty && toEmail != currentEmail) {
+      return toEmail;
+    }
+
+    return '';
+  }
+
+  String _getStatus(Map<String, dynamic> invitation) {
+    final status = invitation['status']?.toString().trim().toLowerCase();
+
+    if (status == null || status.isEmpty) {
+      return 'pending';
+    }
+
+    return status;
+  }
+
+  DateTime _toDateTime(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    return DateTime.fromMillisecondsSinceEpoch(0);
+  }
+
   Future<void> _deleteSharedAccount() async {
-    await showDialog<bool>(
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text(
-            'delete_shared_account'.tr(),
-          ),
-          content: Text(
-            'delete_shared_account_confirmation'.tr(),
-          ),
+          title: Text('delete_shared_account'.tr()),
+          content: Text('delete_shared_account_confirmation'.tr()),
           actions: [
             TextButton(
               onPressed: () {
@@ -119,54 +395,57 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
                 ),
               ),
             ),
-
             SizedBox(width: 8.w),
-
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(
-                  80.w,
-                  40.h,
-                ),
+                minimumSize: Size(80.w, 40.h),
                 backgroundColor: context.colors.error,
               ),
               onPressed: () {
                 Navigator.of(dialogContext).pop(true);
-
-                context
-                    .read<AccountSharingCubit>()
-                    .deleteSharedAccount();
               },
               child: Text(
                 'delete'.tr(),
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           ],
         );
       },
     );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    try {
+      await context.read<AccountSharingCubit>().deleteSharedAccount();
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${'failed_to_delete_shared_account'.tr()}: $e'),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Shared Accounts'.tr())),
+      appBar: AppBar(title: Text('shared_accounts'.tr())),
       body: BlocListener<AccountSharingCubit, AccountSharingState>(
         listener: (context, state) {
           if (state is AccountSharedAccountDeleted) {
             context.goNamed(AppRoutes.splashScreen);
+
+            return;
           }
 
           if (state is AccountSharingStatusChanged) {
-            if (state.sharedAccountId == null) {
-              setState(() {
-                sharedAccountId = null;
-                otherUserEmail = null;
-              });
-            }
+            _reloadData();
+            return;
           }
 
           if (state is AccountSharingError) {
@@ -181,52 +460,91 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
   }
 
   Widget _buildBody() {
-    if (isLoading) {
+    if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (sharedAccountId == null) {
-      return Center(
-        child: Text('No shared accounts'.tr(), style: TextStyle(fontSize: 18)),
-      );
+    if (_allInvitations.isEmpty) {
+      return const EmptySharedAccountsWidget();
     }
 
-    return BlocBuilder<AccountSharingCubit, AccountSharingState>(
-      builder: (context, state) {
-        final deleting = state is AccountSharingLoading;
+    final connectedAccounts = _allInvitations
+        .where((item) => item['type'] == 'connected')
+        .toList();
 
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Card(
-              child: ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.people)),
+    final pendingAccounts = _allInvitations
+        .where((item) => item['type'] == 'pending')
+        .toList();
 
-                title: Text('Shared Account'.tr()),
+    final historyAccounts = _allInvitations
+        .where((item) => item['type'] == 'history')
+        .toList();
 
-                subtitle: Text(
-                  otherUserEmail?.isNotEmpty == true
-                      ? otherUserEmail!
-                      : 'Unknown account'.tr(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                trailing: deleting
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : IconButton(
-                        onPressed: _deleteSharedAccount,
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                      ),
-              ),
+    return RefreshIndicator(
+      onRefresh: _reloadData,
+      child: ListView(
+        padding: EdgeInsets.all(16.sp),
+        children: [
+          if (connectedAccounts.isNotEmpty) ...[
+            Text(
+              'connected_accounts'.tr(),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
+            SizedBox(height: 10.h),
+            ...connectedAccounts.map((item) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: ConnectedAccountCardWidget(
+                  email: item['email'].toString(),
+                  onDelete: _deleteSharedAccount,
+                  isDeleting: false,
+                ),
+              );
+            }),
+            SizedBox(height: 10.h),
           ],
-        );
-      },
+
+          if (pendingAccounts.isNotEmpty) ...[
+            Text(
+              'pending_invitations'.tr(),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            SizedBox(height: 10.h),
+            ...pendingAccounts.map((item) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: PendingInvitationCardWidget(
+                  email: item['email'].toString(),
+                ),
+              );
+            }),
+            SizedBox(height: 10.h),
+          ],
+
+          if (historyAccounts.isNotEmpty) ...[
+            Text(
+              'invitation_history'.tr(),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            SizedBox(height: 10.h),
+            ...historyAccounts.map((item) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: AccountHistoryCardWidget(
+                  email: item['email'].toString(),
+                  status: item['status'].toString(),
+                ),
+              );
+            }),
+          ],
+        ],
+      ),
     );
   }
 }

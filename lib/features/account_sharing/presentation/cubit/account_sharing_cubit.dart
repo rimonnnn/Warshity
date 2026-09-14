@@ -7,119 +7,138 @@ import 'package:warshity/features/account_sharing/data/repositories/account_shar
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
 
 class AccountSharingCubit extends Cubit<AccountSharingState> {
-  AccountSharingCubit(this.repository) : super(AccountSharingInitial()) {
-    _startWatching();
-  }
+  AccountSharingCubit(this.repository) : super(AccountSharingInitial());
 
   final AccountSharingRepository repository;
 
   StreamSubscription<String?>? _sharedAccountSubscription;
-  StreamSubscription<List<ShareInvitationModel>>? _sentInvitationsSubscription;
+  StreamSubscription<Map<String, String>>? _sentInvitationsSubscription;
 
   String? _sharedAccountId;
-  String? _previousSharedAccountId;
-  bool _sharedAccountInitialized = false;
+  String? _lastSharedAccountId;
 
-  final Map<String, String> _previousInvitationStatuses = {};
-  bool _sentInvitationsInitialized = false;
+  bool _sharedWatcherInitialized = false;
+  bool _sentWatcherInitialized = false;
 
-  bool _isLocalAccepting = false;
-  bool _isLocalRejecting = false;
-  bool _isLocalDeleting = false;
+  bool _localAccept = false;
+  bool _localDelete = false;
+
+  Map<String, String> _lastSentStatuses = {};
 
   String? get sharedAccountId => _sharedAccountId;
 
-  bool get isShared => _sharedAccountId != null;
+  bool get isShared => _sharedAccountId != null && _sharedAccountId!.isNotEmpty;
 
-  void _startWatching() {
-    _startWatchingSharedAccount();
-    _startWatchingSentInvitations();
-  }
-
-  void _startWatchingSharedAccount() {
+  void startWatchingSharedAccount() {
     _sharedAccountSubscription?.cancel();
-
-    _sharedAccountSubscription =
-        repository.watchSharedAccountId().listen(
-      (sharedAccountId) {
-        _sharedAccountId = sharedAccountId;
-
-        if (!_sharedAccountInitialized) {
-          _previousSharedAccountId = sharedAccountId;
-          _sharedAccountInitialized = true;
-          return;
-        }
-
-        final previousId = _previousSharedAccountId;
-        _previousSharedAccountId = sharedAccountId;
-
-        if (previousId != null && sharedAccountId == null) {
-          if (_isLocalDeleting) {
-            _isLocalDeleting = false;
-            return;
-          }
-          emit(AccountSharedAccountDeletedRemotely());
-          return;
-        }
-
-        emit(
-          AccountSharingStatusChanged(sharedAccountId: sharedAccountId),
-        );
-      },
-      onError: (error) {
-        emit(AccountSharingError(error.toString()));
-      },
-    );
-  }
-
-  void _startWatchingSentInvitations() {
     _sentInvitationsSubscription?.cancel();
 
-    _sentInvitationsSubscription =
-        repository.watchSentInvitationsStatus().listen(
-      (invitations) {
-        final currentStatuses = <String, String>{};
-        for (final inv in invitations) {
-          currentStatuses[inv.id] = inv.status;
-        }
+    _sharedWatcherInitialized = false;
+    _sentWatcherInitialized = false;
+    _lastSharedAccountId = null;
+    _lastSentStatuses = {};
 
-        if (!_sentInvitationsInitialized) {
-          _previousInvitationStatuses
-            ..clear()
-            ..addAll(currentStatuses);
-          _sentInvitationsInitialized = true;
-          return;
-        }
-
-        for (final entry in currentStatuses.entries) {
-          final previousStatus = _previousInvitationStatuses[entry.key];
-          final currentStatus = entry.value;
-
-          if (previousStatus == 'pending' && currentStatus == 'accepted') {
-            if (_isLocalAccepting) {
-              _isLocalAccepting = false;
-            } else {
-              emit(AccountInvitationAcceptedRemotely());
-            }
-          }
-
-          if (previousStatus == 'pending' && currentStatus == 'rejected') {
-            if (_isLocalRejecting) {
-              _isLocalRejecting = false;
-            } else {
-              emit(AccountInvitationRejectedRemotely());
-            }
-          }
-        }
-
-        _previousInvitationStatuses
-          ..clear()
-          ..addAll(currentStatuses);
-      },
+    _sharedAccountSubscription = repository.watchSharedAccountId().listen(
+      _handleSharedAccountChange,
       onError: (error) {
-        emit(AccountSharingError(error.toString()));
+        if (!isClosed) {
+          emit(AccountSharingError(error.toString()));
+        }
       },
     );
+
+    _sentInvitationsSubscription = repository
+        .watchSentInvitationStatuses()
+        .listen(
+          _handleSentInvitationStatuses,
+          onError: (error) {
+            if (!isClosed) {
+              emit(AccountSharingError(error.toString()));
+            }
+          },
+        );
+  }
+
+  void _handleSharedAccountChange(String? value) {
+    final newId = _normalize(value);
+
+    if (!_sharedWatcherInitialized) {
+      _sharedWatcherInitialized = true;
+      _lastSharedAccountId = newId;
+      _sharedAccountId = newId;
+
+      if (!isClosed) {
+        emit(AccountSharingStatusChanged(sharedAccountId: newId));
+      }
+
+      return;
+    }
+
+    final oldId = _lastSharedAccountId;
+
+    final changedToShared = oldId == null && newId != null;
+
+    final changedToPrivate = oldId != null && newId == null;
+
+    _lastSharedAccountId = newId;
+    _sharedAccountId = newId;
+
+    if (changedToShared) {
+      if (_localAccept) {
+        _localAccept = false;
+      } else {
+        if (!isClosed) {
+          emit(AccountInvitationAcceptedRemotely());
+        }
+      }
+    }
+
+    if (changedToPrivate) {
+      if (_localDelete) {
+        _localDelete = false;
+      } else {
+        if (!isClosed) {
+          emit(AccountSharedAccountDeletedRemotely());
+        }
+      }
+    }
+
+    if (!isClosed) {
+      emit(AccountSharingStatusChanged(sharedAccountId: newId));
+    }
+  }
+
+  void _handleSentInvitationStatuses(Map<String, String> statuses) {
+    if (!_sentWatcherInitialized) {
+      _sentWatcherInitialized = true;
+      _lastSentStatuses = Map<String, String>.from(statuses);
+      return;
+    }
+
+    for (final entry in statuses.entries) {
+      final invitationId = entry.key;
+      final newStatus = entry.value;
+
+      final oldStatus = _lastSentStatuses[invitationId];
+
+      if (oldStatus == 'pending' && newStatus == 'rejected') {
+        if (!isClosed) {
+          emit(AccountInvitationRejectedRemotely());
+        }
+      }
+    }
+
+    _lastSentStatuses = Map<String, String>.from(statuses);
+  }
+
+  String? _normalize(String? value) {
+    if (value == null) {
+      return null;
+    }
+
+    final result = value.trim();
+
+    return result.isEmpty ? null : result;
   }
 
   Future<void> sendInvitation({required String email}) async {
@@ -146,28 +165,31 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
 
     try {
       if (accept) {
-        _isLocalAccepting = true;
-      } else {
-        _isLocalRejecting = true;
-      }
+        _localAccept = true;
 
-      await repository.respondToInvitation(
-        invitationId: invitationId,
-        accept: accept,
-      );
+        await repository.respondToInvitation(
+          invitationId: invitationId,
+          accept: true,
+        );
 
-      if (accept) {
-        _sharedAccountId = await repository.getSharedAccountId();
+        final id = await repository.getSharedAccountId();
+
+        _sharedAccountId = _normalize(id);
+        _lastSharedAccountId = _sharedAccountId;
+
         emit(AccountInvitationAccepted());
+
+        emit(AccountSharingStatusChanged(sharedAccountId: _sharedAccountId));
       } else {
-        _sharedAccountId = null;
+        await repository.respondToInvitation(
+          invitationId: invitationId,
+          accept: false,
+        );
+
         emit(AccountInvitationRejected());
       }
-
-      emit(AccountSharingStatusChanged(sharedAccountId: _sharedAccountId));
     } catch (e) {
-      _isLocalAccepting = false;
-      _isLocalRejecting = false;
+      _localAccept = false;
       emit(AccountSharingError(e.toString()));
     }
   }
@@ -175,26 +197,28 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
   Future<String?> getSharedAccountId() async {
     final id = await repository.getSharedAccountId();
 
-    _sharedAccountId = id;
+    _sharedAccountId = _normalize(id);
+    _lastSharedAccountId = _sharedAccountId;
 
-    return id;
+    return _sharedAccountId;
   }
 
   Future<void> deleteSharedAccount() async {
     emit(AccountSharingLoading());
 
     try {
-      _isLocalDeleting = true;
+      _localDelete = true;
 
       await repository.deleteSharedAccount();
 
       _sharedAccountId = null;
+      _lastSharedAccountId = null;
 
       emit(AccountSharedAccountDeleted());
 
       emit(AccountSharingStatusChanged(sharedAccountId: null));
     } catch (e) {
-      _isLocalDeleting = false;
+      _localDelete = false;
       emit(AccountSharingError(e.toString()));
     }
   }
@@ -203,6 +227,7 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
   Future<void> close() {
     _sharedAccountSubscription?.cancel();
     _sentInvitationsSubscription?.cancel();
+
     return super.close();
   }
 }

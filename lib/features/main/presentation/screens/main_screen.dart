@@ -133,9 +133,16 @@ class _MainScreenState extends State<MainScreen> {
                   message: 'invitation_accepted'.tr(),
                   type: AnimatedSnackBarType.success,
                 );
-                await Future.delayed(const Duration(seconds: 2));
+
+                await Future<void>.delayed(
+                  const Duration(seconds: 2),
+                );
+
                 if (!context.mounted) return;
-                context.goNamed(AppRoutes.splashScreen);
+
+                context.goNamed(
+                  AppRoutes.splashScreen,
+                );
               }
 
               if (state is AccountInvitationRejectedRemotely) {
@@ -152,9 +159,16 @@ class _MainScreenState extends State<MainScreen> {
                   message: 'shared_account_deleted'.tr(),
                   type: AnimatedSnackBarType.error,
                 );
-                await Future.delayed(const Duration(seconds: 2));
+
+                await Future<void>.delayed(
+                  const Duration(seconds: 2),
+                );
+
                 if (!context.mounted) return;
-                context.goNamed(AppRoutes.splashScreen);
+
+                context.goNamed(
+                  AppRoutes.splashScreen,
+                );
               }
             },
             child: AppResponsive(
