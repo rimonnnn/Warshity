@@ -25,29 +25,55 @@ class ClientsRemoteDataSource {
     return GetIt.I<AccountSharingRepository>().getSharedAccountId();
   }
 
+  Future<List<String>> _getUserIds() async {
+    final uid = _currentUserId;
+    final sharedAccountId = await _getSharedAccountId();
+
+    if (sharedAccountId == null || sharedAccountId.isEmpty) {
+      return [uid];
+    }
+
+    final snapshot = await firestore
+        .collection('shared_accounts')
+        .doc(sharedAccountId)
+        .get();
+
+    if (!snapshot.exists) {
+      return [uid];
+    }
+
+    final data = snapshot.data() ?? {};
+
+    final members =
+        (data['members'] as List?)
+            ?.map((e) => e.toString())
+            .where((e) => e.isNotEmpty)
+            .toList() ??
+        [];
+
+    if (!members.contains(uid)) {
+      members.add(uid);
+    }
+
+    return members.toSet().toList();
+  }
+
   Stream<List<CustomerModel>> watchClients() {
     final uid = _currentUserId;
 
     return GetIt.I<AccountSharingRepository>()
         .watchSharedAccountId()
-        .asyncExpand((sharedAccountId) {
-      Query<Map<String, dynamic>> query = firestore.collection('clients');
+        .asyncExpand((_) {
+          final query = firestore
+              .collection('clients')
+              .where('userIds', arrayContains: uid);
 
-      if (sharedAccountId == null || sharedAccountId.isEmpty) {
-        query = query.where('userId', isEqualTo: uid);
-      } else {
-        query = query.where(
-          'sharedAccountId',
-          isEqualTo: sharedAccountId,
-        );
-      }
-
-      return query.snapshots().map(
-        (snapshot) => snapshot.docs
-            .map((doc) => CustomerModel.fromFirestore(doc.id, doc.data()))
-            .toList(),
-      );
-    });
+          return query.snapshots().map(
+            (snapshot) => snapshot.docs
+                .map((doc) => CustomerModel.fromFirestore(doc.id, doc.data()))
+                .toList(),
+          );
+        });
   }
 
   Stream<CustomerModel> watchClient(String clientId) async* {
@@ -56,34 +82,38 @@ class ClientsRemoteDataSource {
         throw Exception('client_not_found'.tr());
       }
 
-      final data = doc.data()!;
-
-      return CustomerModel.fromFirestore(doc.id, data);
+      return CustomerModel.fromFirestore(doc.id, doc.data()!);
     });
   }
 
-  Future<void> addClient(CustomerModel client) async {
-    final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
+Future<void> addClient(CustomerModel client) async {
+  final uid = _currentUserId;
+  final sharedAccountId = await _getSharedAccountId();
+  final userIds = await _getUserIds();
 
-    final data = client.toFirestore();
+  final data = client.toFirestore();
 
-    data['userId'] = uid;
+  data['userId'] = uid;
+  data['userIds'] = userIds;
 
-    if (sharedAccountId != null) {
-      data['sharedAccountId'] = sharedAccountId;
-    }
+  final ref = firestore.collection('clients').doc();
 
-    await firestore.collection('clients').add(data);
+  data['sharedDataId'] = ref.id;
+
+  if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
+    data['sharedAccountId'] = sharedAccountId;
+  } else {
+    data.remove('sharedAccountId');
   }
+
+  await ref.set(data);
+}
 
   Future<void> decreaseDebt({
     required String clientId,
     required num amount,
   }) async {
     final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
-
     final clientRef = firestore.collection('clients').doc(clientId);
 
     await firestore.runTransaction((transaction) async {
@@ -95,21 +125,16 @@ class ClientsRemoteDataSource {
 
       final data = snapshot.data() ?? {};
 
+      final userIds = (data['userIds'] as List?)
+          ?.map((e) => e.toString())
+          .toList();
+
       final ownerUid = data['userId']?.toString();
 
-      if (ownerUid == null || ownerUid.isEmpty) {
-        throw Exception('client_not_found'.tr());
-      }
+      final hasAccess = userIds?.contains(uid) == true || ownerUid == uid;
 
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        final docSharedId = data['sharedAccountId']?.toString();
-        if (docSharedId != sharedAccountId) {
-          throw Exception('client_not_found'.tr());
-        }
-      } else {
-        if (ownerUid != uid) {
-          throw Exception('client_not_found'.tr());
-        }
+      if (!hasAccess) {
+        throw Exception('client_not_found'.tr());
       }
 
       final currentBalance = (data['balance'] as num?) ?? 0;
@@ -136,8 +161,6 @@ class ClientsRemoteDataSource {
     required num amount,
   }) async {
     final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
-
     final clientRef = firestore.collection('clients').doc(clientId);
 
     await firestore.runTransaction((transaction) async {
@@ -149,21 +172,16 @@ class ClientsRemoteDataSource {
 
       final data = snapshot.data() ?? {};
 
+      final userIds = (data['userIds'] as List?)
+          ?.map((e) => e.toString())
+          .toList();
+
       final ownerUid = data['userId']?.toString();
 
-      if (ownerUid == null || ownerUid.isEmpty) {
-        throw Exception('client_not_found'.tr());
-      }
+      final hasAccess = userIds?.contains(uid) == true || ownerUid == uid;
 
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        final docSharedId = data['sharedAccountId']?.toString();
-        if (docSharedId != sharedAccountId) {
-          throw Exception('client_not_found'.tr());
-        }
-      } else {
-        if (ownerUid != uid) {
-          throw Exception('client_not_found'.tr());
-        }
+      if (!hasAccess) {
+        throw Exception('client_not_found'.tr());
       }
 
       final currentBalance = (data['balance'] as num?) ?? 0;
@@ -183,10 +201,8 @@ class ClientsRemoteDataSource {
 
   Future<void> removeClient(String clientId) async {
     final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
 
     final invoicesRef = firestore.collection('invoices');
-
     final clientRef = firestore.collection('clients').doc(clientId);
 
     final clientSnapshot = await clientRef.get();
@@ -201,39 +217,25 @@ class ClientsRemoteDataSource {
       throw Exception('client_not_found'.tr());
     }
 
+    final clientUserIds = (clientData['userIds'] as List?)
+        ?.map((e) => e.toString())
+        .toList();
+
     final clientOwnerUid = clientData['userId']?.toString();
 
-    if (clientOwnerUid == null || clientOwnerUid.isEmpty) {
+    final hasAccess =
+        clientUserIds?.contains(uid) == true || clientOwnerUid == uid;
+
+    if (!hasAccess) {
       throw Exception('client_not_found'.tr());
     }
 
-    if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-      final docSharedId = clientData['sharedAccountId']?.toString();
-      if (docSharedId != sharedAccountId) {
-        throw Exception('client_not_found'.tr());
-      }
-    } else {
-      if (clientOwnerUid != uid) {
-        throw Exception('client_not_found'.tr());
-      }
-    }
-
     while (true) {
-      Query<Map<String, dynamic>> query = invoicesRef.where(
-        'customerId',
-        isEqualTo: clientId,
-      );
-
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        query = query.where(
-          'sharedAccountId',
-          isEqualTo: sharedAccountId,
-        );
-      } else {
-        query = query.where('userId', isEqualTo: uid);
-      }
-
-      final snapshot = await query.limit(400).get();
+      final snapshot = await invoicesRef
+          .where('customerId', isEqualTo: clientId)
+          .where('userIds', arrayContains: uid)
+          .limit(400)
+          .get();
 
       if (snapshot.docs.isEmpty) {
         break;
@@ -244,9 +246,7 @@ class ClientsRemoteDataSource {
       for (final invoiceDoc in snapshot.docs) {
         final data = invoiceDoc.data();
 
-        final stockDeducted = data['stockDeducted'] == true;
-
-        if (!stockDeducted) {
+        if (data['stockDeducted'] != true) {
           continue;
         }
 
@@ -278,9 +278,7 @@ class ClientsRemoteDataSource {
       }
 
       for (final entry in quantities.entries) {
-        final productRef = firestore.collection('products').doc(entry.key);
-
-        batch.update(productRef, {
+        batch.update(firestore.collection('products').doc(entry.key), {
           'quantity': FieldValue.increment(entry.value),
         });
       }

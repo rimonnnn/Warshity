@@ -15,7 +15,7 @@ class InvoicesRemoteDataSource {
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
     if (uid == null || uid.isEmpty) {
-      throw Exception('User not authenticated');
+      throw Exception('user_not_authenticated'.tr());
     }
 
     return uid;
@@ -25,17 +25,56 @@ class InvoicesRemoteDataSource {
     return GetIt.I<AccountSharingRepository>().getSharedAccountId();
   }
 
+  Future<List<String>> _getSharedMembers(String sharedAccountId) async {
+    final snapshot = await firestore
+        .collection('shared_accounts')
+        .doc(sharedAccountId)
+        .get();
+
+    if (!snapshot.exists || snapshot.data() == null) {
+      return [_currentUserId];
+    }
+
+    final members = snapshot.data()?['members'];
+
+    if (members is! List) {
+      return [_currentUserId];
+    }
+
+    final ids = members
+        .map((e) => e.toString())
+        .where((id) => id.isNotEmpty)
+        .toSet()
+        .toList();
+
+    if (!ids.contains(_currentUserId)) {
+      ids.add(_currentUserId);
+    }
+
+    return ids;
+  }
+
   Future<void> createInvoice(InvoiceModel invoice) async {
     final uid = _currentUserId;
     final sharedAccountId = await _getSharedAccountId();
 
-    final data = {...invoice.toJson(), 'userId': uid};
+    final ref = firestore.collection('invoices').doc(invoice.invoiceId);
 
-    if (sharedAccountId != null) {
+    final data = <String, dynamic>{
+      ...invoice.toJson(),
+      'userId': uid,
+      'userIds': <String>[uid],
+      'sharedDataId': ref.id,
+    };
+
+    if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
+      final members = await _getSharedMembers(sharedAccountId);
+
       data['sharedAccountId'] = sharedAccountId;
+      data['userIds'] = members;
     }
 
-    await firestore.collection('invoices').doc(invoice.invoiceId).set(data);
+    await ref.set(data);
   }
 
   Future<void> finalizeInvoice(InvoiceModel invoice) async {
@@ -49,27 +88,30 @@ class InvoicesRemoteDataSource {
     await firestore.runTransaction((transaction) async {
       final invoiceSnapshot = await transaction.get(invoiceRef);
 
-      if (invoiceSnapshot.exists) {
-        final data = invoiceSnapshot.data();
+      Map<String, dynamic>? existingInvoiceData;
 
-        final invoiceUserId = data?['userId']?.toString();
+      if (invoiceSnapshot.exists) {
+        existingInvoiceData = invoiceSnapshot.data();
+
+        final invoiceUserId = existingInvoiceData?['userId']?.toString();
 
         if (invoiceUserId == null || invoiceUserId.isEmpty) {
-          throw Exception('Invoice not found');
+          throw Exception('invoice_not_found'.tr());
         }
 
-        if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-          final docSharedId = data?['sharedAccountId']?.toString();
-          if (docSharedId != sharedAccountId) {
-            throw Exception('Invoice not found');
+        final userIds = existingInvoiceData?['userIds'];
+
+        if (userIds is List) {
+          final allowed = userIds.map((e) => e.toString()).contains(uid);
+
+          if (!allowed && invoiceUserId != uid) {
+            throw Exception('invoice_not_found'.tr());
           }
-        } else {
-          if (invoiceUserId != uid) {
-            throw Exception('Invoice not found');
-          }
+        } else if (invoiceUserId != uid) {
+          throw Exception('invoice_not_found'.tr());
         }
 
-        if (data?['stockDeducted'] == true) {
+        if (existingInvoiceData?['stockDeducted'] == true) {
           return;
         }
       }
@@ -84,7 +126,7 @@ class InvoicesRemoteDataSource {
       final clientSnapshot = await transaction.get(clientRef);
 
       if (!clientSnapshot.exists) {
-        throw Exception('Client not found');
+        throw Exception('client_not_found'.tr());
       }
 
       final clientData = clientSnapshot.data() ?? {};
@@ -92,18 +134,19 @@ class InvoicesRemoteDataSource {
       final clientUserId = clientData['userId']?.toString();
 
       if (clientUserId == null || clientUserId.isEmpty) {
-        throw Exception('Client not found');
+        throw Exception('client_not_found'.tr());
       }
 
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        final docSharedId = clientData['sharedAccountId']?.toString();
-        if (docSharedId != sharedAccountId) {
-          throw Exception('Client not found');
+      final clientUserIds = clientData['userIds'];
+
+      if (clientUserIds is List) {
+        final allowed = clientUserIds.map((e) => e.toString()).contains(uid);
+
+        if (!allowed && clientUserId != uid) {
+          throw Exception('client_not_found'.tr());
         }
-      } else {
-        if (clientUserId != uid) {
-          throw Exception('Client not found');
-        }
+      } else if (clientUserId != uid) {
+        throw Exception('client_not_found'.tr());
       }
 
       final Map<String, DocumentSnapshot<Map<String, dynamic>>> products = {};
@@ -114,7 +157,7 @@ class InvoicesRemoteDataSource {
         final productSnapshot = await transaction.get(productRef);
 
         if (!productSnapshot.exists) {
-          throw Exception('Product not found: $productId');
+          throw Exception('product_not_found'.tr());
         }
 
         final productData = productSnapshot.data() ?? {};
@@ -122,37 +165,36 @@ class InvoicesRemoteDataSource {
         final productUserId = productData['userId']?.toString();
 
         if (productUserId == null || productUserId.isEmpty) {
-          throw Exception('Product not found: $productId');
+          throw Exception('product_not_found'.tr());
         }
 
-        if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-          final docSharedId = productData['sharedAccountId']?.toString();
-          if (docSharedId != sharedAccountId) {
-            throw Exception('Product not found: $productId');
+        final productUserIds = productData['userIds'];
+
+        if (productUserIds is List) {
+          final allowed = productUserIds.map((e) => e.toString()).contains(uid);
+
+          if (!allowed && productUserId != uid) {
+            throw Exception('product_not_found'.tr());
           }
-        } else {
-          if (productUserId != uid) {
-            throw Exception('Product not found: $productId');
-          }
+        } else if (productUserId != uid) {
+          throw Exception('product_not_found'.tr());
         }
 
         products[productId] = productSnapshot;
       }
 
       for (final entry in quantities.entries) {
-        final productId = entry.key;
-        final requestedQuantity = entry.value;
-
-        final productData = products[productId]!.data();
+        final productData = products[entry.key]!.data();
 
         final availableQuantity =
             (productData?['quantity'] as num?)?.toInt() ?? 0;
 
-        if (requestedQuantity > availableQuantity) {
+        if (entry.value > availableQuantity) {
           throw Exception(
-            'Not enough stock. Available: '
-            '$availableQuantity, '
-            'Requested: $requestedQuantity',
+            '${'not_enough_stock_available'.tr()} '
+            '$availableQuantity. '
+            '${'requested'.tr()} '
+            '${entry.value}',
           );
         }
       }
@@ -167,14 +209,26 @@ class InvoicesRemoteDataSource {
 
       final newBalance = currentBalance + remainingAmount;
 
-      final invoiceData = {
+      final existingSharedDataId = existingInvoiceData?['sharedDataId']
+          ?.toString();
+
+      final invoiceData = <String, dynamic>{
         ...invoice.toJson(),
         'userId': uid,
+        'userIds': <String>[uid],
         'stockDeducted': true,
+        'sharedDataId':
+            existingSharedDataId != null && existingSharedDataId.isNotEmpty
+            ? existingSharedDataId
+            : invoice.invoiceId,
       };
 
       if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
+        final members = await _getSharedMembers(sharedAccountId);
+
         invoiceData['sharedAccountId'] = sharedAccountId;
+
+        invoiceData['userIds'] = members;
       }
 
       transaction.set(invoiceRef, invoiceData);
@@ -203,38 +257,21 @@ class InvoicesRemoteDataSource {
 
     return GetIt.I<AccountSharingRepository>()
         .watchSharedAccountId()
-        .asyncExpand((sharedAccountId) {
-      Query<Map<String, dynamic>> query = firestore.collection('invoices');
+        .asyncExpand((_) {
+          final query = firestore
+              .collection('invoices')
+              .where('userIds', arrayContains: uid);
 
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        query = query.where(
-          'sharedAccountId',
-          isEqualTo: sharedAccountId,
-        );
-      } else {
-        query = query.where('userId', isEqualTo: uid);
-      }
+          return query.snapshots().map((snapshot) {
+            final invoices = snapshot.docs
+                .map((doc) => InvoiceModel.fromJson(doc.data()))
+                .toList();
 
-      return query.snapshots().map((snapshot) {
-        final invoices = snapshot.docs
-            .map((doc) => InvoiceModel.fromJson(doc.data()))
-            .toList();
+            invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-        invoices.sort((a, b) {
-          final dateA = DateTime.tryParse(a.createdAt);
-
-          final dateB = DateTime.tryParse(b.createdAt);
-
-          if (dateA == null || dateB == null) {
-            return 0;
-          }
-
-          return dateB.compareTo(dateA);
+            return invoices;
+          });
         });
-
-        return invoices;
-      });
-    });
   }
 
   Stream<List<InvoiceModel>> watchClientInvoices(String customerId) {
@@ -242,44 +279,26 @@ class InvoicesRemoteDataSource {
 
     return GetIt.I<AccountSharingRepository>()
         .watchSharedAccountId()
-        .asyncExpand((sharedAccountId) {
-      Query<Map<String, dynamic>> query = firestore.collection('invoices');
+        .asyncExpand((_) {
+          final query = firestore
+              .collection('invoices')
+              .where('userIds', arrayContains: uid)
+              .where('customerId', isEqualTo: customerId);
 
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        query = query
-            .where('sharedAccountId', isEqualTo: sharedAccountId)
-            .where('customerId', isEqualTo: customerId);
-      } else {
-        query = query
-            .where('userId', isEqualTo: uid)
-            .where('customerId', isEqualTo: customerId);
-      }
+          return query.snapshots().map((snapshot) {
+            final invoices = snapshot.docs
+                .map((doc) => InvoiceModel.fromJson(doc.data()))
+                .toList();
 
-      return query.snapshots().map((snapshot) {
-        final invoices = snapshot.docs
-            .map((doc) => InvoiceModel.fromJson(doc.data()))
-            .toList();
+            invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-        invoices.sort((a, b) {
-          final dateA = DateTime.tryParse(a.createdAt);
-
-          final dateB = DateTime.tryParse(b.createdAt);
-
-          if (dateA == null || dateB == null) {
-            return 0;
-          }
-
-          return dateB.compareTo(dateA);
+            return invoices.take(5).toList();
+          });
         });
-
-        return invoices.take(5).toList();
-      });
-    });
   }
 
   Future<InvoiceModel?> getInvoice(String invoiceId) async {
     final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
 
     final doc = await firestore.collection('invoices').doc(invoiceId).get();
 
@@ -295,23 +314,22 @@ class InvoicesRemoteDataSource {
       return null;
     }
 
-    if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-      final docSharedId = data['sharedAccountId']?.toString();
-      if (docSharedId != sharedAccountId) {
+    final userIds = data['userIds'];
+
+    if (userIds is List) {
+      final allowed = userIds.map((e) => e.toString()).contains(uid);
+
+      if (!allowed && invoiceUserId != uid) {
         return null;
       }
-    } else {
-      if (invoiceUserId != uid) {
-        return null;
-      }
+    } else if (invoiceUserId != uid) {
+      return null;
     }
 
     return InvoiceModel.fromJson(data);
   }
 
   Future<void> checkStock(InvoiceModel invoice) async {
-    await _getSharedAccountId();
-
     final Map<String, int> quantities = {};
 
     for (final item in invoice.items) {
@@ -326,7 +344,7 @@ class InvoicesRemoteDataSource {
           .get();
 
       if (!productSnapshot.exists) {
-        throw Exception('Product not found');
+        throw Exception('product_not_found'.tr());
       }
 
       final data = productSnapshot.data() ?? {};
@@ -334,16 +352,17 @@ class InvoicesRemoteDataSource {
       final productUserId = data['userId']?.toString();
 
       if (productUserId == null || productUserId.isEmpty) {
-        throw Exception('Product not found');
+        throw Exception('product_not_found'.tr());
       }
 
       final availableQuantity = (data['quantity'] as num?)?.toInt() ?? 0;
 
       if (entry.value > availableQuantity) {
         throw Exception(
-          '${'Not enough stock. Available:'.tr()} '
-          '$availableQuantity, '
-          '${'Requested:'.tr()} ${entry.value}',
+          '${'not_enough_stock_available'.tr()} '
+          '$availableQuantity. '
+          '${'requested'.tr()} '
+          '${entry.value}',
         );
       }
     }
@@ -354,44 +373,26 @@ class InvoicesRemoteDataSource {
 
     return GetIt.I<AccountSharingRepository>()
         .watchSharedAccountId()
-        .asyncExpand((sharedAccountId) {
-      Query<Map<String, dynamic>> query = firestore.collection('invoices');
+        .asyncExpand((_) {
+          final query = firestore
+              .collection('invoices')
+              .where('userIds', arrayContains: uid)
+              .where('customerId', isEqualTo: customerId);
 
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        query = query
-            .where('sharedAccountId', isEqualTo: sharedAccountId)
-            .where('customerId', isEqualTo: customerId);
-      } else {
-        query = query
-            .where('userId', isEqualTo: uid)
-            .where('customerId', isEqualTo: customerId);
-      }
+          return query.snapshots().map((snapshot) {
+            final invoices = snapshot.docs
+                .map((doc) => InvoiceModel.fromJson(doc.data()))
+                .toList();
 
-      return query.snapshots().map((snapshot) {
-        final invoices = snapshot.docs
-            .map((doc) => InvoiceModel.fromJson(doc.data()))
-            .toList();
+            invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-        invoices.sort((a, b) {
-          final dateA = DateTime.tryParse(a.createdAt);
-
-          final dateB = DateTime.tryParse(b.createdAt);
-
-          if (dateA == null || dateB == null) {
-            return 0;
-          }
-
-          return dateB.compareTo(dateA);
+            return invoices;
+          });
         });
-
-        return invoices;
-      });
-    });
   }
 
   Future<void> deleteInvoice(String invoiceId) async {
     final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
 
     final invoiceRef = firestore.collection('invoices').doc(invoiceId);
 
@@ -399,29 +400,42 @@ class InvoicesRemoteDataSource {
       final snapshot = await transaction.get(invoiceRef);
 
       if (!snapshot.exists) {
-        throw Exception('Invoice not found');
+        throw Exception('invoice_not_found'.tr());
       }
 
       final data = snapshot.data();
 
       if (data == null) {
-        throw Exception('Invoice not found');
+        throw Exception('invoice_not_found'.tr());
       }
 
       final invoiceUserId = data['userId']?.toString();
 
       if (invoiceUserId == null || invoiceUserId.isEmpty) {
-        throw Exception('Invoice not found');
+        throw Exception('invoice_not_found'.tr());
       }
 
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        final docSharedId = data['sharedAccountId']?.toString();
-        if (docSharedId != sharedAccountId) {
-          throw Exception('Invoice not found');
+      final userIds = data['userIds'];
+
+      if (userIds is List) {
+        final allowed = userIds.map((e) => e.toString()).contains(uid);
+
+        if (!allowed && invoiceUserId != uid) {
+          throw Exception('invoice_not_found'.tr());
         }
-      } else {
-        if (invoiceUserId != uid) {
-          throw Exception('Invoice not found');
+      } else if (invoiceUserId != uid) {
+        throw Exception('invoice_not_found'.tr());
+      }
+
+      final customerId = data['customerId']?.toString() ?? '';
+
+      final clientRef = firestore.collection('clients').doc(customerId);
+
+      if (customerId.isNotEmpty) {
+        final clientSnapshot = await transaction.get(clientRef);
+
+        if (!clientSnapshot.exists) {
+          throw Exception('client_not_found'.tr());
         }
       }
 

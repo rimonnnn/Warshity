@@ -488,7 +488,23 @@
   "invitation_accepted": "تم قبول الدعوة",
   "invitation_rejected": "تم رفض الدعوة",
   "shared_account_deleted": "تم حذف الحساب المشترك",
-
+  "no_shared_accounts": "لا توجد حسابات مشتركة",
+  "unknown_account": "حساب غير معروف",
+  "accepted": "مقبول",
+  "pending": "معلق",
+  "rejected": "مرفوض",
+  "unknown_status": "حالة غير معروفة",
+  "failed_to_load_shared_accounts": "فشل تحميل الحسابات المشتركة",
+  "failed_to_delete_shared_account": "فشل حذف الحساب المشترك"
+,
+  "connected": "مرتبط",
+  "connected_accounts": "الحسابات المرتبطة",
+  "pending_invitations": "الدعوات المعلقة",
+  "invitation_history": "سجل الدعوات",
+  "disconnected": "غير مرتبط",
+  "no_accounts_to_show": "لا توجد حسابات لعرضها",
+  "invitation_already_pending": "توجد بالفعل دعوة معلقة لهذا الحساب."
+,
   "onboarding": {
     "manage_your_business": {
       "title": "أدر مشروعك بسهولة",

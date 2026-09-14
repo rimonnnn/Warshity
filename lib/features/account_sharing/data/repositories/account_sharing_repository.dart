@@ -14,8 +14,8 @@ class AccountSharingRepository {
     return remoteDataSource.watchReceivedInvitations();
   }
 
-  Stream<List<ShareInvitationModel>> watchSentInvitationsStatus() {
-    return remoteDataSource.watchSentInvitationsStatus();
+  Stream<Map<String, String>> watchSentInvitationStatuses() {
+    return remoteDataSource.watchSentInvitationStatuses();
   }
 
   Future<void> respondToInvitation({

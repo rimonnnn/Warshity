@@ -482,8 +482,23 @@
   "invitation_accepted": "The invitation was accepted",
   "invitation_rejected": "The invitation was rejected",
   "shared_account_deleted": "The shared account was removed",
-
-
+  "no_shared_accounts": "No shared accounts",
+  "unknown_account": "Unknown account",
+  "accepted": "Accepted",
+  "pending": "Pending",
+  "rejected": "Rejected",
+  "unknown_status": "Unknown status",
+  "failed_to_load_shared_accounts": "Failed to load shared accounts",
+  "failed_to_delete_shared_account": "Failed to delete shared account"
+,
+  "connected": "Connected",
+  "connected_accounts": "Connected Accounts",
+  "pending_invitations": "Pending Invitations",
+  "invitation_history": "Invitation History",
+  "disconnected": "Disconnected",
+  "no_accounts_to_show": "No accounts to show",
+  "invitation_already_pending": "There is already a pending invitation with this account."
+,
   "onboarding": {
     "manage_your_business": {
       "title": "Manage your business with ease",

@@ -25,71 +25,96 @@ class CategoriesRemoteDataSource {
     return GetIt.I<AccountSharingRepository>().getSharedAccountId();
   }
 
+  Future<List<String>> _getUserIds() async {
+    final uid = _currentUserId;
+    final sharedAccountId = await _getSharedAccountId();
+
+    if (sharedAccountId == null || sharedAccountId.isEmpty) {
+      return [uid];
+    }
+
+    final snapshot = await firestore
+        .collection('shared_accounts')
+        .doc(sharedAccountId)
+        .get();
+
+    if (!snapshot.exists) {
+      return [uid];
+    }
+
+    final data = snapshot.data() ?? {};
+
+    final members =
+        (data['members'] as List?)
+            ?.map((e) => e.toString())
+            .where((e) => e.isNotEmpty)
+            .toList() ??
+        [];
+
+    if (!members.contains(uid)) {
+      members.add(uid);
+    }
+
+    return members.toSet().toList();
+  }
+
   Stream<List<CategoryModel>> watchCategories() {
     final uid = _currentUserId;
 
     return GetIt.I<AccountSharingRepository>()
         .watchSharedAccountId()
-        .asyncExpand((sharedAccountId) {
-      Query<Map<String, dynamic>> query = firestore.collection('categories');
+        .asyncExpand((_) {
+          final query = firestore
+              .collection('categories')
+              .where('userIds', arrayContains: uid);
 
-      if (sharedAccountId == null || sharedAccountId.isEmpty) {
-        query = query.where('userId', isEqualTo: uid);
-      } else {
-        query = query.where(
-          'sharedAccountId',
-          isEqualTo: sharedAccountId,
-        );
-      }
+          return query.snapshots().map((snapshot) {
+            final categories = snapshot.docs
+                .map((doc) => CategoryModel.fromFirestore(doc.id, doc.data()))
+                .toList();
 
-      return query.snapshots().map((snapshot) {
-        final categories = snapshot.docs
-            .map((doc) => CategoryModel.fromFirestore(doc.id, doc.data()))
-            .toList();
+            categories.sort((a, b) => a.name.compareTo(b.name));
 
-        categories.sort((a, b) => a.name.compareTo(b.name));
-
-        return categories;
-      });
-    });
+            return categories;
+          });
+        });
   }
 
-  Future<void> addCategory(String name) async {
-    final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
+Future<void> addCategory(String name) async {
+  final uid = _currentUserId;
+  final sharedAccountId = await _getSharedAccountId();
+  final userIds = await _getUserIds();
 
-    final categoryName = name.trim();
+  final categoryName = name.trim();
 
-    if (categoryName.isEmpty) {
-      throw Exception('category_name_required'.tr());
-    }
-
-    Query<Map<String, dynamic>> query = firestore.collection('categories');
-
-    if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-      query = query.where(
-        'sharedAccountId',
-        isEqualTo: sharedAccountId,
-      );
-    } else {
-      query = query.where('userId', isEqualTo: uid);
-    }
-
-    final existing = await query
-        .where('name', isEqualTo: categoryName)
-        .limit(1)
-        .get();
-
-    if (existing.docs.isNotEmpty) {
-      throw Exception('category_already_exists'.tr());
-    }
-
-    final data = <String, dynamic>{'name': categoryName, 'userId': uid};
-
-    if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-      data['sharedAccountId'] = sharedAccountId;
-    }
-
-    await firestore.collection('categories').add(data);
+  if (categoryName.isEmpty) {
+    throw Exception('category_name_required'.tr());
   }
+
+  final existing = await firestore
+      .collection('categories')
+      .where('userIds', arrayContains: uid)
+      .where('name', isEqualTo: categoryName)
+      .limit(1)
+      .get();
+
+  if (existing.docs.isNotEmpty) {
+    throw Exception('category_already_exists'.tr());
+  }
+
+  final ref = firestore.collection('categories').doc();
+
+  final data = <String, dynamic>{
+    'name': categoryName,
+    'userId': uid,
+    'userIds': userIds,
+    'sharedDataId': ref.id,
+  };
+
+  if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
+    data['sharedAccountId'] = sharedAccountId;
+  }
+
+  await ref.set(data);
+}
 }
