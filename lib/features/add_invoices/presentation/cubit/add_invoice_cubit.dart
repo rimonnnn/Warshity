@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_state.dart';
@@ -204,7 +205,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
         state.selectedCustomerName == null) {
       emit(
         InvoiceError(
-          message: 'Please select a customer',
+          message: 'please_select_customer'.tr(),
           selectedCustomerId: state.selectedCustomerId,
           selectedCustomerName: state.selectedCustomerName,
           cartItems: state.cartItems,
@@ -223,7 +224,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
     if (state.cartItems.isEmpty) {
       emit(
         InvoiceError(
-          message: 'Please add at least one product',
+          message: 'please_add_product'.tr(),
           selectedCustomerId: state.selectedCustomerId,
           selectedCustomerName: state.selectedCustomerName,
           cartItems: state.cartItems,
@@ -275,7 +276,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
 
       emit(
         InvoiceSuccess(
-          message: 'Invoice ready',
+          message: 'invoice_ready'.tr(),
           invoice: invoice,
           invoiceId: invoice.invoiceId,
           createdAt: invoice.createdAt,
@@ -314,7 +315,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
     if (state.invoiceId == null ||
         state.createdAt == null ||
         state.selectedCustomerName == null) {
-      throw Exception('Invoice data is incomplete');
+      throw Exception('invoice_data_not_found'.tr());
     }
 
     return InvoicePdfData(

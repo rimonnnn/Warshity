@@ -6,10 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
-
-import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
 import 'package:warshity/features/account_sharing/presentation/widgets/account_history_card_widget.dart';
@@ -36,6 +33,7 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
   bool _isLoading = true;
 
   List<Map<String, dynamic>> _allInvitations = [];
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +45,6 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
     _sentSubscription?.cancel();
     _receivedSubscription?.cancel();
     _mappingSubscription?.cancel();
-
     super.dispose();
   }
 
@@ -107,7 +104,9 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       setState(() {
         _allInvitations = [];
@@ -120,7 +119,9 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
     final email = user.email?.trim().toLowerCase();
 
     if (email == null || email.isEmpty) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       setState(() {
         _allInvitations = [];
@@ -151,34 +152,11 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
         invitationsById[doc.id] = {'id': doc.id, ...doc.data()};
       }
 
-      Map<String, dynamic>? currentSharedAccount;
-
-      final mappingSnapshot = await FirebaseFirestore.instance
-          .collection('user_shared_accounts')
-          .doc(user.uid)
-          .get();
-
-      if (mappingSnapshot.exists && mappingSnapshot.data() != null) {
-        final mappingData = mappingSnapshot.data()!;
-
-        final sharedAccountId = mappingData['sharedAccountId']?.toString();
-
-        if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-          final sharedSnapshot = await FirebaseFirestore.instance
-              .collection('shared_accounts')
-              .doc(sharedAccountId)
-              .get();
-
-          if (sharedSnapshot.exists && sharedSnapshot.data() != null) {
-            currentSharedAccount = {
-              'id': sharedAccountId,
-              ...sharedSnapshot.data()!,
-            };
-          }
-        }
-      }
-
       final allInvitations = invitationsById.values.toList();
+
+      final connections = await context
+          .read<AccountSharingCubit>()
+          .getActiveSharedAccounts();
 
       final Map<String, List<Map<String, dynamic>>> groupedByEmail = {};
 
@@ -194,23 +172,39 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
 
       final List<Map<String, dynamic>> visibleItems = [];
 
+      final Set<String> connectedEmails = {};
+
+      for (final connection in connections) {
+        final connectionId = connection['id']?.toString();
+
+        if (connectionId == null || connectionId.isEmpty) {
+          continue;
+        }
+
+        final otherEmail = _getOtherConnectionEmail(connection, user.uid);
+
+        if (otherEmail.isEmpty) {
+          continue;
+        }
+
+        connectedEmails.add(otherEmail.toLowerCase());
+
+        visibleItems.add({
+          'type': 'connected',
+          'email': otherEmail,
+          'status': 'connected',
+          'connectionId': connectionId,
+        });
+      }
+
       for (final entry in groupedByEmail.entries) {
         final otherEmail = entry.key;
 
-        final invitations = entry.value;
-
-        if (_isCurrentConnectionForEmail(
-          otherEmail: otherEmail,
-          currentSharedAccount: currentSharedAccount,
-        )) {
-          visibleItems.add({
-            'type': 'connected',
-            'email': otherEmail,
-            'status': 'connected',
-          });
-
+        if (connectedEmails.contains(otherEmail.toLowerCase())) {
           continue;
         }
+
+        final invitations = entry.value;
 
         final pendingInvitations = invitations
             .where((invitation) => _getStatus(invitation) == 'pending')
@@ -275,14 +269,18 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
         );
       });
 
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       setState(() {
         _allInvitations = visibleItems;
         _isLoading = false;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       setState(() {
         _isLoading = false;
@@ -292,6 +290,34 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
         SnackBar(content: Text('${'failed_to_load_shared_accounts'.tr()}: $e')),
       );
     }
+  }
+
+  String _getOtherConnectionEmail(
+    Map<String, dynamic> connection,
+    String currentUid,
+  ) {
+    final emails = connection['emails'];
+
+    if (emails is! List) {
+      return '';
+    }
+
+    final normalizedEmails = emails
+        .map((e) => e.toString().trim().toLowerCase())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    final currentEmail = FirebaseAuth.instance.currentUser?.email
+        ?.trim()
+        .toLowerCase();
+
+    for (final connectionEmail in normalizedEmails) {
+      if (currentEmail != null && connectionEmail != currentEmail) {
+        return connectionEmail;
+      }
+    }
+
+    return normalizedEmails.isNotEmpty ? normalizedEmails.first : '';
   }
 
   int _getTypePriority(String? type) {
@@ -308,27 +334,6 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
       default:
         return 3;
     }
-  }
-
-  bool _isCurrentConnectionForEmail({
-    required String otherEmail,
-    required Map<String, dynamic>? currentSharedAccount,
-  }) {
-    if (currentSharedAccount == null) {
-      return false;
-    }
-
-    final emailsData = currentSharedAccount['emails'];
-
-    if (emailsData is! List) {
-      return false;
-    }
-
-    final emails = emailsData
-        .map((e) => e.toString().trim().toLowerCase())
-        .toList();
-
-    return emails.contains(otherEmail.trim().toLowerCase());
   }
 
   String _getOtherEmail(Map<String, dynamic> invitation) {
@@ -375,7 +380,7 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
     return DateTime.fromMillisecondsSinceEpoch(0);
   }
 
-  Future<void> _deleteSharedAccount() async {
+  Future<void> _deleteSharedAccount(String connectionId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -419,9 +424,13 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
     }
 
     try {
-      await context.read<AccountSharingCubit>().deleteSharedAccount();
+      await context.read<AccountSharingCubit>().deleteSharedAccount(
+        connectionId,
+      );
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -438,8 +447,7 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
       body: BlocListener<AccountSharingCubit, AccountSharingState>(
         listener: (context, state) {
           if (state is AccountSharedAccountDeleted) {
-            context.goNamed(AppRoutes.splashScreen);
-
+            _reloadData();
             return;
           }
 
@@ -494,11 +502,15 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
             ),
             SizedBox(height: 10.h),
             ...connectedAccounts.map((item) {
+              final connectionId = item['connectionId']?.toString() ?? '';
+
               return Padding(
                 padding: EdgeInsets.only(bottom: 12.h),
                 child: ConnectedAccountCardWidget(
                   email: item['email'].toString(),
-                  onDelete: _deleteSharedAccount,
+                  onDelete: connectionId.isEmpty
+                      ? null
+                      : () => _deleteSharedAccount(connectionId),
                   isDeleting: false,
                 ),
               );

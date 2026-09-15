@@ -1,15 +1,17 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get_it/get_it.dart';
 
 import 'package:warshity/features/products/data/models/category_model.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
 
 class CategoriesRemoteDataSource {
   final FirebaseFirestore firestore;
+  final AccountSharingRepository accountSharingRepository;
 
-  CategoriesRemoteDataSource(this.firestore);
+  CategoriesRemoteDataSource(this.firestore, this.accountSharingRepository);
 
   String get _currentUserId {
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -20,101 +22,126 @@ class CategoriesRemoteDataSource {
 
     return uid;
   }
-
-  Future<String?> _getSharedAccountId() async {
-    return GetIt.I<AccountSharingRepository>().getSharedAccountId();
-  }
-
-  Future<List<String>> _getUserIds() async {
-    final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
-
-    if (sharedAccountId == null || sharedAccountId.isEmpty) {
-      return [uid];
-    }
-
-    final snapshot = await firestore
-        .collection('shared_accounts')
-        .doc(sharedAccountId)
-        .get();
-
-    if (!snapshot.exists) {
-      return [uid];
-    }
-
-    final data = snapshot.data() ?? {};
-
-    final members =
-        (data['members'] as List?)
-            ?.map((e) => e.toString())
-            .where((e) => e.isNotEmpty)
-            .toList() ??
-        [];
-
-    if (!members.contains(uid)) {
-      members.add(uid);
-    }
-
-    return members.toSet().toList();
+  Future<List<String>> _getActiveConnectionIds() async {
+    return accountSharingRepository.getActiveConnectionIds();
   }
 
   Stream<List<CategoryModel>> watchCategories() {
     final uid = _currentUserId;
 
-    return GetIt.I<AccountSharingRepository>()
-        .watchSharedAccountId()
-        .asyncExpand((_) {
-          final query = firestore
+    return accountSharingRepository.watchActiveConnectionIds().asyncExpand((
+      connectionIds,
+    ) {
+      final streams = <Stream<QuerySnapshot<Map<String, dynamic>>>>[];
+
+      streams.add(
+        firestore
+            .collection('categories')
+            .where('userId', isEqualTo: uid)
+            .snapshots(),
+      );
+
+      for (final connectionId in connectionIds) {
+        if (connectionId.isEmpty) {
+          continue;
+        }
+
+        streams.add(
+          firestore
               .collection('categories')
-              .where('userIds', arrayContains: uid);
+              .where('sharedConnectionIds', arrayContains: connectionId)
+              .snapshots(),
+        );
+      }
 
-          return query.snapshots().map((snapshot) {
-            final categories = snapshot.docs
-                .map((doc) => CategoryModel.fromFirestore(doc.id, doc.data()))
-                .toList();
+      if (streams.length == 1) {
+        return streams.first.map((snapshot) {
+          final categories = snapshot.docs
+              .map((doc) => CategoryModel.fromFirestore(doc.id, doc.data()))
+              .toList();
 
-            categories.sort((a, b) => a.name.compareTo(b.name));
+          categories.sort((a, b) => a.name.compareTo(b.name));
 
-            return categories;
-          });
+          return categories;
         });
+      }
+
+      return Stream.multi((controller) {
+        final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+
+        final subscriptions =
+            <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
+
+        void emit() {
+          final categories = documents.values
+              .where((doc) => doc.exists && doc.data() != null)
+              .map((doc) => CategoryModel.fromFirestore(doc.id, doc.data()!))
+              .toList();
+
+          categories.sort((a, b) => a.name.compareTo(b.name));
+
+          controller.add(categories);
+        }
+
+        for (final stream in streams) {
+          final subscription = stream.listen((snapshot) {
+            for (final change in snapshot.docChanges) {
+              if (change.type == DocumentChangeType.removed) {
+                documents.remove(change.doc.id);
+              } else {
+                documents[change.doc.id] = change.doc;
+              }
+            }
+
+            emit();
+          }, onError: controller.addError);
+
+          subscriptions.add(subscription);
+        }
+
+        controller.onCancel = () async {
+          for (final subscription in subscriptions) {
+            await subscription.cancel();
+          }
+        };
+      });
+    });
   }
 
-Future<void> addCategory(String name) async {
-  final uid = _currentUserId;
-  final sharedAccountId = await _getSharedAccountId();
-  final userIds = await _getUserIds();
+  Future<void> addCategory(String name) async {
+    final uid = _currentUserId;
 
-  final categoryName = name.trim();
+    final connectionIds = await _getActiveConnectionIds();
 
-  if (categoryName.isEmpty) {
-    throw Exception('category_name_required'.tr());
+    final categoryName = name.trim();
+
+    if (categoryName.isEmpty) {
+      throw Exception('category_name_required'.tr());
+    }
+
+    final existing = await firestore
+        .collection('categories')
+        .where('userId', isEqualTo: uid)
+        .where('name', isEqualTo: categoryName)
+        .limit(1)
+        .get();
+
+    if (existing.docs.isNotEmpty) {
+      throw Exception('category_already_exists'.tr());
+    }
+
+    final ref = firestore.collection('categories').doc();
+
+    final data = <String, dynamic>{
+      'name': categoryName,
+      'userId': uid,
+      'userIds': [uid],
+      'sharedConnectionIds': connectionIds,
+      'sharedDataId': ref.id,
+    };
+
+    data.remove('sharedAccountId');
+
+    await ref.set(data);
   }
-
-  final existing = await firestore
-      .collection('categories')
-      .where('userIds', arrayContains: uid)
-      .where('name', isEqualTo: categoryName)
-      .limit(1)
-      .get();
-
-  if (existing.docs.isNotEmpty) {
-    throw Exception('category_already_exists'.tr());
-  }
-
-  final ref = firestore.collection('categories').doc();
-
-  final data = <String, dynamic>{
-    'name': categoryName,
-    'userId': uid,
-    'userIds': userIds,
-    'sharedDataId': ref.id,
-  };
-
-  if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-    data['sharedAccountId'] = sharedAccountId;
-  }
-
-  await ref.set(data);
-}
 }

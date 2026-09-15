@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,68 +23,124 @@ class InvoicesRemoteDataSources {
     return uid;
   }
 
-  Future<String?> _getSharedAccountId() async {
-    return GetIt.I<AccountSharingRepository>().getSharedAccountId();
+  AccountSharingRepository get _sharingRepository =>
+      GetIt.I<AccountSharingRepository>();
+
+  List<String> _normalizeIds(dynamic value) {
+    if (value is! List) {
+      return <String>[];
+    }
+
+    return value
+        .map((e) => e.toString())
+        .where((e) => e.isNotEmpty)
+        .toSet()
+        .toList();
   }
 
-  // ignore: unused_element
-  Future<List<String>> _getUserIds() async {
-    final uid = _currentUserId;
-    final sharedAccountId = await _getSharedAccountId();
+  Future<List<String>> _getActiveConnectionIds() async {
+    return _sharingRepository.getActiveConnectionIds();
+  }
 
-    if (sharedAccountId == null || sharedAccountId.isEmpty) {
-      return [uid];
+  bool _hasSharedConnectionAccess({
+    required Map<String, dynamic> data,
+    required List<String> activeConnectionIds,
+  }) {
+    final sharedConnectionIds = _normalizeIds(data['sharedConnectionIds']);
+
+    if (sharedConnectionIds.isEmpty || activeConnectionIds.isEmpty) {
+      return false;
     }
 
-    final snapshot = await firestore
-        .collection('shared_accounts')
-        .doc(sharedAccountId)
-        .get();
-
-    if (!snapshot.exists) {
-      return [uid];
-    }
-
-    final data = snapshot.data() ?? {};
-
-    final members =
-        (data['members'] as List?)
-            ?.map((e) => e.toString())
-            .where((e) => e.isNotEmpty)
-            .toList() ??
-        [];
-
-    if (!members.contains(uid)) {
-      members.add(uid);
-    }
-
-    return members.toSet().toList();
+    return sharedConnectionIds.any(activeConnectionIds.contains);
   }
 
   Stream<List<InvoiceModel>> watchInvoices() {
     final uid = _currentUserId;
 
-    return GetIt.I<AccountSharingRepository>()
-        .watchSharedAccountId()
-        .asyncExpand((_) {
-          final query = firestore
+    return _sharingRepository.watchActiveConnectionIds().asyncExpand((
+      connectionIds,
+    ) {
+      final streams = <Stream<QuerySnapshot<Map<String, dynamic>>>>[];
+
+      streams.add(
+        firestore
+            .collection('invoices')
+            .where('userId', isEqualTo: uid)
+            .snapshots(),
+      );
+
+      for (final connectionId in connectionIds) {
+        if (connectionId.isEmpty) {
+          continue;
+        }
+
+        streams.add(
+          firestore
               .collection('invoices')
-              .where('userIds', arrayContains: uid);
+              .where('sharedConnectionIds', arrayContains: connectionId)
+              .snapshots(),
+        );
+      }
 
-          return query.snapshots().map((snapshot) {
-            final invoices = snapshot.docs
-                .map((doc) => InvoiceModel.fromJson(doc.data()))
-                .toList();
+      if (streams.length == 1) {
+        return streams.first.map((snapshot) {
+          final invoices = snapshot.docs
+              .map((doc) => InvoiceModel.fromJson(doc.data()))
+              .toList();
 
-            invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-            return invoices;
-          });
+          return invoices;
         });
+      }
+
+      return Stream.multi((controller) {
+        final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+
+        final subscriptions =
+            <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
+
+        void emit() {
+          final invoices = documents.values
+              .where((doc) => doc.exists && doc.data() != null)
+              .map((doc) => InvoiceModel.fromJson(doc.data()!))
+              .toList();
+
+          invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+          controller.add(invoices);
+        }
+
+        for (final stream in streams) {
+          final subscription = stream.listen((snapshot) {
+            for (final change in snapshot.docChanges) {
+              if (change.type == DocumentChangeType.removed) {
+                documents.remove(change.doc.id);
+              } else {
+                documents[change.doc.id] = change.doc;
+              }
+            }
+
+            emit();
+          }, onError: controller.addError);
+
+          subscriptions.add(subscription);
+        }
+
+        controller.onCancel = () async {
+          for (final subscription in subscriptions) {
+            await subscription.cancel();
+          }
+        };
+      });
+    });
   }
 
   Future<void> deleteInvoice(String invoiceId) async {
     final uid = _currentUserId;
+
+    final activeConnectionIds = await _getActiveConnectionIds();
 
     final invoiceRef = firestore.collection('invoices').doc(invoiceId);
 
@@ -99,17 +157,23 @@ class InvoicesRemoteDataSources {
         throw Exception('invoice_data_not_found'.tr());
       }
 
-      final invoiceUserIds = (invoiceData['userIds'] as List?)
-          ?.map((e) => e.toString())
-          .toList();
-
       final invoiceUserId = invoiceData['userId']?.toString();
 
-      final hasAccess =
-          invoiceUserIds?.contains(uid) == true || invoiceUserId == uid;
+      final isOwner = invoiceUserId == uid;
 
-      if (!hasAccess) {
-        throw Exception('invoice_not_found'.tr());
+      final hasSharedAccess = _hasSharedConnectionAccess(
+        data: invoiceData,
+        activeConnectionIds: activeConnectionIds,
+      );
+
+      if (!isOwner && !hasSharedAccess) {
+        final legacyUserIds = _normalizeIds(invoiceData['userIds']);
+
+        final legacyAccess = legacyUserIds.contains(uid);
+
+        if (!legacyAccess) {
+          throw Exception('invoice_not_found'.tr());
+        }
       }
 
       final customerId = invoiceData['customerId']?.toString() ?? '';
@@ -134,21 +198,29 @@ class InvoicesRemoteDataSources {
 
         final clientData = clientSnapshot.data() ?? {};
 
-        final clientUserIds = (clientData['userIds'] as List?)
-            ?.map((e) => e.toString())
-            .toList();
-
         final clientUserId = clientData['userId']?.toString();
 
-        final clientHasAccess =
-            clientUserIds?.contains(uid) == true || clientUserId == uid;
+        final clientIsOwner = clientUserId == uid;
+
+        final clientSharedAccess = _hasSharedConnectionAccess(
+          data: clientData,
+          activeConnectionIds: activeConnectionIds,
+        );
+
+        var clientHasAccess = clientIsOwner || clientSharedAccess;
+
+        if (!clientHasAccess) {
+          final legacyUserIds = _normalizeIds(clientData['userIds']);
+
+          clientHasAccess = legacyUserIds.contains(uid);
+        }
 
         if (!clientHasAccess) {
           throw Exception('client_not_found'.tr());
         }
       }
 
-      final Map<String, int> quantities = {};
+      final quantities = <String, int>{};
 
       if (stockDeducted) {
         final items = invoiceData['items'];
@@ -183,14 +255,22 @@ class InvoicesRemoteDataSources {
 
         final productData = productSnapshot.data() ?? {};
 
-        final productUserIds = (productData['userIds'] as List?)
-            ?.map((e) => e.toString())
-            .toList();
-
         final productUserId = productData['userId']?.toString();
 
-        final productHasAccess =
-            productUserIds?.contains(uid) == true || productUserId == uid;
+        final productIsOwner = productUserId == uid;
+
+        final productSharedAccess = _hasSharedConnectionAccess(
+          data: productData,
+          activeConnectionIds: activeConnectionIds,
+        );
+
+        var productHasAccess = productIsOwner || productSharedAccess;
+
+        if (!productHasAccess) {
+          final legacyUserIds = _normalizeIds(productData['userIds']);
+
+          productHasAccess = legacyUserIds.contains(uid);
+        }
 
         if (!productHasAccess) {
           throw Exception('product_not_found'.tr());

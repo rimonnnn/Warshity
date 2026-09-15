@@ -28,15 +28,43 @@ class AccountSharingRepository {
     );
   }
 
+  Future<List<Map<String, dynamic>>> getActiveSharedAccounts() {
+    return remoteDataSource.getActiveSharedAccounts();
+  }
+
+  Stream<List<Map<String, dynamic>>> watchActiveSharedAccounts() {
+    return remoteDataSource.watchActiveSharedAccounts();
+  }
+
+  Future<List<String>> getActiveConnectionIds() {
+    return remoteDataSource.getActiveConnectionIds();
+  }
+
+  Stream<List<String>> watchActiveConnectionIds() {
+    return remoteDataSource.watchActiveConnectionIds();
+  }
+
+  Future<List<String>> getConnectedUserIds() {
+    return remoteDataSource.getConnectedUserIds();
+  }
+
+  Stream<List<String>> watchConnectedUserIds() {
+    return remoteDataSource.watchConnectedUserIds();
+  }
+
+  Future<List<String>> getConnectionMembers(String connectionId) {
+    return remoteDataSource.getConnectionMembers(connectionId);
+  }
+
+  Future<void> deleteSharedAccount(String connectionId) {
+    return remoteDataSource.deleteSharedAccount(connectionId);
+  }
+
   Future<String?> getSharedAccountId() {
     return remoteDataSource.getSharedAccountId();
   }
 
   Stream<String?> watchSharedAccountId() {
     return remoteDataSource.watchSharedAccountId();
-  }
-
-  Future<void> deleteSharedAccount() {
-    return remoteDataSource.deleteSharedAccount();
   }
 }

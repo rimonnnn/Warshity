@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
@@ -60,7 +61,7 @@ class StoreInfoCard extends StatelessWidget {
                 const Spacer(),
 
                 Text(
-                  title ?? "store_information",
+                  title ?? "store_information".tr(),
                   style: context.text.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

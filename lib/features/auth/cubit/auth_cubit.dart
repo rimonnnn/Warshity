@@ -81,18 +81,18 @@ Stream<List<String>> get categoriesStream {
 
       _watchUserData();
 
-      emit(LoginSuccess('login_success'));
+      emit(LoginSuccess('login_success'.tr()));
     } on FirebaseAuthException catch (e) {
       log(
         '$providerName Sign-In Error: '
         '${e.code} - ${e.message}',
       );
 
-      emit(AuthError('generic_error_message'));
+      emit(AuthError('generic_error_message'.tr()));
     } catch (e) {
       log('$providerName Sign-In Error: $e');
 
-      emit(AuthError('generic_error_message'));
+      emit(AuthError('generic_error_message'.tr()));
     }
   }
 

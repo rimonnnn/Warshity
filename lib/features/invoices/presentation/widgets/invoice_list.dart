@@ -182,8 +182,8 @@ class InvoiceList extends StatelessWidget {
     builder: (dialogContext) {
       return AlertDialog(
         title: Text('delete'.tr()),
-        content: const Text(
-          'Are you sure you want to delete this invoice?',
+        content: Text(
+          'Are you sure you want to delete this invoice?'.tr(),
         ),
         actions: [
           TextButton(
@@ -232,7 +232,7 @@ class InvoiceList extends StatelessWidget {
 
     showAnimatedSnackDialog(
       context,
-      message: 'Invoice deleted successfully',
+      message: 'invoice_deleted_successfully'.tr(),
       type: AnimatedSnackBarType.success,
     );
   } catch (e) {
@@ -262,8 +262,8 @@ class InvoiceList extends StatelessWidget {
         // نعرض الحالة الفارغة بدل Loading لا نهائي.
         if (state is InvoiceHistoryLoading &&
             state.invoices.isEmpty) {
-          return const Center(
-            child: Text('No invoices found'),
+          return Center(
+            child: Text('no_invoice_found'.tr()),
           );
         }
 
@@ -281,8 +281,8 @@ class InvoiceList extends StatelessWidget {
         final invoices = state.filteredInvoices;
 
         if (invoices.isEmpty) {
-          return const Center(
-            child: Text('No invoices found'),
+          return Center(
+            child: Text('no_invoice_found'.tr()),
           );
         }
 

@@ -260,9 +260,9 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                             if (!ischecked) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   content: Text(
-                                    "You must accept the terms and conditions",
+                                    "validator_terms_required".tr(),
                                   ),
                                 ),
                               );
