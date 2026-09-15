@@ -505,6 +505,18 @@
   "no_accounts_to_show": "لا توجد حسابات لعرضها",
   "invitation_already_pending": "توجد بالفعل دعوة معلقة لهذا الحساب."
 ,
+"Deleting...": "حذف...",
+  "product_deleted_successfully": "تم حذف المنتج بنجاح",
+  "failed_to_delete_product": "فشل حذف المنتج",
+  "invoice_deleted_successfully": "تم حذف الفاتورة بنجاح",
+  "invoice_ready": "الفاتورة جاهزة",
+  "remove_item": "إزالة الصنف",
+  "decrease_quantity": "نقصان الكمية",
+  "increase_quantity": "زيادة الكمية",
+  "page_not_found": "الصفحة غير موجودة",
+  "google_sign_in_cancelled": "تم إلغاء تسجيل الدخول بـ Google",
+  "facebook_sign_in_cancelled": "تم إلغاء تسجيل الدخول بـ Facebook",
+  "facebook_sign_in_failed": "فشل تسجيل الدخول بـ Facebook",
   "onboarding": {
     "manage_your_business": {
       "title": "أدر مشروعك بسهولة",

@@ -76,6 +76,7 @@
   "send the link": "Send the link",
   "remember your password?": "Remember your password?",
   "resend" : "Resend",
+  "Deleting...": "Deleting...",
    "reset_link_sent_message": "A reset link has been sent to your email",
   "generic_error_message": "Something went wrong. Please try again",
   "resend_in": "Resend in",
@@ -499,6 +500,17 @@
   "no_accounts_to_show": "No accounts to show",
   "invitation_already_pending": "There is already a pending invitation with this account."
 ,
+  "product_deleted_successfully": "Product deleted successfully",
+  "failed_to_delete_product": "Failed to delete product",
+  "invoice_deleted_successfully": "Invoice deleted successfully",
+  "invoice_ready": "Invoice ready",
+  "remove_item": "Remove item",
+  "decrease_quantity": "Decrease quantity",
+  "increase_quantity": "Increase quantity",
+  "page_not_found": "Page not found",
+  "google_sign_in_cancelled": "Google sign-in was cancelled",
+  "facebook_sign_in_cancelled": "Facebook sign-in was cancelled",
+  "facebook_sign_in_failed": "Facebook sign-in failed",
   "onboarding": {
     "manage_your_business": {
       "title": "Manage your business with ease",

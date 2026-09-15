@@ -88,7 +88,7 @@ class AuthRepoImpl implements AuthRepo {
     final googleUser = await _googleSignIn.signIn();
 
     if (googleUser == null) {
-      throw Exception('google_sign_in_cancelled');
+      throw Exception('google_sign_in_cancelled'.tr());
     }
 
     final googleAuth = await googleUser.authentication;
@@ -113,16 +113,16 @@ class AuthRepoImpl implements AuthRepo {
 
     if (result.status != LoginStatus.success) {
       if (result.status == LoginStatus.cancelled) {
-        throw Exception('facebook_sign_in_cancelled');
+        throw Exception('facebook_sign_in_cancelled'.tr());
       }
 
-      throw Exception(result.message ?? 'facebook_sign_in_failed');
+      throw Exception(result.message ?? 'facebook_sign_in_failed'.tr());
     }
 
     final accessToken = result.accessToken;
 
     if (accessToken == null) {
-      throw Exception('facebook_sign_in_failed');
+      throw Exception('facebook_sign_in_failed'.tr());
     }
 
     final credential = FacebookAuthProvider.credential(accessToken.tokenString);

@@ -353,7 +353,7 @@ class _WebProductState extends State<WebProduct> {
                                         ).showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                              '${product.name} deleted successfully',
+                                              'product_deleted_successfully'.tr(),
                                             ),
                                           ),
                                         );
@@ -365,7 +365,7 @@ class _WebProductState extends State<WebProduct> {
                                         ).showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                              'Failed to delete product: $e',
+                                              'failed_to_delete_product'.tr(),
                                             ),
                                           ),
                                         );
