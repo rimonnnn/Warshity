@@ -144,6 +144,8 @@ class MyApp extends StatelessWidget {
                   title: 'Masiter',
                   debugShowCheckedModeBanner: false,
                   theme: AppTheme.lightTheme,
+                  themeMode: themeState.themeMode,
+                  darkTheme: AppTheme.darkTheme,
                   localizationsDelegates: context.localizationDelegates,
                   supportedLocales: context.supportedLocales,
                   locale: context.locale,

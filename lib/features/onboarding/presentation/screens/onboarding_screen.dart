@@ -71,6 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Column(
                 children: [
+                  
                   // Skip
                   if (!isLastPage)
                     Align(
