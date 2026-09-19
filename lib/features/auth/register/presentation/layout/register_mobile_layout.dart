@@ -307,9 +307,9 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
 
                                   if (!isChecked) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
+                                      SnackBar(
                                         content: Text(
-                                          "You must accept the terms and conditions",
+                                          "validator_terms_required".tr(),
                                         ),
                                       ),
                                     );

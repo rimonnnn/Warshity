@@ -18,7 +18,7 @@ class InvoiceEmptyState extends StatelessWidget {
             Icon(Icons.receipt_long, size: 80.sp, color: Colors.grey),
             SizedBox(height: 24.h),
             Text(
-              'invoice_history',
+              'invoice_history'.tr(),
               textAlign: TextAlign.center,
               style: context.text.titleLarge,
             ),

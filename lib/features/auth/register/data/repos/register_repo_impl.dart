@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:warshity/features/auth/register/data/models/user_model.dart';
 import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
@@ -51,7 +52,7 @@ Future<void> addCategory(String categoryName) async {
     final name = categoryName.trim();
 
     if (name.isEmpty) {
-      throw Exception('enter_category_name');
+      throw Exception('enter_category_name'.tr());
     }
 
     final existingCategory = await _firestore
@@ -61,7 +62,7 @@ Future<void> addCategory(String categoryName) async {
         .get();
 
     if (existingCategory.docs.isNotEmpty) {
-      throw Exception('category_already_exists');
+      throw Exception('category_already_exists'.tr());
     }
 
     await _firestore
@@ -88,7 +89,7 @@ Future<void> addCategory(String categoryName) async {
       final user = _auth.currentUser;
 
       if (user == null) {
-        throw Exception('No current user found');
+        throw Exception('no_current_user'.tr());
       }
 
       await user.sendEmailVerification();

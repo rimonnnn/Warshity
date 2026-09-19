@@ -226,7 +226,7 @@ class _MobileProductsState extends State<MobileProduct> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          '${product.name} deleted successfully',
+                                          'product_deleted_successfully'.tr(),
                                         ),
                                       ),
                                     );
@@ -236,7 +236,7 @@ class _MobileProductsState extends State<MobileProduct> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          'Failed to delete product: $e',
+                                          'failed_to_delete_product'.tr(),
                                         ),
                                       ),
                                     );

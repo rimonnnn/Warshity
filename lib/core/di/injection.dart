@@ -69,13 +69,13 @@ Future<void> setupDependencies() async {
     () => RegisterRepoImpl(getIt<FirebaseAuth>(), getIt<FirebaseFirestore>()),
   );
 
-getIt.registerLazySingleton<AuthRepo>(
-  () => AuthRepoImpl(
-    getIt<FirebaseAuth>(),
-    getIt<GoogleSignIn>(),
-    getIt<FirebaseFirestore>(),
-  ),
-);
+  getIt.registerLazySingleton<AuthRepo>(
+    () => AuthRepoImpl(
+      getIt<FirebaseAuth>(),
+      getIt<GoogleSignIn>(),
+      getIt<FirebaseFirestore>(),
+    ),
+  );
   getIt.registerFactory<AuthCubit>(
     () => AuthCubit(getIt<RegisterRepo>(), getIt<AuthRepo>()),
   );
@@ -99,12 +99,12 @@ getIt.registerLazySingleton<AuthRepo>(
   );
 
   getIt.registerLazySingleton<ProductsRemoteDataSource>(
-  () => ProductsRemoteDataSource(
-    getIt<FirebaseFirestore>(),
-    getIt<SupabaseClient>(),
-    getIt<AccountSharingRepository>(),
-  ),
-);
+    () => ProductsRemoteDataSource(
+      getIt<FirebaseFirestore>(),
+      getIt<SupabaseClient>(),
+      getIt<AccountSharingRepository>(),
+    ),
+  );
   getIt.registerFactory<ProductsRepository>(
     () => ProductsRepository(getIt<ProductsRemoteDataSource>()),
   );
@@ -118,7 +118,10 @@ getIt.registerLazySingleton<AuthRepo>(
   );
 
   getIt.registerLazySingleton<CategoriesRemoteDataSource>(
-    () => CategoriesRemoteDataSource(getIt<FirebaseFirestore>()),
+    () => CategoriesRemoteDataSource(
+      getIt<FirebaseFirestore>(),
+      getIt<AccountSharingRepository>(),
+    ),
   );
 
   getIt.registerLazySingleton<CategoriesRepository>(
@@ -150,47 +153,37 @@ getIt.registerLazySingleton<AuthRepo>(
     () => InvoicesRepository(getIt<InvoicesRemoteDataSource>()),
   );
 
-
   getIt.registerFactory<InvoiceCubit>(
     () => InvoiceCubit(getIt<InvoicesRepository>()),
   );
 
   getIt.registerLazySingleton<InvoicePdfService>(() => InvoicePdfService());
 
-
   getIt.registerLazySingleton<InvoicesRemoteDataSources>(
-  () => InvoicesRemoteDataSources(
-    getIt<FirebaseFirestore>(),
-  ),
-);
+    () => InvoicesRemoteDataSources(getIt<FirebaseFirestore>()),
+  );
 
-getIt.registerLazySingleton<InvoiceRepository>(
-  () => InvoiceRepository(
-    getIt<InvoicesRemoteDataSources>(),
-  ),
-);
-getIt.registerFactory<HomeCubit>(
-  () => HomeCubit(
-    clientsRepository: getIt<ClientsRepository>(),
-    productsRepository: getIt<ProductsRepository>(),
-    invoicesRepository: getIt<InvoiceRepository>(),
-  ),
-);
-getIt.registerLazySingleton<AccountSharingRemoteDataSource>(
-  () => AccountSharingRemoteDataSource(
-    getIt<FirebaseFirestore>(),
-    getIt<FirebaseAuth>(),
-  ),
-);
+  getIt.registerLazySingleton<InvoiceRepository>(
+    () => InvoiceRepository(getIt<InvoicesRemoteDataSources>()),
+  );
+  getIt.registerFactory<HomeCubit>(
+    () => HomeCubit(
+      clientsRepository: getIt<ClientsRepository>(),
+      productsRepository: getIt<ProductsRepository>(),
+      invoicesRepository: getIt<InvoiceRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<AccountSharingRemoteDataSource>(
+    () => AccountSharingRemoteDataSource(
+      getIt<FirebaseFirestore>(),
+      getIt<FirebaseAuth>(),
+    ),
+  );
 
-getIt.registerLazySingleton<AccountSharingRepository>(
-  () => AccountSharingRepository(
-    getIt<AccountSharingRemoteDataSource>(),
-  ),
-);
-getIt.registerLazySingleton<AccountSharingCubit>(
-  () => AccountSharingCubit(
-    getIt<AccountSharingRepository>(),
-  ),
-);
+  getIt.registerLazySingleton<AccountSharingRepository>(
+    () => AccountSharingRepository(getIt<AccountSharingRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<AccountSharingCubit>(
+    () => AccountSharingCubit(getIt<AccountSharingRepository>()),
+  );
 }

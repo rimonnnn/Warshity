@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/constants/app_radius.dart';
@@ -62,7 +63,7 @@ final double? height;
         onSubmitted: onSubmitted,
         onTap: onTap,
         decoration: InputDecoration(
-          hintText: hintText ?? "ابحث...",
+          hintText: hintText ?? "search".tr(),
           hintStyle: context.text.bodyMedium?.copyWith(
             color: context.colors.onSurfaceVariant,
           ),

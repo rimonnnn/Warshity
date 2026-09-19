@@ -11,35 +11,53 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
 
   final AccountSharingRepository repository;
 
-  StreamSubscription<String?>? _sharedAccountSubscription;
+  StreamSubscription<List<Map<String, dynamic>>>? _sharedAccountsSubscription;
+
   StreamSubscription<Map<String, String>>? _sentInvitationsSubscription;
 
-  String? _sharedAccountId;
-  String? _lastSharedAccountId;
+  List<Map<String, dynamic>> _connections = [];
+
+  Map<String, String> _lastSentStatuses = {};
 
   bool _sharedWatcherInitialized = false;
   bool _sentWatcherInitialized = false;
 
   bool _localAccept = false;
-  bool _localDelete = false;
+  String? _localDeletedConnectionId;
 
-  Map<String, String> _lastSentStatuses = {};
+  List<Map<String, dynamic>> get connections => List.unmodifiable(_connections);
 
-  String? get sharedAccountId => _sharedAccountId;
+  List<String> get connectionIds {
+    return _connections
+        .map((connection) => connection['id']?.toString() ?? '')
+        .where((id) => id.isNotEmpty)
+        .toList();
+  }
 
-  bool get isShared => _sharedAccountId != null && _sharedAccountId!.isNotEmpty;
+  int get connectionsCount => _connections.length;
 
-  void startWatchingSharedAccount() {
-    _sharedAccountSubscription?.cancel();
+  bool get isShared => _connections.isNotEmpty;
+
+  String? get sharedAccountId {
+    if (_connections.isEmpty) {
+      return null;
+    }
+
+    return _connections.first['id']?.toString();
+  }
+
+  void startWatchingSharedAccounts() {
+    _sharedAccountsSubscription?.cancel();
     _sentInvitationsSubscription?.cancel();
 
     _sharedWatcherInitialized = false;
     _sentWatcherInitialized = false;
-    _lastSharedAccountId = null;
+
+    _connections = [];
     _lastSentStatuses = {};
 
-    _sharedAccountSubscription = repository.watchSharedAccountId().listen(
-      _handleSharedAccountChange,
+    _sharedAccountsSubscription = repository.watchActiveSharedAccounts().listen(
+      _handleSharedAccountsChange,
       onError: (error) {
         if (!isClosed) {
           emit(AccountSharingError(error.toString()));
@@ -59,52 +77,58 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
         );
   }
 
-  void _handleSharedAccountChange(String? value) {
-    final newId = _normalize(value);
+  void startWatchingSharedAccount() {
+    startWatchingSharedAccounts();
+  }
+
+  void _handleSharedAccountsChange(List<Map<String, dynamic>> value) {
+    final newConnections = List<Map<String, dynamic>>.from(value);
+
+    final oldIds = _connections
+        .map((connection) => connection['id']?.toString() ?? '')
+        .where((id) => id.isNotEmpty)
+        .toSet();
+
+    final newIds = newConnections
+        .map((connection) => connection['id']?.toString() ?? '')
+        .where((id) => id.isNotEmpty)
+        .toSet();
 
     if (!_sharedWatcherInitialized) {
       _sharedWatcherInitialized = true;
-      _lastSharedAccountId = newId;
-      _sharedAccountId = newId;
+      _connections = newConnections;
 
       if (!isClosed) {
-        emit(AccountSharingStatusChanged(sharedAccountId: newId));
+        emit(AccountSharingStatusChanged(sharedAccountId: sharedAccountId));
       }
 
       return;
     }
 
-    final oldId = _lastSharedAccountId;
+    final addedIds = newIds.difference(oldIds);
+    final removedIds = oldIds.difference(newIds);
 
-    final changedToShared = oldId == null && newId != null;
+    _connections = newConnections;
 
-    final changedToPrivate = oldId != null && newId == null;
-
-    _lastSharedAccountId = newId;
-    _sharedAccountId = newId;
-
-    if (changedToShared) {
+    if (addedIds.isNotEmpty) {
       if (_localAccept) {
         _localAccept = false;
-      } else {
-        if (!isClosed) {
-          emit(AccountInvitationAcceptedRemotely());
-        }
+      } else if (!isClosed) {
+        emit(AccountInvitationAcceptedRemotely());
       }
     }
 
-    if (changedToPrivate) {
-      if (_localDelete) {
-        _localDelete = false;
-      } else {
-        if (!isClosed) {
-          emit(AccountSharedAccountDeletedRemotely());
-        }
+    if (removedIds.isNotEmpty) {
+      if (_localDeletedConnectionId != null &&
+          removedIds.contains(_localDeletedConnectionId)) {
+        _localDeletedConnectionId = null;
+      } else if (!isClosed) {
+        emit(AccountSharedAccountDeletedRemotely());
       }
     }
 
     if (!isClosed) {
-      emit(AccountSharingStatusChanged(sharedAccountId: newId));
+      emit(AccountSharingStatusChanged(sharedAccountId: sharedAccountId));
     }
   }
 
@@ -131,25 +155,23 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     _lastSentStatuses = Map<String, String>.from(statuses);
   }
 
-  String? _normalize(String? value) {
-    if (value == null) {
-      return null;
+  Future<void> sendInvitation({required String email}) async {
+    if (isClosed) {
+      return;
     }
 
-    final result = value.trim();
-
-    return result.isEmpty ? null : result;
-  }
-
-  Future<void> sendInvitation({required String email}) async {
     emit(AccountSharingLoading());
 
     try {
       await repository.sendInvitation(email: email);
 
-      emit(AccountInvitationSent());
+      if (!isClosed) {
+        emit(AccountInvitationSent());
+      }
     } catch (e) {
-      emit(AccountSharingError(e.toString()));
+      if (!isClosed) {
+        emit(AccountSharingError(e.toString()));
+      }
     }
   }
 
@@ -161,6 +183,10 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     required String invitationId,
     required bool accept,
   }) async {
+    if (isClosed) {
+      return;
+    }
+
     emit(AccountSharingLoading());
 
     try {
@@ -172,61 +198,107 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
           accept: true,
         );
 
-        final id = await repository.getSharedAccountId();
-
-        _sharedAccountId = _normalize(id);
-        _lastSharedAccountId = _sharedAccountId;
-
-        emit(AccountInvitationAccepted());
-
-        emit(AccountSharingStatusChanged(sharedAccountId: _sharedAccountId));
+        if (!isClosed) {
+          emit(AccountInvitationAccepted());
+        }
       } else {
         await repository.respondToInvitation(
           invitationId: invitationId,
           accept: false,
         );
 
-        emit(AccountInvitationRejected());
+        if (!isClosed) {
+          emit(AccountInvitationRejected());
+        }
       }
     } catch (e) {
       _localAccept = false;
-      emit(AccountSharingError(e.toString()));
+
+      if (!isClosed) {
+        emit(AccountSharingError(e.toString()));
+      }
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getActiveSharedAccounts() async {
+    final result = await repository.getActiveSharedAccounts();
+
+    _connections = List<Map<String, dynamic>>.from(result);
+
+    return connections;
+  }
+
+  Future<List<String>> getActiveConnectionIds() {
+    return repository.getActiveConnectionIds();
+  }
+
+  Future<List<String>> getConnectedUserIds() {
+    return repository.getConnectedUserIds();
+  }
+
+  Future<List<String>> getConnectionMembers(String connectionId) {
+    return repository.getConnectionMembers(connectionId);
+  }
+
+  Future<void> deleteSharedAccount(String connectionId) async {
+    if (isClosed) {
+      return;
+    }
+
+    if (connectionId.trim().isEmpty) {
+      return;
+    }
+
+    emit(AccountSharingLoading());
+
+    try {
+      _localDeletedConnectionId = connectionId;
+
+      await repository.deleteSharedAccount(connectionId);
+
+      _connections.removeWhere(
+        (connection) => connection['id']?.toString() == connectionId,
+      );
+
+      if (!isClosed) {
+        emit(AccountSharedAccountDeleted());
+
+        emit(AccountSharingStatusChanged(sharedAccountId: sharedAccountId));
+      }
+
+      _localDeletedConnectionId = null;
+    } catch (e) {
+      _localDeletedConnectionId = null;
+
+      if (!isClosed) {
+        emit(AccountSharingError(e.toString()));
+      }
     }
   }
 
   Future<String?> getSharedAccountId() async {
-    final id = await repository.getSharedAccountId();
+    if (_connections.isEmpty) {
+      await getActiveSharedAccounts();
+    }
 
-    _sharedAccountId = _normalize(id);
-    _lastSharedAccountId = _sharedAccountId;
-
-    return _sharedAccountId;
+    return sharedAccountId;
   }
 
-  Future<void> deleteSharedAccount() async {
-    emit(AccountSharingLoading());
+  int get activeConnectionsCount {
+    return _connections.length;
+  }
 
-    try {
-      _localDelete = true;
-
-      await repository.deleteSharedAccount();
-
-      _sharedAccountId = null;
-      _lastSharedAccountId = null;
-
-      emit(AccountSharedAccountDeleted());
-
-      emit(AccountSharingStatusChanged(sharedAccountId: null));
-    } catch (e) {
-      _localDelete = false;
-      emit(AccountSharingError(e.toString()));
-    }
+  bool get hasReachedMaxConnections {
+    return _connections.length >= 5;
   }
 
   @override
-  Future<void> close() {
-    _sharedAccountSubscription?.cancel();
-    _sentInvitationsSubscription?.cancel();
+  Future<void> close() async {
+    await _sharedAccountsSubscription?.cancel();
+    await _sentInvitationsSubscription?.cancel();
+
+    _sharedAccountsSubscription = null;
+    _sentInvitationsSubscription = null;
 
     return super.close();
   }

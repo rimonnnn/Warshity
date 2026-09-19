@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,9 +10,23 @@ class AccountSharingRemoteDataSource {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
 
-  static const _sharedDataIdField = 'sharedDataId';
+  static const int maxConnections = 5;
 
-  static const _collections = ['clients', 'products', 'categories', 'invoices'];
+  static const String _connectionIdsField = 'connectionIds';
+
+  static const String _connectionsCountField = 'connectionsCount';
+
+  static const String _sharedConnectionIdsField = 'sharedConnectionIds';
+
+  static const String _inheritedFromConnectionsField =
+      'inheritedFromConnections';
+
+  static const List<String> _dataCollections = [
+    'clients',
+    'products',
+    'categories',
+    'invoices',
+  ];
 
   String get _currentUserId {
     final uid = auth.currentUser?.uid;
@@ -30,9 +42,9 @@ class AccountSharingRemoteDataSource {
     return value.trim().toLowerCase();
   }
 
-  List<String> _normalizeUserIds(dynamic value) {
+  List<String> _normalizeIds(dynamic value) {
     if (value is! List) {
-      return [];
+      return <String>[];
     }
 
     return value
@@ -42,95 +54,320 @@ class AccountSharingRemoteDataSource {
         .toList();
   }
 
-  Map<String, dynamic> _copyMap(Map<String, dynamic> source) {
-    return Map<String, dynamic>.from(source);
+  List<String> _extractConnectionIds(Map<String, dynamic> data) {
+    final value = data[_connectionIdsField];
+
+    if (value is List) {
+      return _normalizeIds(value);
+    }
+
+    final legacy = data['sharedAccountId'];
+
+    if (legacy is String && legacy.isNotEmpty) {
+      return [legacy];
+    }
+
+    if (legacy is List) {
+      return _normalizeIds(legacy);
+    }
+
+    return <String>[];
   }
 
-  Map<String, dynamic> _withoutSharingFields(Map<String, dynamic> data) {
-    final result = _copyMap(data);
+  String _getLogicalDataId(Map<String, dynamic> data, String documentId) {
+    final sharedDataId = data['sharedDataId']?.toString().trim();
 
-    result.remove('userId');
-    result.remove('userIds');
-    result.remove('sharedAccountId');
-    result.remove(_sharedDataIdField);
+    if (sharedDataId != null && sharedDataId.isNotEmpty) {
+      return sharedDataId;
+    }
+
+    return documentId;
+  }
+
+  String _safeId(String value) {
+    final result = value.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+
+    if (result.isEmpty) {
+      return 'data';
+    }
 
     return result;
   }
 
-  dynamic _normalizeValue(dynamic value) {
+  String _getSeparatedDocumentId({
+    required String collectionName,
+    required String logicalDataId,
+    required String uid,
+  }) {
+    final id = 'separated_${collectionName}_${_safeId(logicalDataId)}_$uid';
+
+    if (id.length <= 1500) {
+      return id;
+    }
+
+    return id.substring(0, 1500);
+  }
+
+  DateTime? _getUpdatedAt(dynamic value) {
     if (value is Timestamp) {
-      return value.millisecondsSinceEpoch;
+      return value.toDate();
     }
 
-    if (value is GeoPoint) {
-      return {'latitude': value.latitude, 'longitude': value.longitude};
+    if (value is DateTime) {
+      return value;
     }
 
-    if (value is DocumentReference) {
-      return value.path;
+    if (value is String) {
+      return DateTime.tryParse(value);
     }
 
-    if (value is List) {
-      return value.map(_normalizeValue).toList();
-    }
-
-    if (value is Map) {
-      final map = <String, dynamic>{};
-
-      for (final entry in value.entries) {
-        map[entry.key.toString()] = _normalizeValue(entry.value);
-      }
-
-      return map;
-    }
-
-    return value;
+    return null;
   }
 
-  String _fingerprint(Map<String, dynamic> data) {
-    final normalized = _normalizeValue(_withoutSharingFields(data));
+  QueryDocumentSnapshot<Map<String, dynamic>> _selectCanonicalDocument({
+    required QueryDocumentSnapshot<Map<String, dynamic>> firstDoc,
+    required QueryDocumentSnapshot<Map<String, dynamic>> secondDoc,
+  }) {
+    final firstUpdatedAt = _getUpdatedAt(firstDoc.data()['updatedAt']);
 
-    return jsonEncode(normalized);
+    final secondUpdatedAt = _getUpdatedAt(secondDoc.data()['updatedAt']);
+
+    if (firstUpdatedAt == null && secondUpdatedAt == null) {
+      return firstDoc;
+    }
+
+    if (firstUpdatedAt == null) {
+      return secondDoc;
+    }
+
+    if (secondUpdatedAt == null) {
+      return firstDoc;
+    }
+
+    return firstUpdatedAt.isAfter(secondUpdatedAt) ? firstDoc : secondDoc;
   }
 
-  // ignore: unused_element
-  Future<List<String>> _getSharedMembers(String sharedAccountId) async {
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+  _getUserConnectionDocuments(String uid) async {
+    final mappingRef = firestore.collection('user_shared_accounts').doc(uid);
+
+    final mappingSnapshot = await mappingRef.get();
+
+    if (!mappingSnapshot.exists || mappingSnapshot.data() == null) {
+      return [];
+    }
+
+    final connectionIds = _extractConnectionIds(mappingSnapshot.data()!);
+
+    if (connectionIds.isEmpty) {
+      return [];
+    }
+
+    final result = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+
     final snapshot = await firestore
         .collection('shared_accounts')
-        .doc(sharedAccountId)
+        .where(FieldPath.documentId, whereIn: connectionIds)
         .get();
 
-    if (!snapshot.exists || snapshot.data() == null) {
+    for (final doc in snapshot.docs) {
+      final members = _normalizeIds(doc.data()['members']);
+
+      if (members.length != 2) {
+        continue;
+      }
+
+      if (!members.contains(uid)) {
+        continue;
+      }
+
+      final otherUid = members.firstWhere((id) => id != uid);
+
+      if (otherUid == uid) {
+        continue;
+      }
+
+      result.add(doc);
+    }
+
+    return result;
+  }
+
+  Future<int> _getActiveConnectionCount(String uid) async {
+    final connections = await _getUserConnectionDocuments(uid);
+
+    return connections.length;
+  }
+
+  Future<List<String>> _getActiveConnectionIdsForUser(String uid) async {
+    final connections = await _getUserConnectionDocuments(uid);
+
+    return connections.map((doc) => doc.id).toSet().toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getActiveSharedAccounts() async {
+    final uid = _currentUserId;
+
+    final documents = await _getUserConnectionDocuments(uid);
+
+    final unique = <String, Map<String, dynamic>>{};
+
+    for (final doc in documents) {
+      unique[doc.id] = {'id': doc.id, ...doc.data()};
+    }
+
+    return unique.values.toList();
+  }
+
+  Stream<List<Map<String, dynamic>>> watchActiveSharedAccounts() {
+    final uid = _currentUserId;
+
+    final mappingRef = firestore.collection('user_shared_accounts').doc(uid);
+
+    return mappingRef.snapshots().asyncExpand((mappingSnapshot) {
+      if (!mappingSnapshot.exists || mappingSnapshot.data() == null) {
+        return Stream.value(<Map<String, dynamic>>[]);
+      }
+
+      final connectionIds = _extractConnectionIds(mappingSnapshot.data()!);
+
+      if (connectionIds.isEmpty) {
+        return Stream.value(<Map<String, dynamic>>[]);
+      }
+
+      return firestore
+          .collection('shared_accounts')
+          .where(FieldPath.documentId, whereIn: connectionIds)
+          .snapshots()
+          .map((snapshot) {
+            final unique = <String, Map<String, dynamic>>{};
+
+            for (final doc in snapshot.docs) {
+              final data = doc.data();
+
+              final members = _normalizeIds(data['members']);
+
+              if (members.length != 2) {
+                continue;
+              }
+
+              if (!members.contains(uid)) {
+                continue;
+              }
+
+              final otherUid = members.firstWhere((id) => id != uid);
+
+              if (otherUid == uid) {
+                continue;
+              }
+
+              unique[doc.id] = {'id': doc.id, ...data};
+            }
+
+            return unique.values.toList();
+          });
+    });
+  }
+
+  Future<List<String>> getConnectedUserIds() async {
+    final uid = _currentUserId;
+
+    final connections = await getActiveSharedAccounts();
+
+    final ids = <String>{uid};
+
+    for (final connection in connections) {
+      final members = _normalizeIds(connection['members']);
+
+      for (final member in members) {
+        if (member != uid) {
+          ids.add(member);
+        }
+      }
+    }
+
+    return ids.toList();
+  }
+
+  Stream<List<String>> watchConnectedUserIds() {
+    return watchActiveSharedAccounts().map((connections) {
+      final uid = auth.currentUser?.uid ?? '';
+
+      final ids = <String>{};
+
+      if (uid.isNotEmpty) {
+        ids.add(uid);
+      }
+
+      for (final connection in connections) {
+        final members = _normalizeIds(connection['members']);
+
+        for (final member in members) {
+          if (member.isNotEmpty) {
+            ids.add(member);
+          }
+        }
+      }
+
+      return ids.toList();
+    });
+  }
+
+  Future<List<String>> getActiveConnectionIds() async {
+    final connections = await getActiveSharedAccounts();
+
+    return connections
+        .map((connection) => connection['id']?.toString() ?? '')
+        .where((id) => id.isNotEmpty)
+        .toList();
+  }
+
+  Stream<List<String>> watchActiveConnectionIds() {
+    return watchActiveSharedAccounts().map((connections) {
+      return connections
+          .map((connection) => connection['id']?.toString() ?? '')
+          .where((id) => id.isNotEmpty)
+          .toList();
+    });
+  }
+
+  Future<List<String>> getConnectionMembers(String connectionId) async {
+    final doc = await firestore
+        .collection('shared_accounts')
+        .doc(connectionId)
+        .get();
+
+    if (!doc.exists || doc.data() == null) {
       return [_currentUserId];
     }
 
-    final members = _normalizeUserIds(snapshot.data()?['members']);
+    final members = _normalizeIds(doc.data()!['members']);
 
-    if (!members.contains(_currentUserId)) {
-      members.add(_currentUserId);
+    if (members.isEmpty) {
+      return [_currentUserId];
     }
 
     return members;
   }
 
-  Future<void> _commitOperations(
-    List<void Function(WriteBatch)> operations,
-  ) async {
-    const maxOperations = 400;
+  Future<String?> getSharedAccountId() async {
+    final ids = await getActiveConnectionIds();
 
-    for (var i = 0; i < operations.length; i += maxOperations) {
-      final end = (i + maxOperations < operations.length)
-          ? i + maxOperations
-          : operations.length;
+    if (ids.isEmpty) {
+      return null;
+    }
 
-      final batch = firestore.batch();
+    return ids.first;
+  }
 
-      for (var j = i; j < end; j++) {
-        operations[j](batch);
+  Stream<String?> watchSharedAccountId() {
+    return watchActiveConnectionIds().map((ids) {
+      if (ids.isEmpty) {
+        return null;
       }
 
-      await batch.commit();
-    }
+      return ids.first;
+    });
   }
 
   Future<void> sendInvitation({required String email}) async {
@@ -141,50 +378,57 @@ class AccountSharingRemoteDataSource {
     }
 
     final currentEmail = currentUser.email == null
-        ? null
+        ? ''
         : _normalizeEmail(currentUser.email!);
 
-    final toEmail = _normalizeEmail(email);
+    final targetEmail = _normalizeEmail(email);
 
-    if (toEmail.isEmpty) {
+    if (targetEmail.isEmpty) {
       throw Exception('email_is_required'.tr());
     }
 
-    if (currentEmail == null || currentEmail.isEmpty) {
+    if (currentEmail.isEmpty) {
       throw Exception('user_not_authenticated'.tr());
     }
 
-    if (currentEmail == toEmail) {
+    if (currentEmail == targetEmail) {
       throw Exception('cannot_invite_yourself'.tr());
     }
 
-    final currentMapping = await firestore
-        .collection('user_shared_accounts')
-        .doc(currentUser.uid)
+    final currentCount = await _getActiveConnectionCount(currentUser.uid);
+
+    if (currentCount >= maxConnections) {
+      throw Exception('maximum_connections_reached'.tr());
+    }
+
+    final targetSnapshot = await firestore
+        .collection('users')
+        .where('email', isEqualTo: targetEmail)
+        .limit(1)
         .get();
 
-    if (currentMapping.exists && currentMapping.data() != null) {
-      final sharedAccountId = currentMapping
-          .data()?['sharedAccountId']
-          ?.toString();
+    if (targetSnapshot.docs.isNotEmpty) {
+      final targetUid = targetSnapshot.docs.first.id;
 
-      if (sharedAccountId != null && sharedAccountId.isNotEmpty) {
-        final sharedAccount = await firestore
-            .collection('shared_accounts')
-            .doc(sharedAccountId)
-            .get();
+      if (targetUid == currentUser.uid) {
+        throw Exception('cannot_invite_yourself'.tr());
+      }
 
-        if (sharedAccount.exists && sharedAccount.data() != null) {
-          final emails =
-              (sharedAccount.data()?['emails'] as List?)
-                  ?.map((e) => _normalizeEmail(e.toString()))
-                  .where((e) => e.isNotEmpty)
-                  .toList() ??
-              [];
+      final targetCount = await _getActiveConnectionCount(targetUid);
 
-          if (emails.contains(toEmail)) {
-            throw Exception('already_connected_to_this_account'.tr());
-          }
+      if (targetCount >= maxConnections) {
+        throw Exception('maximum_connections_reached'.tr());
+      }
+
+      final existingConnections = await _getUserConnectionDocuments(
+        currentUser.uid,
+      );
+
+      for (final connection in existingConnections) {
+        final members = _normalizeIds(connection.data()['members']);
+
+        if (members.contains(targetUid)) {
+          throw Exception('already_connected_to_this_account'.tr());
         }
       }
     }
@@ -192,7 +436,7 @@ class AccountSharingRemoteDataSource {
     final pendingSent = await firestore
         .collection('account_shares')
         .where('fromUid', isEqualTo: currentUser.uid)
-        .where('toEmail', isEqualTo: toEmail)
+        .where('toEmail', isEqualTo: targetEmail)
         .where('status', isEqualTo: 'pending')
         .limit(1)
         .get();
@@ -204,7 +448,7 @@ class AccountSharingRemoteDataSource {
     final pendingReceived = await firestore
         .collection('account_shares')
         .where('toEmail', isEqualTo: currentEmail)
-        .where('fromEmail', isEqualTo: toEmail)
+        .where('fromEmail', isEqualTo: targetEmail)
         .where('status', isEqualTo: 'pending')
         .limit(1)
         .get();
@@ -216,7 +460,7 @@ class AccountSharingRemoteDataSource {
     await firestore.collection('account_shares').add({
       'fromUid': currentUser.uid,
       'fromEmail': currentEmail,
-      'toEmail': toEmail,
+      'toEmail': targetEmail,
       'status': 'pending',
       'createdAt': FieldValue.serverTimestamp(),
     });
@@ -236,11 +480,11 @@ class AccountSharingRemoteDataSource {
         .where('toEmail', isEqualTo: email)
         .where('status', isEqualTo: 'pending')
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
+        .map((snapshot) {
+          return snapshot.docs
               .map((doc) => ShareInvitationModel.fromMap(doc.id, doc.data()))
-              .toList(),
-        );
+              .toList();
+        });
   }
 
   Stream<Map<String, String>> watchSentInvitationStatuses() {
@@ -269,78 +513,292 @@ class AccountSharingRemoteDataSource {
         });
   }
 
-  Future<Map<String, String>> _deduplicateCollection({
-    required String collectionName,
-    required List<String> members,
-    Map<String, dynamic> Function(Map<String, dynamic>)? transform,
-  }) async {
-    final snapshot = await firestore
-        .collection(collectionName)
-        .where('userId', whereIn: members)
-        .get();
-
-    final groups =
-        <String, List<QueryDocumentSnapshot<Map<String, dynamic>>>>{};
-
-    for (final doc in snapshot.docs) {
-      final original = doc.data();
-      final data = transform == null
-          ? _copyMap(original)
-          : transform(_copyMap(original));
-
-      final sharedDataId = data[_sharedDataIdField]?.toString();
-
-      final key = sharedDataId != null && sharedDataId.isNotEmpty
-          ? 'shared:$sharedDataId'
-          : 'fingerprint:${_fingerprint(data)}';
-
-      groups.putIfAbsent(key, () => []).add(doc);
+  bool _canShareRecordToConnection({
+    required Map<String, dynamic> data,
+    required String connectionId,
+    required bool hadOtherConnectionsBeforeLink,
+  }) {
+    if (!hadOtherConnectionsBeforeLink) {
+      return true;
     }
 
-    final operations = <void Function(WriteBatch)>[];
-    final idMap = <String, String>{};
+    final inherited = _normalizeIds(data[_inheritedFromConnectionsField]);
 
-    for (final entry in groups.entries) {
-      final docs = entry.value;
-
-      docs.sort((a, b) {
-        final aCreated = a.data()['createdAt']?.toString() ?? '';
-
-        final bCreated = b.data()['createdAt']?.toString() ?? '';
-
-        return aCreated.compareTo(bCreated);
-      });
-
-      final canonical = docs.first;
-      final canonicalData = transform == null
-          ? _copyMap(canonical.data())
-          : transform(_copyMap(canonical.data()));
-
-      final canonicalSharedDataId = canonicalData[_sharedDataIdField]
-          ?.toString();
-
-      canonicalData['userIds'] = members;
-      canonicalData['sharedAccountId'] = _currentPendingSharedAccountId!;
-      canonicalData[_sharedDataIdField] =
-          (canonicalSharedDataId != null && canonicalSharedDataId.isNotEmpty)
-          ? canonicalSharedDataId
-          : canonical.id;
-
-      operations.add((batch) => batch.set(canonical.reference, canonicalData));
-
-      for (final duplicate in docs.skip(1)) {
-        idMap[duplicate.id] = canonical.id;
-
-        operations.add((batch) => batch.delete(duplicate.reference));
-      }
+    if (inherited.isEmpty) {
+      return true;
     }
 
-    await _commitOperations(operations);
-
-    return idMap;
+    return inherited.contains(connectionId);
   }
 
-  String? _currentPendingSharedAccountId;
+  Future<void> _mergeDataForConnection({
+    required String firstUid,
+    required String secondUid,
+    required String connectionId,
+    required bool firstHadOtherConnections,
+    required bool secondHadOtherConnections,
+  }) async {
+    for (final collectionName in _dataCollections) {
+      final firstSnapshot = await firestore
+          .collection(collectionName)
+          .where('userId', isEqualTo: firstUid)
+          .get();
+
+      final secondSnapshot = await firestore
+          .collection(collectionName)
+          .where('userId', isEqualTo: secondUid)
+          .get();
+
+      final firstEligible =
+          <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
+
+      final secondEligible =
+          <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
+
+      for (final doc in firstSnapshot.docs) {
+        final data = doc.data();
+
+        if (!_canShareRecordToConnection(
+          data: data,
+          connectionId: connectionId,
+          hadOtherConnectionsBeforeLink: firstHadOtherConnections,
+        )) {
+          continue;
+        }
+
+        final logicalId = _getLogicalDataId(data, doc.id);
+
+        firstEligible[logicalId] = doc;
+      }
+
+      for (final doc in secondSnapshot.docs) {
+        final data = doc.data();
+
+        if (!_canShareRecordToConnection(
+          data: data,
+          connectionId: connectionId,
+          hadOtherConnectionsBeforeLink: secondHadOtherConnections,
+        )) {
+          continue;
+        }
+
+        final logicalId = _getLogicalDataId(data, doc.id);
+
+        secondEligible[logicalId] = doc;
+      }
+
+      final logicalIds = <String>{
+        ...firstEligible.keys,
+        ...secondEligible.keys,
+      };
+
+      if (logicalIds.isEmpty) {
+        continue;
+      }
+
+      const batchSize = 200;
+
+      final logicalIdList = logicalIds.toList();
+
+      for (var start = 0; start < logicalIdList.length; start += batchSize) {
+        final end = (start + batchSize < logicalIdList.length)
+            ? start + batchSize
+            : logicalIdList.length;
+
+        final batch = firestore.batch();
+
+        for (var index = start; index < end; index++) {
+          final logicalId = logicalIdList[index];
+
+          final firstDoc = firstEligible[logicalId];
+
+          final secondDoc = secondEligible[logicalId];
+
+          if (firstDoc != null && secondDoc == null) {
+            final data = Map<String, dynamic>.from(firstDoc.data());
+
+            _prepareMergedData(
+              data: data,
+              connectionId: connectionId,
+              otherUid: secondUid,
+            );
+
+            batch.update(firstDoc.reference, data);
+
+            continue;
+          }
+
+          if (firstDoc == null && secondDoc != null) {
+            final data = Map<String, dynamic>.from(secondDoc.data());
+
+            _prepareMergedData(
+              data: data,
+              connectionId: connectionId,
+              otherUid: firstUid,
+            );
+
+            batch.update(secondDoc.reference, data);
+
+            continue;
+          }
+
+          final first = firstDoc!;
+          final second = secondDoc!;
+
+          final canonical = _selectCanonicalDocument(
+            firstDoc: first,
+            secondDoc: second,
+          );
+
+          final duplicate = canonical.id == first.id ? second : first;
+
+          final canonicalData = Map<String, dynamic>.from(canonical.data());
+
+          final firstConnections = _normalizeIds(
+            first.data()[_sharedConnectionIdsField],
+          );
+
+          final secondConnections = _normalizeIds(
+            second.data()[_sharedConnectionIdsField],
+          );
+
+          final mergedConnections = <String>{
+            ...firstConnections,
+            ...secondConnections,
+            connectionId,
+          };
+
+          canonicalData[_sharedConnectionIdsField] = mergedConnections.toList();
+
+          canonicalData['userIds'] = [firstUid, secondUid];
+
+          canonicalData['sharedDataId'] = logicalId;
+
+          final inherited = _normalizeIds(
+            canonicalData[_inheritedFromConnectionsField],
+          );
+
+          inherited.remove(connectionId);
+
+          if (inherited.isEmpty) {
+            canonicalData.remove(_inheritedFromConnectionsField);
+          } else {
+            canonicalData[_inheritedFromConnectionsField] = inherited;
+          }
+
+          batch.set(canonical.reference, canonicalData);
+
+          batch.delete(duplicate.reference);
+        }
+
+        await batch.commit();
+      }
+    }
+  }
+
+  void _prepareMergedData({
+    required Map<String, dynamic> data,
+    required String connectionId,
+    required String otherUid,
+  }) {
+    final ids = _normalizeIds(data[_sharedConnectionIdsField]);
+
+    ids.add(connectionId);
+
+    data[_sharedConnectionIdsField] = ids;
+
+    final ownerUid = data['userId']?.toString();
+
+    final userIds = <String>{
+      if (ownerUid != null && ownerUid.isNotEmpty) ownerUid,
+      otherUid,
+    };
+
+    data['userIds'] = userIds.toList();
+
+    final inherited = _normalizeIds(data[_inheritedFromConnectionsField]);
+
+    inherited.remove(connectionId);
+
+    if (inherited.isEmpty) {
+      data.remove(_inheritedFromConnectionsField);
+    } else {
+      data[_inheritedFromConnectionsField] = inherited;
+    }
+  }
+
+  Future<void> _addConnectionToUserData({
+    required String ownerUid,
+    required String connectionId,
+    required bool hadOtherConnectionsBeforeLink,
+  }) async {
+    if (ownerUid.isEmpty || connectionId.isEmpty) {
+      return;
+    }
+
+    for (final collectionName in _dataCollections) {
+      final snapshot = await firestore
+          .collection(collectionName)
+          .where('userId', isEqualTo: ownerUid)
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        continue;
+      }
+
+      const batchSize = 400;
+
+      for (var start = 0; start < snapshot.docs.length; start += batchSize) {
+        final end = (start + batchSize < snapshot.docs.length)
+            ? start + batchSize
+            : snapshot.docs.length;
+
+        final batch = firestore.batch();
+
+        var operationCount = 0;
+
+        for (var index = start; index < end; index++) {
+          final doc = snapshot.docs[index];
+
+          final data = doc.data();
+
+          if (!_canShareRecordToConnection(
+            data: data,
+            connectionId: connectionId,
+            hadOtherConnectionsBeforeLink: hadOtherConnectionsBeforeLink,
+          )) {
+            continue;
+          }
+
+          final ids = _normalizeIds(data[_sharedConnectionIdsField]);
+
+          if (!ids.contains(connectionId)) {
+            ids.add(connectionId);
+          }
+
+          final inherited = _normalizeIds(data[_inheritedFromConnectionsField]);
+
+          inherited.remove(connectionId);
+
+          final updateData = <String, dynamic>{_sharedConnectionIdsField: ids};
+
+          if (inherited.isEmpty) {
+            updateData[_inheritedFromConnectionsField] = FieldValue.delete();
+          } else {
+            updateData[_inheritedFromConnectionsField] = inherited;
+          }
+
+          batch.update(doc.reference, updateData);
+
+          operationCount++;
+        }
+
+        if (operationCount > 0) {
+          await batch.commit();
+        }
+      }
+    }
+  }
 
   Future<void> respondToInvitation({
     required String invitationId,
@@ -356,19 +814,24 @@ class AccountSharingRemoteDataSource {
         .collection('account_shares')
         .doc(invitationId);
 
-    final snapshot = await invitationRef.get();
+    final invitationSnapshot = await invitationRef.get();
 
-    if (!snapshot.exists || snapshot.data() == null) {
+    if (!invitationSnapshot.exists || invitationSnapshot.data() == null) {
       throw Exception('invitation_not_found'.tr());
     }
 
-    final data = snapshot.data()!;
+    final invitationData = invitationSnapshot.data()!;
 
-    final toEmail = data['toEmail']?.toString().trim().toLowerCase();
+    final toEmail = invitationData['toEmail']?.toString().trim().toLowerCase();
 
-    final status = data['status']?.toString();
+    final fromEmail = invitationData['fromEmail']
+        ?.toString()
+        .trim()
+        .toLowerCase();
 
-    final fromUid = data['fromUid']?.toString();
+    final fromUid = invitationData['fromUid']?.toString();
+
+    final status = invitationData['status']?.toString();
 
     if (toEmail != _normalizeEmail(currentUser.email!)) {
       throw Exception('unauthorized_invitation'.tr());
@@ -382,6 +845,10 @@ class AccountSharingRemoteDataSource {
       throw Exception('invalid_invitation'.tr());
     }
 
+    if (fromUid == currentUser.uid) {
+      throw Exception('cannot_connect_to_yourself'.tr());
+    }
+
     if (!accept) {
       await invitationRef.update({
         'status': 'rejected',
@@ -391,421 +858,359 @@ class AccountSharingRemoteDataSource {
       return;
     }
 
-    final sharedAccountId = invitationId;
+    final senderCount = await _getActiveConnectionCount(fromUid);
 
-    final members = {fromUid, currentUser.uid}.toList();
+    final receiverCount = await _getActiveConnectionCount(currentUser.uid);
 
-    _currentPendingSharedAccountId = sharedAccountId;
+    if (senderCount >= maxConnections || receiverCount >= maxConnections) {
+      throw Exception('maximum_connections_reached'.tr());
+    }
 
-    try {
-      final clientMap = await _deduplicateCollection(
-        collectionName: 'clients',
-        members: members,
-      );
+    final senderConnections = await _getUserConnectionDocuments(fromUid);
 
-      final productMap = await _deduplicateCollection(
-        collectionName: 'products',
-        members: members,
-      );
+    for (final connection in senderConnections) {
+      final members = _normalizeIds(connection.data()['members']);
 
-      Map<String, dynamic> invoiceTransform(Map<String, dynamic> source) {
-        final data = _copyMap(source);
+      if (members.contains(currentUser.uid)) {
+        throw Exception('already_connected_to_this_account'.tr());
+      }
+    }
 
-        final customerId = data['customerId']?.toString();
+    final connectionId = invitationId;
 
-        if (customerId != null && clientMap.containsKey(customerId)) {
-          data['customerId'] = clientMap[customerId];
-        }
+    final sharedAccountRef = firestore
+        .collection('shared_accounts')
+        .doc(connectionId);
 
-        final items = data['items'];
+    final senderMappingRef = firestore
+        .collection('user_shared_accounts')
+        .doc(fromUid);
 
-        if (items is List) {
-          final updatedItems = <dynamic>[];
+    final receiverMappingRef = firestore
+        .collection('user_shared_accounts')
+        .doc(currentUser.uid);
 
-          for (final item in items) {
-            if (item is Map) {
-              final itemMap = Map<String, dynamic>.from(item);
+    final members = [fromUid, currentUser.uid];
 
-              final productId = itemMap['productId']?.toString();
+    final emails = [
+      _normalizeEmail(fromEmail ?? ''),
+      _normalizeEmail(currentUser.email!),
+    ];
 
-              if (productId != null && productMap.containsKey(productId)) {
-                itemMap['productId'] = productMap[productId];
-              }
+    final senderHadOtherConnections = senderCount > 0;
 
-              updatedItems.add(itemMap);
-            } else {
-              updatedItems.add(item);
-            }
-          }
+    final receiverHadOtherConnections = receiverCount > 0;
 
-          data['items'] = updatedItems;
-        }
+    await firestore.runTransaction((transaction) async {
+      final senderMappingSnapshot = await transaction.get(senderMappingRef);
 
-        return data;
+      final receiverMappingSnapshot = await transaction.get(receiverMappingRef);
+
+      final senderIds =
+          senderMappingSnapshot.exists && senderMappingSnapshot.data() != null
+          ? _extractConnectionIds(senderMappingSnapshot.data()!)
+          : <String>[];
+
+      final receiverIds =
+          receiverMappingSnapshot.exists &&
+              receiverMappingSnapshot.data() != null
+          ? _extractConnectionIds(receiverMappingSnapshot.data()!)
+          : <String>[];
+
+      if (senderIds.length >= maxConnections ||
+          receiverIds.length >= maxConnections) {
+        throw Exception('maximum_connections_reached'.tr());
       }
 
-      await _deduplicateCollection(
-        collectionName: 'categories',
-        members: members,
-      );
+      if (!senderIds.contains(connectionId)) {
+        senderIds.add(connectionId);
+      }
 
-      await _deduplicateCollection(
-        collectionName: 'invoices',
-        members: members,
-        transform: invoiceTransform,
-      );
+      if (!receiverIds.contains(connectionId)) {
+        receiverIds.add(connectionId);
+      }
 
-      final sharedAccountRef = firestore
-          .collection('shared_accounts')
-          .doc(sharedAccountId);
-
-      final ownerAccessRef = firestore
-          .collection('user_shared_accounts')
-          .doc(fromUid);
-
-      final currentAccessRef = firestore
-          .collection('user_shared_accounts')
-          .doc(currentUser.uid);
-
-      await sharedAccountRef.set({
+      transaction.set(sharedAccountRef, {
         'members': members,
-        'emails': [
-          _normalizeEmail(currentUser.email!),
-          _normalizeEmail(data['fromEmail']?.toString() ?? ''),
-        ],
+        'emails': emails,
         'invitationId': invitationId,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await Future.wait([
-        ownerAccessRef.set({
-          'sharedAccountId': sharedAccountId,
-          'members': members,
-          'invitationId': invitationId,
-          'createdAt': FieldValue.serverTimestamp(),
-        }),
-        currentAccessRef.set({
-          'sharedAccountId': sharedAccountId,
-          'members': members,
-          'invitationId': invitationId,
-          'createdAt': FieldValue.serverTimestamp(),
-        }),
-      ]);
+      transaction.set(senderMappingRef, {
+        _connectionIdsField: senderIds,
+        _connectionsCountField: senderIds.length,
+      }, SetOptions(merge: true));
 
-      await invitationRef.update({
+      transaction.set(receiverMappingRef, {
+        _connectionIdsField: receiverIds,
+        _connectionsCountField: receiverIds.length,
+      }, SetOptions(merge: true));
+
+      transaction.update(invitationRef, {
         'status': 'accepted',
-        'sharedAccountId': sharedAccountId,
+        'sharedAccountId': connectionId,
         'respondedAt': FieldValue.serverTimestamp(),
       });
-    } finally {
-      _currentPendingSharedAccountId = null;
-    }
+    });
+
+    await _mergeDataForConnection(
+      firstUid: fromUid,
+      secondUid: currentUser.uid,
+      connectionId: connectionId,
+      firstHadOtherConnections: senderHadOtherConnections,
+      secondHadOtherConnections: receiverHadOtherConnections,
+    );
+
+    await Future.wait([
+      _addConnectionToUserData(
+        ownerUid: fromUid,
+        connectionId: connectionId,
+        hadOtherConnectionsBeforeLink: senderHadOtherConnections,
+      ),
+      _addConnectionToUserData(
+        ownerUid: currentUser.uid,
+        connectionId: connectionId,
+        hadOtherConnectionsBeforeLink: receiverHadOtherConnections,
+      ),
+    ]);
   }
 
-  Future<String?> getSharedAccountId() async {
-    final currentUser = auth.currentUser;
-
-    if (currentUser == null) {
-      return null;
-    }
-
-    final snapshot = await firestore
-        .collection('user_shared_accounts')
-        .doc(currentUser.uid)
-        .get();
-
-    if (!snapshot.exists || snapshot.data() == null) {
-      return null;
-    }
-
-    final id = snapshot.data()?['sharedAccountId']?.toString();
-
-    if (id == null || id.isEmpty) {
-      return null;
-    }
-
-    return id;
-  }
-
-  Stream<String?> watchSharedAccountId() async* {
-    final currentUser = auth.currentUser;
-
-    if (currentUser == null) {
-      yield null;
-      return;
-    }
-
-    final ref = firestore
-        .collection('user_shared_accounts')
-        .doc(currentUser.uid);
-
-    await for (final snapshot in ref.snapshots()) {
-      if (!snapshot.exists || snapshot.data() == null) {
-        yield null;
-        continue;
-      }
-
-      final id = snapshot.data()?['sharedAccountId']?.toString();
-
-      yield id == null || id.isEmpty ? null : id;
-    }
-  }
-
-  Future<void> deleteSharedAccount() async {
+  Future<void> deleteSharedAccount(String connectionId) async {
     final currentUser = auth.currentUser;
 
     if (currentUser == null) {
       throw Exception('user_not_authenticated'.tr());
     }
 
-    final mappingSnapshot = await firestore
-        .collection('user_shared_accounts')
-        .doc(currentUser.uid)
-        .get();
-
-    if (!mappingSnapshot.exists || mappingSnapshot.data() == null) {
+    if (connectionId.trim().isEmpty) {
       throw Exception('shared_account_not_found'.tr());
     }
 
-    final mappingData = mappingSnapshot.data()!;
+    final sharedAccountRef = firestore
+        .collection('shared_accounts')
+        .doc(connectionId);
 
-    final sharedAccountId = mappingData['sharedAccountId']?.toString();
+    final sharedAccountSnapshot = await sharedAccountRef.get();
 
-    final members = _normalizeUserIds(mappingData['members']);
-
-    if (sharedAccountId == null ||
-        sharedAccountId.isEmpty ||
-        members.length != 2) {
+    if (!sharedAccountSnapshot.exists || sharedAccountSnapshot.data() == null) {
       throw Exception('shared_account_not_found'.tr());
     }
 
-    final memberA = members[0];
-    final memberB = members[1];
+    final members = _normalizeIds(sharedAccountSnapshot.data()?['members']);
 
-    final collections = ['clients', 'products', 'categories', 'invoices'];
+    if (members.length != 2 || !members.contains(currentUser.uid)) {
+      throw Exception('shared_account_not_found'.tr());
+    }
 
-    final snapshots =
-        <String, List<QueryDocumentSnapshot<Map<String, dynamic>>>>{};
+    final otherUserId = members.firstWhere((id) => id != currentUser.uid);
 
-    for (final collectionName in collections) {
+    final currentUserConnectionIds = await _getActiveConnectionIdsForUser(
+      currentUser.uid,
+    );
+
+    final otherUserConnectionIds = await _getActiveConnectionIdsForUser(
+      otherUserId,
+    );
+
+    final currentUserRemainingIds = currentUserConnectionIds
+        .where((id) => id != connectionId)
+        .toSet();
+
+    final otherUserRemainingIds = otherUserConnectionIds
+        .where((id) => id != connectionId)
+        .toSet();
+
+    for (final collectionName in _dataCollections) {
       final snapshot = await firestore
           .collection(collectionName)
-          .where('sharedAccountId', isEqualTo: sharedAccountId)
+          .where(_sharedConnectionIdsField, arrayContains: connectionId)
           .get();
 
-      snapshots[collectionName] = snapshot.docs;
-    }
-
-    final clientMapA = <String, String>{};
-    final clientMapB = <String, String>{};
-
-    final productMapA = <String, String>{};
-    final productMapB = <String, String>{};
-
-    final operations = <void Function(WriteBatch)>[];
-
-    String getLogicalKey(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
-      final data = doc.data();
-
-      final sharedDataId = data[_sharedDataIdField]?.toString();
-
-      if (sharedDataId != null && sharedDataId.isNotEmpty) {
-        return 'shared:$sharedDataId';
-      }
-
-      final invoiceId = data['invoiceId']?.toString();
-
-      if (invoiceId != null && invoiceId.isNotEmpty) {
-        return 'invoice:$invoiceId';
-      }
-
-      return 'fingerprint:${_fingerprint(data)}';
-    }
-
-    for (final collectionName in ['clients', 'products', 'categories']) {
-      final docs = snapshots[collectionName] ?? [];
-
-      final groups =
-          <String, List<QueryDocumentSnapshot<Map<String, dynamic>>>>{};
-
-      for (final doc in docs) {
-        final key = getLogicalKey(doc);
-
-        groups.putIfAbsent(key, () => []).add(doc);
-      }
-
-      for (final group in groups.values) {
-        if (group.isEmpty) {
-          continue;
-        }
-
-        group.sort((a, b) {
-          final aId = a.id;
-          final bId = b.id;
-          return aId.compareTo(bId);
-        });
-
-        final canonical = group.first;
-        final originalData = _copyMap(canonical.data());
-
-        final sharedDataId =
-            originalData[_sharedDataIdField]?.toString() ?? canonical.id;
-
-        final dataForA = _copyMap(originalData);
-
-        dataForA['userId'] = memberA;
-        dataForA['userIds'] = [memberA];
-        dataForA[_sharedDataIdField] = sharedDataId;
-        dataForA.remove('sharedAccountId');
-
-        operations.add((batch) => batch.set(canonical.reference, dataForA));
-
-        final copyForBRef = firestore.collection(collectionName).doc();
-
-        final dataForB = _copyMap(originalData);
-
-        dataForB['userId'] = memberB;
-        dataForB['userIds'] = [memberB];
-        dataForB[_sharedDataIdField] = sharedDataId;
-        dataForB.remove('sharedAccountId');
-
-        operations.add((batch) => batch.set(copyForBRef, dataForB));
-
-        if (collectionName == 'clients') {
-          for (final doc in group) {
-            clientMapA[doc.id] = canonical.id;
-            clientMapB[doc.id] = copyForBRef.id;
-          }
-        }
-
-        if (collectionName == 'products') {
-          for (final doc in group) {
-            productMapA[doc.id] = canonical.id;
-            productMapB[doc.id] = copyForBRef.id;
-          }
-        }
-
-        for (final duplicate in group.skip(1)) {
-          operations.add((batch) => batch.delete(duplicate.reference));
-        }
-      }
-    }
-
-    final invoiceDocs = snapshots['invoices'] ?? [];
-
-    final invoiceGroups =
-        <String, List<QueryDocumentSnapshot<Map<String, dynamic>>>>{};
-
-    for (final doc in invoiceDocs) {
-      final key = getLogicalKey(doc);
-
-      invoiceGroups.putIfAbsent(key, () => []).add(doc);
-    }
-
-    for (final group in invoiceGroups.values) {
-      if (group.isEmpty) {
+      if (snapshot.docs.isEmpty) {
         continue;
       }
 
-      group.sort((a, b) {
-        final aId = a.id;
-        final bId = b.id;
-        return aId.compareTo(bId);
-      });
+      final grouped = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
 
-      final canonical = group.first;
+      for (final doc in snapshot.docs) {
+        final logicalId = _getLogicalDataId(doc.data(), doc.id);
 
-      final originalData = _copyMap(canonical.data());
+        final existing = grouped[logicalId];
 
-      final sharedDataId =
-          originalData[_sharedDataIdField]?.toString() ?? canonical.id;
-
-      String? originalCustomerId = originalData['customerId']?.toString();
-
-      if (originalCustomerId != null) {
-        originalCustomerId =
-            clientMapA[originalCustomerId] ?? originalCustomerId;
-      }
-
-      List<dynamic> mapItems(dynamic items, Map<String, String> productMap) {
-        if (items is! List) {
-          return [];
+        if (existing == null) {
+          grouped[logicalId] = doc;
+          continue;
         }
 
-        return items.map((item) {
-          if (item is! Map) {
-            return item;
+        grouped[logicalId] = _selectCanonicalDocument(
+          firstDoc: existing,
+          secondDoc: doc,
+        );
+      }
+
+      const batchSize = 200;
+
+      final entries = grouped.entries.toList();
+
+      for (var start = 0; start < entries.length; start += batchSize) {
+        final end = (start + batchSize < entries.length)
+            ? start + batchSize
+            : entries.length;
+
+        final batch = firestore.batch();
+
+        for (var index = start; index < end; index++) {
+          final logicalDataId = entries[index].key;
+
+          final sourceDoc = entries[index].value;
+
+          final sourceData = Map<String, dynamic>.from(sourceDoc.data());
+
+          final originalOwnerUid = sourceData['userId']?.toString();
+
+          final sourceConnectionIds = _normalizeIds(
+            sourceData[_sharedConnectionIdsField],
+          );
+
+          final currentCopyId = _getSeparatedDocumentId(
+            collectionName: collectionName,
+            logicalDataId: logicalDataId,
+            uid: currentUser.uid,
+          );
+
+          final currentCopyRef = firestore
+              .collection(collectionName)
+              .doc(currentCopyId);
+
+          final currentCopyData = Map<String, dynamic>.from(sourceData);
+
+          currentCopyData['userId'] = currentUser.uid;
+
+          currentCopyData['userIds'] = [currentUser.uid];
+
+          final currentRemaining = sourceConnectionIds
+              .where(currentUserRemainingIds.contains)
+              .toList();
+
+          currentCopyData[_sharedConnectionIdsField] = currentRemaining;
+
+          final currentInherited = _normalizeIds(
+            sourceData[_inheritedFromConnectionsField],
+          );
+
+          if (originalOwnerUid != null && originalOwnerUid != currentUser.uid) {
+            currentInherited
+              ..clear()
+              ..addAll(currentRemaining);
           }
 
-          final itemMap = Map<String, dynamic>.from(item);
-
-          final productId = itemMap['productId']?.toString();
-
-          if (productId != null) {
-            itemMap['productId'] = productMap[productId] ?? productId;
+          if (currentInherited.isEmpty) {
+            currentCopyData.remove(_inheritedFromConnectionsField);
+          } else {
+            currentCopyData[_inheritedFromConnectionsField] = currentInherited;
           }
 
-          return itemMap;
-        }).toList();
-      }
+          currentCopyData['sharedDataId'] = logicalDataId;
 
-      final dataForA = _copyMap(originalData);
+          batch.set(currentCopyRef, currentCopyData);
 
-      dataForA['userId'] = memberA;
-      dataForA['userIds'] = [memberA];
-      dataForA['sharedDataId'] = sharedDataId;
-      dataForA['invoiceId'] = canonical.id;
+          final otherCopyId = _getSeparatedDocumentId(
+            collectionName: collectionName,
+            logicalDataId: logicalDataId,
+            uid: otherUserId,
+          );
 
-      if (originalCustomerId != null) {
-        dataForA['customerId'] = originalCustomerId;
-      }
+          final otherCopyRef = firestore
+              .collection(collectionName)
+              .doc(otherCopyId);
 
-      if (originalData['items'] is List) {
-        dataForA['items'] = mapItems(originalData['items'], productMapA);
-      }
+          final otherCopyData = Map<String, dynamic>.from(sourceData);
 
-      dataForA.remove('sharedAccountId');
+          otherCopyData['userId'] = otherUserId;
 
-      operations.add((batch) => batch.set(canonical.reference, dataForA));
+          otherCopyData['userIds'] = [otherUserId];
 
-      final copyForBRef = firestore.collection('invoices').doc();
+          final otherRemaining = sourceConnectionIds
+              .where(otherUserRemainingIds.contains)
+              .toList();
 
-      final dataForB = _copyMap(originalData);
+          otherCopyData[_sharedConnectionIdsField] = otherRemaining;
 
-      dataForB['userId'] = memberB;
-      dataForB['userIds'] = [memberB];
-      dataForB['sharedDataId'] = sharedDataId;
-      dataForB['invoiceId'] = copyForBRef.id;
+          final otherInherited = _normalizeIds(
+            sourceData[_inheritedFromConnectionsField],
+          );
 
-      if (originalCustomerId != null) {
-        dataForB['customerId'] =
-            clientMapB[originalCustomerId] ?? originalCustomerId;
-      }
+          if (originalOwnerUid != null && originalOwnerUid != otherUserId) {
+            otherInherited
+              ..clear()
+              ..addAll(otherRemaining);
+          }
 
-      if (originalData['items'] is List) {
-        dataForB['items'] = mapItems(originalData['items'], productMapB);
-      }
+          if (otherInherited.isEmpty) {
+            otherCopyData.remove(_inheritedFromConnectionsField);
+          } else {
+            otherCopyData[_inheritedFromConnectionsField] = otherInherited;
+          }
 
-      dataForB.remove('sharedAccountId');
+          otherCopyData['sharedDataId'] = logicalDataId;
 
-      operations.add((batch) => batch.set(copyForBRef, dataForB));
+          batch.set(otherCopyRef, otherCopyData);
 
-      for (final duplicate in group.skip(1)) {
-        operations.add((batch) => batch.delete(duplicate.reference));
+          for (final oldDoc in snapshot.docs.where(
+            (doc) => _getLogicalDataId(doc.data(), doc.id) == logicalDataId,
+          )) {
+            batch.delete(oldDoc.reference);
+          }
+        }
+
+        await batch.commit();
       }
     }
 
-    await _commitOperations(operations);
-
-    await Future.wait(
-      members.map(
-        (memberUid) => firestore
-            .collection('user_shared_accounts')
-            .doc(memberUid)
-            .delete(),
+    await Future.wait([
+      _removeConnectionFromUserMapping(
+        uid: currentUser.uid,
+        connectionId: connectionId,
       ),
-    );
+      _removeConnectionFromUserMapping(
+        uid: otherUserId,
+        connectionId: connectionId,
+      ),
+    ]);
 
-    await firestore.collection('shared_accounts').doc(sharedAccountId).delete();
+    await sharedAccountRef.delete();
+  }
+
+  Future<void> _removeConnectionFromUserMapping({
+    required String uid,
+    required String connectionId,
+  }) async {
+    final ref = firestore.collection('user_shared_accounts').doc(uid);
+
+    final snapshot = await ref.get();
+
+    if (!snapshot.exists || snapshot.data() == null) {
+      return;
+    }
+
+    final ids = _extractConnectionIds(snapshot.data()!);
+
+    ids.remove(connectionId);
+
+    await ref.set({
+      _connectionIdsField: ids,
+      _connectionsCountField: ids.length,
+    }, SetOptions(merge: true));
+  }
+
+  int _cachedConnectionsCount = 0;
+
+  int getActiveConnectionsCount() {
+    return _cachedConnectionsCount;
+  }
+
+  void updateConnectionsCount(int count) {
+    _cachedConnectionsCount = count;
   }
 }

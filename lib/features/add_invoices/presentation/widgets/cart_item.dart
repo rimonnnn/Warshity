@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:warshity/core/constants/app_padding.dart';
@@ -182,8 +183,8 @@ class _QuantityStepper extends StatelessWidget {
                 ? Icons.delete_outline
                 : Icons.remove,
             tooltip: atMinimum
-                ? 'Remove item'
-                : 'Decrease quantity',
+                ? 'remove_item'.tr()
+                : 'decrease_quantity'.tr(),
             onPressed: onDecrement,
             foreground: atMinimum
                 ? context.colors.error
@@ -203,7 +204,7 @@ class _QuantityStepper extends StatelessWidget {
 
           _StepperButton(
             icon: Icons.add_box,
-            tooltip: 'Increase quantity',
+            tooltip: 'increase_quantity'.tr(),
             onPressed: onIncrement,
             filled: true,
           ),

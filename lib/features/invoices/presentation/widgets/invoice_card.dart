@@ -98,7 +98,7 @@ class InvoiceCard extends StatelessWidget {
                         color: context.colors.onSurfaceVariant,
                       ),
                     ),
-                    Text('$itemCount Items', style: context.text.bodyMedium),
+                    Text('$itemCount ${'item_count'.tr()}', style: context.text.bodyMedium),
                   ],
                 ),
 

@@ -82,10 +82,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit(getIt())),
-        BlocProvider<AccountSharingCubit>(
-          create: (_) =>
-              getIt<AccountSharingCubit>()..startWatchingSharedAccount(),
-        ),
+       BlocProvider<AccountSharingCubit>(
+  create: (_) =>
+      getIt<AccountSharingCubit>()..startWatchingSharedAccounts(),
+),
       ],
       child: ScreenUtilInit(
         designSize: const Size(390, 884),
