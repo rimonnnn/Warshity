@@ -13,8 +13,8 @@ import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 
-import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
-import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
+import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
+import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_cubit.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_state.dart';

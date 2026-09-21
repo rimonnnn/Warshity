@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
+import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';

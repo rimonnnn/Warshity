@@ -12,8 +12,8 @@ import 'package:warshity/core/widgets/customer_balance_type.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/features/Cleints/data/model/customer_model.dart';
-import 'package:warshity/features/Cleints/presentation/cubit/add_client_cubit.dart';
+import 'package:warshity/features/clients/data/model/customer_model.dart';
+import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 
 class AddClientDialog extends StatefulWidget {
   const AddClientDialog({super.key});

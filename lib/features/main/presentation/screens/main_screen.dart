@@ -7,7 +7,7 @@ import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/app_responsive.dart';
-import 'package:warshity/features/Cleints/presentation/pages/clients_page.dart';
+import 'package:warshity/features/clients/presentation/pages/clients_page.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
 import 'package:warshity/features/home/presentation/layout/web_home.dart';
