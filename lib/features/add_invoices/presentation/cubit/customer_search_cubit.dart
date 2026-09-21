@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:warshity/features/Cleints/data/repo/clients_reprosatory.dart';
+import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 
 import 'customer_search_state.dart';
 
