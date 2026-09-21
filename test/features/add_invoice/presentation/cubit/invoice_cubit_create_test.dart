@@ -3,9 +3,9 @@ import 'package:mockito/mockito.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_cubit.dart';
 import 'package:warshity/features/add_invoices/presentation/cubit/add_invoice_state.dart';
 
-import 'invoice_cubit_test.mocks.dart';
 
 import 'invoice_test_helpers_test.dart';
+import 'invoice_test_helpers_test.mocks.dart';
 
 void main() {
   late InvoiceCubit cubit;

@@ -10,7 +10,7 @@ import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/clients_cubit.dart';
-import 'package:warshity/features/clients/presentation/cubit/remove_clients_state.dart';
+import 'package:warshity/features/clients/presentation/cubit/remove_clients_cubit.dart';
 import 'package:warshity/features/clients/presentation/widgets/add_customer_button.dart';
 import 'package:warshity/features/clients/presentation/widgets/clients_shimmer.dart';
 import 'package:warshity/features/clients/presentation/widgets/customer_filter_tabs.dart';
