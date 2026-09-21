@@ -1,37 +1,38 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
-import 'package:warshity/features/clients/presentation/cubit/remove_clients_cubit.dart';
+import 'package:equatable/equatable.dart';
 
-class RemoveClientCubit extends Cubit<RemoveClientState> {
-  final ClientsRepository repository;
+enum RemoveClientStatus { initial, loading, success, failure }
 
-  RemoveClientCubit(this.repository)
-      : super(const RemoveClientInitial());
+abstract class RemoveClientState extends Equatable {
+  const RemoveClientState();
 
-  Future<void> removeClient({
-    required String clientId,
-  }) async {
-    emit(
-      const RemoveClientAction(
-        status: RemoveClientStatus.loading,
-      ),
+  @override
+  List<Object?> get props => [];
+}
+
+class RemoveClientInitial extends RemoveClientState {
+  const RemoveClientInitial();
+}
+
+class RemoveClientAction extends RemoveClientState {
+  final RemoveClientStatus status;
+  final String? errorMessage;
+
+  const RemoveClientAction({
+    this.status = RemoveClientStatus.initial,
+    this.errorMessage,
+  });
+
+  RemoveClientAction copyWith({
+    RemoveClientStatus? status,
+    String? errorMessage,
+    bool clearError = false,
+  }) {
+    return RemoveClientAction(
+      status: status ?? this.status,
+      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
-
-    try {
-      await repository.removeClient(clientId);
-
-      emit(
-        const RemoveClientAction(
-          status: RemoveClientStatus.success,
-        ),
-      );
-    } catch (e) {
-      emit(
-        RemoveClientAction(
-          status: RemoveClientStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
-    }
   }
+
+  @override
+  List<Object?> get props => [status, errorMessage];
 }

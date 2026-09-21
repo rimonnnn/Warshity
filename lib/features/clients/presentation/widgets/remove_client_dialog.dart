@@ -7,8 +7,8 @@ import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/features/clients/presentation/cubit/remove_clients_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/remove_clients_state.dart';
+import 'package:warshity/features/clients/presentation/cubit/remove_clients_cubit.dart';
 
 class RemoveClientDialog extends StatelessWidget {
   final String clientId;

@@ -10,7 +10,7 @@ import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/debt_cubit.dart';
-import 'package:warshity/features/clients/presentation/cubit/remove_clients_state.dart';
+import 'package:warshity/features/clients/presentation/cubit/remove_clients_cubit.dart';
 import 'package:warshity/features/account_sharing/data/data_source/account_sharing_remote_data_source.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';

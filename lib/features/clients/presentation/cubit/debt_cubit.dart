@@ -28,11 +28,4 @@ class DebtCubit extends Cubit<DebtState> {
       );
     }
   }
-
-
-
-
-  
 }
-
-
