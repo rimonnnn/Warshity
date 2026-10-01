@@ -157,10 +157,10 @@ class CustomTextField extends StatelessWidget {
 
               errorStyle: context.text.bodySmall?.copyWith(
                 color: context.colors.error,
-                height: 1.2,
+                height: 0.5,
               ),
 
-              errorMaxLines: 2,
+              errorMaxLines: 1,
             ),
           ),
         ),

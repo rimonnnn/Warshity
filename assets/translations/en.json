@@ -524,7 +524,9 @@
       "title": "Your data is always with you",
       "description": "Keep your business data secure, work even without an internet connection, and sync your data automatically when you're back online."
     }
-  }
+  },
+  "debt_payment_exceeds_balance": "The payment amount exceeds the customer's current debt balance.",
+  "debt_payment_success": "Debt payment recorded successfully."
 }
 
 
