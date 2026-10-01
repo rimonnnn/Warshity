@@ -219,4 +219,18 @@ Future<void> changePassword({
 
     return super.close();
   }
+
+  Future<void> logOut() async {
+  emit(AuthLoading());
+
+  try {
+    await authRepo.logOut();
+
+    if (!isClosed) {
+      emit(LogoutSuccess());
+    }
+  } catch (e) {
+    _handleError(e);
+  }
+}
 }

@@ -9,13 +9,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/services/shared_pref_service.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/cubit/auth_state.dart';
 
 import 'core/di/injection.dart';
 import 'core/routing/router_generator_config.dart';
@@ -82,10 +84,12 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit(getIt())),
-       BlocProvider<AccountSharingCubit>(
-  create: (_) =>
-      getIt<AccountSharingCubit>()..startWatchingSharedAccounts(),
-),
+
+        BlocProvider<AuthCubit>(create: (_) => getIt<AuthCubit>()),
+
+        BlocProvider<AccountSharingCubit>(
+          create: (_) => getIt<AccountSharingCubit>(),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(390, 884),
@@ -93,63 +97,78 @@ class MyApp extends StatelessWidget {
         builder: (context, child) {
           return BlocBuilder<ThemeCubit, ThemeState>(
             builder: (context, themeState) {
-              return BlocListener<AccountSharingCubit, AccountSharingState>(
-                listener: (context, state) {
-                  if (state is AccountInvitationAccepted) {
-                    context.goNamed(AppRoutes.splashScreen);
-                    return;
+              return BlocListener<AuthCubit, AuthState>(
+                listener: (context, authState) {
+                  if (authState is UserLoaded) {
+                    context
+                        .read<AccountSharingCubit>()
+                        .startWatchingSharedAccounts();
                   }
 
-                  if (state is AccountInvitationRejected) {
-                    return;
-                  }
-
-                  if (state is AccountSharedAccountDeleted) {
-                    context.goNamed(AppRoutes.splashScreen);
-                    return;
-                  }
-
-                  if (state is AccountInvitationAcceptedRemotely) {
-                    unawaited(
-                      _showMessageThenSplash(
-                        context: context,
-                        message: 'invitation_accepted'.tr(),
-                        type: AnimatedSnackBarType.success,
-                      ),
-                    );
-                    return;
-                  }
-
-                  if (state is AccountInvitationRejectedRemotely) {
-                    showAnimatedSnackDialog(
-                      context,
-                      message: 'invitation_rejected'.tr(),
-                      type: AnimatedSnackBarType.error,
-                    );
-                    return;
-                  }
-
-                  if (state is AccountSharedAccountDeletedRemotely) {
-                    unawaited(
-                      _showMessageThenSplash(
-                        context: context,
-                        message: 'shared_account_deleted'.tr(),
-                        type: AnimatedSnackBarType.error,
-                      ),
-                    );
-                    return;
+                  if (authState is LogoutSuccess) {
+                    context
+                        .read<AccountSharingCubit>()
+                        .stopWatchingSharedAccounts();
                   }
                 },
-                child: MaterialApp.router(
-                  title: 'Masiter',
-                  debugShowCheckedModeBanner: false,
-                  theme: AppTheme.lightTheme,
-                  themeMode: themeState.themeMode,
-                  darkTheme: AppTheme.darkTheme,
-                  localizationsDelegates: context.localizationDelegates,
-                  supportedLocales: context.supportedLocales,
-                  locale: context.locale,
-                  routerConfig: RouterGeneratorConfig.goRouter,
+                child: BlocListener<AccountSharingCubit, AccountSharingState>(
+                  listener: (context, state) {
+                    if (state is AccountInvitationAccepted) {
+                      context.goNamed(AppRoutes.splashScreen);
+                      return;
+                    }
+
+                    if (state is AccountInvitationRejected) {
+                      return;
+                    }
+
+                    if (state is AccountSharedAccountDeleted) {
+                      context.goNamed(AppRoutes.splashScreen);
+                      return;
+                    }
+
+                    if (state is AccountInvitationAcceptedRemotely) {
+                      unawaited(
+                        _showMessageThenSplash(
+                          context: context,
+                          message: 'invitation_accepted'.tr(),
+                          type: AnimatedSnackBarType.success,
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (state is AccountInvitationRejectedRemotely) {
+                      showAnimatedSnackDialog(
+                        context,
+                        message: 'invitation_rejected'.tr(),
+                        type: AnimatedSnackBarType.error,
+                      );
+                      return;
+                    }
+
+                    if (state is AccountSharedAccountDeletedRemotely) {
+                      unawaited(
+                        _showMessageThenSplash(
+                          context: context,
+                          message: 'shared_account_deleted'.tr(),
+                          type: AnimatedSnackBarType.error,
+                        ),
+                      );
+                      return;
+                    }
+                  },
+                  child: MaterialApp.router(
+                    title: 'Masiter',
+                    debugShowCheckedModeBanner: false,
+                    theme: AppTheme.lightTheme,
+                    themeMode: themeState.themeMode,
+                    darkTheme: AppTheme.darkTheme,
+                    localizationsDelegates: context.localizationDelegates,
+                    supportedLocales: context.supportedLocales,
+                    locale: context.locale,
+                    routerConfig: RouterGeneratorConfig.goRouter,
+                  ),
                 ),
               );
             },

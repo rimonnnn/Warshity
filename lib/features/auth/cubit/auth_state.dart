@@ -50,3 +50,5 @@ class ForgotPasswordSuccess extends AuthState {
 
   ForgotPasswordSuccess(this.message);
 }
+
+class LogoutSuccess extends AuthState {}

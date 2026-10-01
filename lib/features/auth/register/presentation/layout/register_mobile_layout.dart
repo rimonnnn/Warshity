@@ -144,261 +144,265 @@ class _RegisterMobileLayoutState extends State<RegisterMobileLayout> {
 
                     Form(
                       key: _formKey,
-                      child: Container(
-                        width: 358.w,
-                        height: 1040.h,
-                        decoration: BoxDecoration(
-                          color: context.colors.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                        ),
+                      child: SingleChildScrollView(
+                        child: Container(
+                          width: 358.w,
+                          height: 1100.h,
+                          decoration: BoxDecoration(
+                            color: context.colors.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(AppRadius.md),
+                          ),
 
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24.w),
-                          child: Column(
-                            children: [
-                              HeightSpace(24.h),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: Column(
+                              children: [
+                                HeightSpace(24.h),
 
-                              CustomTextField(
-                                label: "labelname_of_shop".tr(),
-                                hint: "hintname_of_shop".tr(),
-                                keyboardType: TextInputType.text,
-                                prefixIconData: Icons.store,
-                                controller: shopNameController,
-                                validator: AppValidators.shopName,
-                              ),
+                                CustomTextField(
+                                  label: "labelname_of_shop".tr(),
+                                  hint: "hintname_of_shop".tr(),
+                                  keyboardType: TextInputType.text,
+                                  prefixIconData: Icons.store,
+                                  controller: shopNameController,
+                                  validator: AppValidators.shopName,
+                                ),
 
-                              HeightSpace(16.h),
+                                HeightSpace(16.h),
 
-                              CustomTextField(
-                                label: "accountname".tr(),
-                                hint: "enter_your_name".tr(),
-                                keyboardType: TextInputType.text,
-                                prefixIconData: Icons.person,
-                                controller: accountNameController,
-                                validator: AppValidators.accountName,
-                              ),
+                                CustomTextField(
+                                  label: "accountname".tr(),
+                                  hint: "enter_your_name".tr(),
+                                  keyboardType: TextInputType.text,
+                                  prefixIconData: Icons.person,
+                                  controller: accountNameController,
+                                  validator: AppValidators.accountName,
+                                ),
 
-                              HeightSpace(16.h),
+                                HeightSpace(16.h),
 
-                              CustomTextField(
-                                label: "email".tr(),
-                                hint: "enter_your_email".tr(),
-                                keyboardType: TextInputType.emailAddress,
-                                controller: emailController,
-                                prefixIconData: Icons.email,
-                                validator: AppValidators.email,
-                              ),
+                                CustomTextField(
+                                  label: "email".tr(),
+                                  hint: "enter_your_email".tr(),
+                                  keyboardType: TextInputType.emailAddress,
+                                  controller: emailController,
+                                  prefixIconData: Icons.email,
+                                  validator: AppValidators.email,
+                                ),
 
-                              HeightSpace(16.h),
+                                HeightSpace(16.h),
 
-                              StreamBuilder<List<String>>(
-                                stream: categoriesStream,
-                                builder: (context, snapshot) {
-                                  final firestoreCategories =
-                                      snapshot.data ?? [];
+                                StreamBuilder<List<String>>(
+                                  stream: categoriesStream,
+                                  builder: (context, snapshot) {
+                                    final firestoreCategories =
+                                        snapshot.data ?? [];
 
-                                  final allActivities = <String>{
-                                    ...activities,
-                                    ...firestoreCategories,
-                                  }.toList();
+                                    final allActivities = <String>{
+                                      ...activities,
+                                      ...firestoreCategories,
+                                    }.toList();
 
-                                  return CustomDropdown(
-                                    label: "activetype".tr(),
-                                    hint: "select_activity".tr(),
-                                    validator: (value) =>
-                                        AppValidators.dropdown(
-                                          value,
-                                          'select_activity'.tr(),
-                                        ),
-                                    items: allActivities,
-                                    selectedItem: selectedActivity,
-                                    prefixIconData: Icons.category_outlined,
+                                    return CustomDropdown(
+                                      label: "activetype".tr(),
+                                      hint: "select_activity".tr(),
+                                      validator: (value) =>
+                                          AppValidators.dropdown(
+                                            value,
+                                            'select_activity'.tr(),
+                                          ),
+                                      items: allActivities,
+                                      selectedItem: selectedActivity,
+                                      prefixIconData: Icons.category_outlined,
 
-                                    onSelected: (value) {
+                                      onSelected: (value) {
+                                        setState(() {
+                                          selectedActivity = value;
+                                        });
+                                      },
+
+                                      onAddCategory: (categoryName) async {
+                                        await context
+                                            .read<AuthCubit>()
+                                            .addCategory(categoryName);
+                                      },
+                                    );
+                                  },
+                                ),
+
+                                HeightSpace(16.h),
+
+                                CustomTextField(
+                                  label: "password".tr(),
+                                  hint: "hash".tr(),
+                                  keyboardType: TextInputType.text,
+                                  prefixIconData: Icons.lock,
+                                  obscureText: isvisible,
+                                  controller: passwordController,
+                                  validator: AppValidators.password,
+
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      isvisible
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                    ),
+                                    onPressed: () {
                                       setState(() {
-                                        selectedActivity = value;
+                                        isvisible = !isvisible;
                                       });
                                     },
-
-                                    onAddCategory: (categoryName) async {
-                                      await context
-                                          .read<AuthCubit>()
-                                          .addCategory(categoryName);
-                                    },
-                                  );
-                                },
-                              ),
-
-                              HeightSpace(16.h),
-
-                              CustomTextField(
-                                label: "password".tr(),
-                                hint: "hash".tr(),
-                                keyboardType: TextInputType.text,
-                                prefixIconData: Icons.lock,
-                                obscureText: isvisible,
-                                controller: passwordController,
-                                validator: AppValidators.password,
-
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    isvisible
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      isvisible = !isvisible;
-                                    });
-                                  },
                                 ),
-                              ),
 
-                              HeightSpace(16.h),
+                                HeightSpace(16.h),
 
-                              CustomTextField(
-                                label: "confirm_password".tr(),
-                                hint: "hash".tr(),
-                                keyboardType: TextInputType.text,
-                                prefixIconData: Icons.lock,
-                                controller: confirmPasswordController,
-                                validator: (value) =>
-                                    AppValidators.confirmPassword(
-                                      value,
-                                      passwordController.text,
-                                    ),
-                                obscureText: isvisible2,
-
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    isvisible2
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      isvisible2 = !isvisible2;
-                                    });
-                                  },
-                                ),
-                              ),
-
-                              HeightSpace(16.h),
-
-                              CheckboxWidget(
-                                width: 250.w,
-                                value: isChecked,
-                                onChanged: (value) {
-                                  setState(() {
-                                    isChecked = value ?? false;
-                                  });
-                                },
-                              ),
-
-                              HeightSpace(40.h),
-
-                              PrimaryButtonWidget(
-                                buttonText: "create_account1".tr(),
-                                fontSize: context.text.titleMedium?.fontSize,
-                                onPress: () {
-                                  if (!_formKey.currentState!.validate()) {
-                                    return;
-                                  }
-
-                                  if (!isChecked) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          "validator_terms_required".tr(),
-                                        ),
+                                CustomTextField(
+                                  label: "confirm_password".tr(),
+                                  hint: "hash".tr(),
+                                  keyboardType: TextInputType.text,
+                                  prefixIconData: Icons.lock,
+                                  controller: confirmPasswordController,
+                                  validator: (value) =>
+                                      AppValidators.confirmPassword(
+                                        value,
+                                        passwordController.text,
                                       ),
+                                  obscureText: isvisible2,
+
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      isvisible2
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        isvisible2 = !isvisible2;
+                                      });
+                                    },
+                                  ),
+                                ),
+
+                                HeightSpace(16.h),
+
+                                CheckboxWidget(
+                                  width: 250.w,
+                                  value: isChecked,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isChecked = value ?? false;
+                                    });
+                                  },
+                                ),
+
+                                HeightSpace(40.h),
+
+                                PrimaryButtonWidget(
+                                  buttonText: "create_account1".tr(),
+                                  fontSize: context.text.titleMedium?.fontSize,
+                                  onPress: () {
+                                    if (!_formKey.currentState!.validate()) {
+                                      return;
+                                    }
+
+                                    if (!isChecked) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "validator_terms_required".tr(),
+                                          ),
+                                        ),
+                                      );
+
+                                      return;
+                                    }
+
+                                    final user = UserModel(
+                                      uid: '',
+                                      shopName: shopNameController.text.trim(),
+                                      ownerName: accountNameController.text
+                                          .trim(),
+                                      email: emailController.text.trim(),
+                                      activity: selectedActivity!,
                                     );
 
-                                    return;
-                                  }
+                                    context.read<AuthCubit>().register(
+                                      user: user,
+                                      password: passwordController.text.trim(),
+                                    );
 
-                                  final user = UserModel(
-                                    uid: '',
-                                    shopName: shopNameController.text.trim(),
-                                    ownerName: accountNameController.text
-                                        .trim(),
-                                    email: emailController.text.trim(),
-                                    activity: selectedActivity!,
-                                  );
+                                    shopNameController.clear();
+                                    accountNameController.clear();
+                                    emailController.clear();
+                                    passwordController.clear();
+                                    confirmPasswordController.clear();
 
-                                  context.read<AuthCubit>().register(
-                                    user: user,
-                                    password: passwordController.text.trim(),
-                                  );
+                                    setState(() {
+                                      selectedActivity = null;
+                                    });
+                                  },
 
-                                  shopNameController.clear();
-                                  accountNameController.clear();
-                                  emailController.clear();
-                                  passwordController.clear();
-                                  confirmPasswordController.clear();
-
-                                  setState(() {
-                                    selectedActivity = null;
-                                  });
-                                },
-
-                                suffixicon: true,
-                                borderRadius: AppRadius.sm,
-                                buttonColor: context.colors.primary,
-                                textColor: context.colors.onPrimary,
-                                iconData: Icons.arrow_forward,
-                                iconSize: 24.sp,
-                                iconeColor: context.colors.onPrimary,
-                                height: 56.h,
-                                width: 310.w,
-                              ),
-
-                              HeightSpace(40.h),
-
-                              Dividerwidget(
-                                child: Text(
-                                  "continue".tr(),
-                                  style: context.text.bodyMedium,
+                                  suffixicon: true,
+                                  borderRadius: AppRadius.sm,
+                                  buttonColor: context.colors.primary,
+                                  textColor: context.colors.onPrimary,
+                                  iconData: Icons.arrow_forward,
+                                  iconSize: 24.sp,
+                                  iconeColor: context.colors.onPrimary,
+                                  height: 56.h,
+                                  width: 310.w,
                                 ),
-                              ),
 
-                              HeightSpace(20.h),
+                                HeightSpace(40),
 
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  OutlinedButtonWidget(
-                                    iconPath: AppAssets.google,
-                                    iconHeight: 35.h,
-                                    iconWidth: 35.w,
-                                    width: 120.w,
-                                    height: 50.h,
-                                    onPressed: () {
-                                      context
-                                          .read<AuthCubit>()
-                                          .signInWithGoogle();
-                                    },
+                                Dividerwidget(
+                                  child: Text(
+                                    "continue".tr(),
+                                    style: context.text.bodyMedium,
                                   ),
+                                ),
 
-                                  WidthSpace(16),
-                                  OutlinedButtonWidget(
-                                    icon: Icon(
-                                      Icons.facebook_rounded,
-                                      size: 40.sp,
-                                      color: Colors.blue.shade900,
+                                HeightSpace(20),
+
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    OutlinedButtonWidget(
+                                      iconPath: AppAssets.google,
+                                      iconHeight: 35.h,
+                                      iconWidth: 35.w,
+                                      width: 120.w,
+                                      height: 50.h,
+                                      onPressed: () {
+                                        context
+                                            .read<AuthCubit>()
+                                            .signInWithGoogle();
+                                      },
                                     ),
-                                    width: 120.w,
-                                    height: 50.h,
-                                    onPressed: () {
-                                      context
-                                          .read<AuthCubit>()
-                                          .signInWithFacebook();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
+
+                                    WidthSpace(16),
+                                    OutlinedButtonWidget(
+                                      icon: Icon(
+                                        Icons.facebook_rounded,
+                                        size: 40.sp,
+                                        color: Colors.blue.shade900,
+                                      ),
+                                      width: 120.w,
+                                      height: 50.h,
+                                      onPressed: () {
+                                        context
+                                            .read<AuthCubit>()
+                                            .signInWithFacebook();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

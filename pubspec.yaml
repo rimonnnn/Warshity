@@ -6,12 +6,12 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 flutter_native_splash:
   color: "#F8FAFC"
-  image: assets/images/app_icon.png
+  image: assets/images/app_icon_2.png
 
   color_dark: "#0F172A"
 
   android_12:
-    image: assets/images/app_icon.png
+    image: assets/images/app_icon_2.png
     icon_background_color: "#F8FAFC"
 
     icon_background_color_dark: "#0F172A"
@@ -94,7 +94,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/app_icon_2.png"
+  image_path: "assets/images/app_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

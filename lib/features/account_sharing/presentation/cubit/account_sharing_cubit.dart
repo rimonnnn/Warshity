@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:warshity/features/account_sharing/data/models/share_invitation_model.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
@@ -290,6 +289,23 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
 
   bool get hasReachedMaxConnections {
     return _connections.length >= 5;
+  }
+
+  void stopWatchingSharedAccounts() {
+    _sharedAccountsSubscription?.cancel();
+    _sentInvitationsSubscription?.cancel();
+
+    _sharedAccountsSubscription = null;
+    _sentInvitationsSubscription = null;
+
+    _sharedWatcherInitialized = false;
+    _sentWatcherInitialized = false;
+
+    _connections = [];
+    _lastSentStatuses = {};
+
+    _localAccept = false;
+    _localDeletedConnectionId = null;
   }
 
   @override
