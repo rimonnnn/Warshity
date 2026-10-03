@@ -497,6 +497,7 @@
   "failed_to_load_shared_accounts": "فشل تحميل الحسابات المشتركة",
   "failed_to_delete_shared_account": "فشل حذف الحساب المشترك"
 ,
+"Masiter": "مسيطر",
   "connected": "مرتبط",
   "connected_accounts": "الحسابات المرتبطة",
   "pending_invitations": "الدعوات المعلقة",

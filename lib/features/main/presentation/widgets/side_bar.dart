@@ -33,10 +33,10 @@ class Sidebar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               children: [
-                Image.asset(AppAssets.loginicon, width: 32, height: 32),
+                Image.asset(AppAssets.logo, width: 32, height: 32),
                 const SizedBox(width: 12),
                 Text(
-                  'wershity'.tr(),
+                  'Masiter'.tr(),
                   style: context.text.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: context.colors.primary,
