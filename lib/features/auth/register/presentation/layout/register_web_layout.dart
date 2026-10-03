@@ -101,6 +101,7 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
               child: Container(
                 width: 650,
                 height: 790,
+                margin: const EdgeInsets.symmetric(vertical: 32),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   color: context.colors.surfaceContainerLow,
