@@ -23,6 +23,7 @@ class CustomTextField extends StatelessWidget {
     this.borderRadius,
     this.maxlines,
     this.focusNode,
+    this.iconSize,
   });
 
   final String? label;
@@ -45,6 +46,7 @@ class CustomTextField extends StatelessWidget {
   final double? width;
   final double? height;
   final double? borderRadius;
+  final double? iconSize;
   final int? maxlines;
   final FocusNode? focusNode;
 
@@ -110,7 +112,7 @@ class CustomTextField extends StatelessWidget {
                   ? Icon(
                       prefixIconData,
                       color: context.colors.onSurfaceVariant,
-                      size: 24.sp,
+                      size: iconSize ?? 24.sp,
                     )
                   : null,
 

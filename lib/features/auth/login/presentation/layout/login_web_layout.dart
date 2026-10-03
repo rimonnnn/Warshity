@@ -112,34 +112,36 @@ class _LoginWebLayoutState extends State<LoginWebLayout> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            AppAssets.loginicon,
-                            width: 56,
-                            height: 56,
-                            color: context.colors.primary,
-                          ),
+                          Image.asset(AppAssets.logo, width: 80, height: 80),
                           const SizedBox(height: 20),
-                          Text(
-                            "welcome".tr(),
-                            style: context.text.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "welcome".tr(),
+                                style: context.text.bodyLarge?.copyWith(
+                                  color: context.colors.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "startlogin".tr(),
+                                style: context.text.bodySmall?.copyWith(
+                                  color: context.colors.onSurfaceVariant,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "startlogin".tr(),
-                            style: context.text.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 36),
+
+                          const SizedBox(height: 30),
                           CustomTextField(
                             height: 57,
-
+                            prefixIconData: Icons.email_outlined,
+                            iconSize: 20,
                             width: double.infinity,
                             label: "email".tr(),
-                            hint: "email1".tr(),
+                            hint: "enter_your_email".tr(),
                             borderRadius: 12,
                             keyboardType: TextInputType.emailAddress,
                             controller: emailController,
@@ -153,10 +155,12 @@ class _LoginWebLayoutState extends State<LoginWebLayout> {
                             hint: "hash".tr(),
                             borderRadius: 12,
                             keyboardType: TextInputType.visiblePassword,
-                            prefixIcon: AppAssets.password,
+
                             controller: passwordController,
                             validator: AppValidators.password,
                             obscureText: isPasswordVisible,
+                            prefixIconData: Icons.lock_outline,
+                            iconSize: 20,
                             suffixIcon: IconButton(
                               icon: Icon(
                                 isPasswordVisible
@@ -246,8 +250,8 @@ class _LoginWebLayoutState extends State<LoginWebLayout> {
                                   height: 48,
                                   child: OutlinedButtonWidget(
                                     iconPath: AppAssets.google,
-                                    iconWidth: 40,
-                                    iconHeight: 40,
+                                    iconWidth: 35,
+                                    iconHeight: 35,
                                     borderRadius: 12,
                                     onPressed: isLoading
                                         ? null
@@ -264,9 +268,12 @@ class _LoginWebLayoutState extends State<LoginWebLayout> {
                                 child: SizedBox(
                                   height: 48,
                                   child: OutlinedButtonWidget(
-                                    iconPath: AppAssets.facebook,
-                                    iconWidth: 40,
-                                    iconHeight: 40,
+                                    icon: Icon(
+                                      Icons.facebook_rounded,
+                                      size: 35,
+                                      color: Colors.blue.shade900,
+                                    ),
+
                                     borderRadius: 12,
                                     onPressed: isLoading
                                         ? null

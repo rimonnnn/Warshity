@@ -104,6 +104,7 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                               children: [
                                 CustomTextField(
                                   prefixIconData: Icons.email_outlined,
+                                  
                                   label: "email".tr(),
                                   hint: "enter_your_email".tr(),
                                   borderRadius: AppRadius.sm,
@@ -166,14 +167,16 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                                   height: 56.h,
                                   width: 310.w,
                                   buttonText: "login".tr(),
-                            
+
                                   isLoading: isLoading,
                                   onPress: isLoading
                                       ? null
                                       : () {
-                                          if (_formKey.currentState!.validate()) {
+                                          if (_formKey.currentState!
+                                              .validate()) {
                                             context.read<AuthCubit>().login(
-                                              email: emailController.text.trim(),
+                                              email: emailController.text
+                                                  .trim(),
                                               password: passwordController.text
                                                   .trim(),
                                             );

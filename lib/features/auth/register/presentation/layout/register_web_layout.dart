@@ -114,17 +114,29 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                       children: [
                         SizedBox(height: 32),
                         Image.asset(
-                          AppAssets.registerLogo,
-                          width: 64,
-                          height: 64,
+                          AppAssets.logo,
+                          width: 80,
+                          height: 80,
                           fit: BoxFit.contain,
-                          color: context.colors.primary,
                         ),
-                        Text(
-                          "create_account".tr(),
-                          style: context.text.headlineLarge,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "create_account".tr(),
+                              style: context.text.bodyLarge?.copyWith(
+                                color: context.colors.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              "start".tr(),
+                              style: context.text.bodySmall?.copyWith(
+                                color: context.colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text("start".tr(), style: context.text.bodyLarge),
+
                         HeightSpace(24),
                         Row(
                           children: [
@@ -136,7 +148,8 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               keyboardType: TextInputType.name,
                               controller: shopNameController,
                               validator: AppValidators.shopName,
-                              prefixIcon: AppAssets.shopname,
+                              prefixIconData: Icons.store,
+                              iconSize: 20,
                             ),
                             SizedBox(width: 16),
                             CustomTextField(
@@ -147,7 +160,8 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               validator: AppValidators.accountName,
                               borderRadius: AppRadius.sm,
                               keyboardType: TextInputType.emailAddress,
-                              prefixIcon: AppAssets.person,
+                              prefixIconData: Icons.person,
+                              iconSize: 20,
                             ),
                           ],
                         ),
@@ -156,13 +170,14 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                           children: [
                             CustomTextField(
                               label: "email".tr(),
-                              hint: "email1".tr(),
+                              hint: "enter_your_email".tr(),
                               width: 270,
                               controller: emailController,
                               validator: AppValidators.email,
                               borderRadius: AppRadius.sm,
                               keyboardType: TextInputType.phone,
-                              prefixIcon: AppAssets.shopname,
+                              prefixIconData: Icons.email,
+                              iconSize: 20,
                             ),
                             SizedBox(width: 16),
                             CustomDropdown(
@@ -196,7 +211,8 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               validator: AppValidators.password,
                               borderRadius: AppRadius.sm,
                               keyboardType: TextInputType.visiblePassword,
-                              prefixIcon: AppAssets.shopname,
+                              prefixIconData: Icons.lock,
+                              iconSize: 20,
                               obscureText: isvisible,
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -219,7 +235,8 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                               width: 270,
                               controller: confirmPasswordController,
                               validator: AppValidators.password,
-
+                              prefixIconData: Icons.lock,
+                              iconSize: 20,
                               borderRadius: AppRadius.sm,
                               keyboardType: TextInputType.visiblePassword,
                               obscureText: isvisible1,
@@ -236,7 +253,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                                   });
                                 },
                               ),
-                              prefixIcon: AppAssets.person,
                             ),
                           ],
                         ),
@@ -288,15 +304,13 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                             confirmPasswordController.clear();
                             selectedActivity = null;
                           },
-                          suffixicon: true,
-                          iconPath: "arrowpath".tr(),
+
                           borderRadius: AppRadius.sm,
                           buttonColor: context.colors.primary,
                           textColor: context.colors.onPrimary,
                           fontSize: context.text.titleLarge?.fontSize,
                           height: 56,
                           width: 434,
-                          buttonspacing: 0,
                         ),
                         HeightSpace(24),
                         Dividerwidget(
@@ -309,8 +323,9 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                         Row(
                           children: [
                             OutlinedButtonWidget(
-                              buttonText: "google".tr(),
                               iconPath: AppAssets.google,
+                              iconHeight: 35,
+                              iconWidth: 35,
                               width: 270,
                               height: 48,
                               onPressed: () {
@@ -319,8 +334,11 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                             ),
                             Spacer(),
                             OutlinedButtonWidget(
-                              buttonText: "facebook".tr(),
-                              iconPath: AppAssets.facebook,
+                              icon: Icon(
+                                Icons.facebook_rounded,
+                                size: 35,
+                                color: Colors.blue.shade900,
+                              ),
                               width: 270,
                               onPressed: () {
                                 context.read<AuthCubit>().signInWithFacebook();
@@ -340,7 +358,7 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                         HeightSpace(16),
                         Dividerwidget(
                           child: Image.asset(
-                            AppAssets.footer,
+                            AppAssets.logo,
                             width: 24,
                             height: 24,
                           ),
