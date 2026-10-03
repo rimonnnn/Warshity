@@ -526,7 +526,8 @@
     }
   },
   "debt_payment_exceeds_balance": "The payment amount exceeds the customer's current debt balance.",
-  "debt_payment_success": "Debt payment recorded successfully."
+  "debt_payment_success": "Debt payment recorded successfully.",
+  "loading_preparing": "Preparing the app..."
 }
 
 

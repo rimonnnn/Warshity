@@ -532,7 +532,8 @@
     }
   },
   "debt_payment_exceeds_balance": "مبلغ السداد يتجاوز رصيد المديونية الحالي للعميل.",
-  "debt_payment_success": "تم تسجيل سداد المديونية بنجاح."
+  "debt_payment_success": "تم تسجيل سداد المديونية بنجاح.",
+  "loading_preparing": "جاري تجهيز التطبيق..."
 }
 
 
