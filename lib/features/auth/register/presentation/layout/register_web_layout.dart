@@ -129,6 +129,7 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                                 color: context.colors.onSurfaceVariant,
                               ),
                             ),
+                            SizedBox(width: 8),
                             Text(
                               "start".tr(),
                               style: context.text.bodySmall?.copyWith(
