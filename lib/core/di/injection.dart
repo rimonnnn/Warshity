@@ -186,4 +186,5 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<AccountSharingCubit>(
     () => AccountSharingCubit(getIt<AccountSharingRepository>()),
   );
+
 }

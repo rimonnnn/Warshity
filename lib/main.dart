@@ -14,17 +14,18 @@ import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/services/shared_pref_service.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
+import 'package:warshity/core/web/reveal_app.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
+import 'package:warshity/firebase_options.dart';
 
 import 'core/di/injection.dart';
 import 'core/routing/router_generator_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/cubit/theme_cubit.dart';
 import 'core/theme/cubit/theme_state.dart';
-import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,9 +56,11 @@ Future<void> main() async {
       path: AppAssets.translations,
       fallbackLocale: const Locale('ar'),
       startLocale: const Locale('ar'),
-      child: const MyApp(),
+      child: const MyApp(), // بدل AppRoot
     ),
   );
+
+  if (kIsWeb) unawaited(revealApp());
 }
 
 class MyApp extends StatelessWidget {
