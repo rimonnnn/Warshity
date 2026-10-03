@@ -31,7 +31,7 @@
   "have_account" : "Already have an account? ",
   "login" : "Login",
   "account_created" : "Account Created Successfully",
-  "welcome" : "Welcome Back Again",
+  "welcome" : "Welcome Back",
   "startlogin" : "Start login to manage your workshop and store",
   "forget" : "Forget Password",
   "Don't_have_account" : "Don't have an account?",
@@ -528,7 +528,9 @@
   },
   "debt_payment_exceeds_balance": "The payment amount exceeds the customer's current debt balance.",
   "debt_payment_success": "Debt payment recorded successfully.",
-  "loading_preparing": "Preparing the app..."
+  "loading_preparing": "Preparing the app...",
+  "change_language": "Change Language",
+  "change_theme": "Change Theme"
 }
 
 
