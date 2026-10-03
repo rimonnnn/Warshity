@@ -2,11 +2,12 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
+
 import 'package:warshity/features/account_sharing/data/models/share_invitation_model.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
@@ -17,6 +18,7 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final theme = Theme.of(context);
 
     return BlocListener<AccountSharingCubit, AccountSharingState>(
       listener: (context, state) async {
@@ -30,204 +32,209 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
 
         if (state is AccountInvitationAccepted) {
           if (!context.mounted) return;
+
           Navigator.of(context).pop();
+
           if (!context.mounted) return;
+
           context.goNamed(AppRoutes.splashScreen);
         }
 
         if (state is AccountInvitationRejected) {
           if (!context.mounted) return;
+
           Navigator.of(context).pop();
         }
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 20.h),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 42.w,
-                  height: 5.h,
-                  decoration: BoxDecoration(
-                    color: colors.primary.withOpacity(.25),
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
+      child: Material(
+        color: Colors.transparent,
+        child: Center(
+          child: Container(
+            width: 560,
+            constraints: const BoxConstraints(maxWidth: 560, maxHeight: 720),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: theme.colorScheme.outlineVariant),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 30,
+                  offset: const Offset(0, 12),
                 ),
-
-                SizedBox(height: 22.h),
-
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 52.w,
-                      height: 52.w,
-                      decoration: BoxDecoration(
-                        color: colors.primary.withOpacity(.12),
-                        borderRadius: BorderRadius.circular(16.r),
-                      ),
-                      child: Icon(
-                        Icons.mail_outline_rounded,
-                        color: colors.primary,
-                        size: 27.sp,
-                      ),
-                    ),
-
-                    SizedBox(width: 14.w),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'account_invitations'.tr(),
-                            style: TextStyle(
-                              fontSize: 21.sp,
-                              fontWeight: FontWeight.w700,
-                              color: colors.primary,
-                            ),
-                          ),
-                          SizedBox(height: 5.h),
-                          Text(
-                            'account_invitations_description'.tr(),
-                            style: TextStyle(
-                              fontSize: 13.5.sp,
-                              height: 1.4,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.color?.withOpacity(.65),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(width: 8.w),
-
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(Icons.close_rounded, size: 24.sp),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 24.h),
-
-                StreamBuilder<List<ShareInvitationModel>>(
-                  stream: context
-                      .read<AccountSharingCubit>()
-                      .watchReceivedInvitations(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 35.h),
-                        child: SizedBox(
-                          width: 28.w,
-                          height: 28.w,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: colors.primary,
-                          ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      );
-                    }
+                        child: Icon(
+                          Icons.mail_outline_rounded,
+                          color: colors.primary,
+                          size: 28,
+                        ),
+                      ),
 
-                    if (snapshot.hasError) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30.h),
+                      const SizedBox(width: 16),
+
+                      Expanded(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.error_outline_rounded,
-                              size: 42.sp,
-                              color: colors.error,
-                            ),
-                            SizedBox(height: 10.h),
                             Text(
-                              'something_went_wrong'.tr(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 14.sp),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    final invitations = snapshot.data ?? [];
-
-                    if (invitations.isEmpty) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30.h),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 70.w,
-                              height: 70.w,
-                              decoration: BoxDecoration(
-                                color: colors.primary.withOpacity(.10),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.mark_email_read_outlined,
-                                size: 34.sp,
+                              'account_invitations'.tr(),
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
                                 color: colors.primary,
                               ),
                             ),
 
-                            SizedBox(height: 14.h),
+                            const SizedBox(height: 7),
 
                             Text(
-                              'no_pending_invitations'.tr(),
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-
-                            SizedBox(height: 5.h),
-
-                            Text(
-                              'no_invitations_description'.tr(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium?.color?.withOpacity(.60),
+                              'account_invitations_description'.tr(),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                height: 1.5,
                               ),
                             ),
                           ],
                         ),
-                      );
-                    }
-
-                    return ConstrainedBox(
-                      constraints: BoxConstraints(maxHeight: 430.h),
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: invitations.length,
-                        separatorBuilder: (_, __) => SizedBox(height: 12.h),
-                        itemBuilder: (context, index) {
-                          return _InvitationCard(
-                            invitation: invitations[index],
-                          );
-                        },
                       ),
-                    );
-                  },
-                ),
 
-                SizedBox(height: 8.h),
-              ],
+                      const SizedBox(width: 10),
+
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        tooltip: MaterialLocalizations.of(
+                          context,
+                        ).closeButtonTooltip,
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 26),
+
+                  Expanded(
+                    child: StreamBuilder<List<ShareInvitationModel>>(
+                      stream: context
+                          .read<AccountSharingCubit>()
+                          .watchReceivedInvitations(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: colors.primary,
+                            ),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.error_outline_rounded,
+                                    size: 48,
+                                    color: colors.error,
+                                  ),
+
+                                  const SizedBox(height: 12),
+
+                                  Text(
+                                    'something_went_wrong'.tr(),
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        final invitations = snapshot.data ?? [];
+
+                        if (invitations.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 76,
+                                    height: 76,
+                                    decoration: BoxDecoration(
+                                      color: colors.primary.withValues(
+                                        alpha: 0.10,
+                                      ),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.mark_email_read_outlined,
+                                      size: 36,
+                                      color: colors.primary,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 16),
+
+                                  Text(
+                                    'no_pending_invitations'.tr(),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+
+                                  const SizedBox(height: 6),
+
+                                  Text(
+                                    'no_invitations_description'.tr(),
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.textTheme.bodyMedium?.color
+                                          ?.withValues(alpha: 0.60),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        return ListView.separated(
+                          padding: EdgeInsets.zero,
+                          itemCount: invitations.length,
+                          separatorBuilder: (_, __) {
+                            return const SizedBox(height: 12);
+                          },
+                          itemBuilder: (context, index) {
+                            return _InvitationCard(
+                              invitation: invitations[index],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -244,15 +251,16 @@ class _InvitationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final theme = Theme.of(context);
 
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.surfaceContainerHighest.withOpacity(.35),
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(color: colors.primary.withOpacity(.12)),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.35,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.12)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,20 +268,20 @@ class _InvitationCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 44.w,
-                height: 44.w,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  color: colors.primary.withOpacity(.12),
+                  color: colors.primary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.person_outline_rounded,
                   color: colors.primary,
-                  size: 23.sp,
+                  size: 24,
                 ),
               ),
 
-              SizedBox(width: 12.w),
+              const SizedBox(width: 12),
 
               Expanded(
                 child: Column(
@@ -281,20 +289,18 @@ class _InvitationCard extends StatelessWidget {
                   children: [
                     Text(
                       'account_share_request'.tr(),
-                      style: TextStyle(
-                        fontSize: 14.sp,
+                      style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
 
-                    SizedBox(height: 3.h),
+                    const SizedBox(height: 4),
 
                     Text(
                       invitation.fromEmail,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13.sp,
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: colors.primary,
                         fontWeight: FontWeight.w500,
                       ),
@@ -305,20 +311,17 @@ class _InvitationCard extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 14.h),
+          const SizedBox(height: 16),
 
           Text(
             'account_share_invitation_description'.tr(),
-            style: TextStyle(
-              fontSize: 13.5.sp,
-              height: 1.45,
-              color: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.color?.withOpacity(.70),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              height: 1.5,
+              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.70),
             ),
           ),
 
-          SizedBox(height: 16.h),
+          const SizedBox(height: 18),
 
           Row(
             children: [
@@ -331,48 +334,44 @@ class _InvitationCard extends StatelessWidget {
                     );
                   },
                   style: OutlinedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 48.h),
-                    side: BorderSide(color: colors.error.withOpacity(.65)),
+                    minimumSize: const Size(double.infinity, 48),
+                    side: BorderSide(
+                      color: colors.error.withValues(alpha: 0.65),
+                    ),
+                    foregroundColor: colors.error,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
                   child: Text(
                     'reject'.tr(),
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: colors.error,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
 
-              SizedBox(width: 10.w),
+              const SizedBox(width: 12),
 
               Expanded(
-                child: ElevatedButton(
+                child: FilledButton(
                   onPressed: () {
                     context.read<AccountSharingCubit>().respondToInvitation(
                       invitationId: invitation.id,
                       accept: true,
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 48.h),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
                     backgroundColor: colors.primary,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
                   child: Text(
                     'accept'.tr(),
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
               ),

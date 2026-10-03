@@ -2,10 +2,10 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
+
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
 
@@ -17,8 +17,7 @@ class SendInvitationBottomSheet extends StatefulWidget {
       _SendInvitationBottomSheetState();
 }
 
-class _SendInvitationBottomSheetState
-    extends State<SendInvitationBottomSheet> {
+class _SendInvitationBottomSheetState extends State<SendInvitationBottomSheet> {
   final TextEditingController _emailController = TextEditingController();
 
   @override
@@ -39,14 +38,13 @@ class _SendInvitationBottomSheetState
       return;
     }
 
-    context.read<AccountSharingCubit>().sendInvitation(
-          email: email,
-        );
+    context.read<AccountSharingCubit>().sendInvitation(email: email);
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final theme = Theme.of(context);
 
     return BlocListener<AccountSharingCubit, AccountSharingState>(
       listener: (context, state) {
@@ -68,56 +66,48 @@ class _SendInvitationBottomSheetState
           );
         }
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(28.r),
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxWidth: 560),
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 30,
+                spreadRadius: 2,
+                offset: const Offset(0, 12),
+                color: Colors.black.withValues(alpha: 0.08),
+              ),
+            ],
           ),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              20.w,
-              12.h,
-              20.w,
-              20.h,
-            ),
+          child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Drag handle
-                Container(
-                  width: 42.w,
-                  height: 5.h,
-                  decoration: BoxDecoration(
-                    color: colors.primary.withOpacity(.25),
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                ),
-
-                SizedBox(height: 22.h),
-
-                // Header
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 52.w,
-                      height: 52.w,
+                      width: 56,
+                      height: 56,
                       decoration: BoxDecoration(
-                        color: colors.primary.withOpacity(.12),
-                        borderRadius: BorderRadius.circular(16.r),
+                        color: colors.primary.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: Icon(
                         Icons.share_outlined,
                         color: colors.primary,
-                        size: 27.sp,
+                        size: 28,
                       ),
                     ),
 
-                    SizedBox(width: 14.w),
+                    const SizedBox(width: 16),
 
                     Expanded(
                       child: Column(
@@ -125,65 +115,56 @@ class _SendInvitationBottomSheetState
                         children: [
                           Text(
                             'share_account'.tr(),
-                            style: TextStyle(
-                              fontSize: 21.sp,
-                              fontWeight: FontWeight.w700,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
                               color: colors.primary,
                             ),
                           ),
 
-                          SizedBox(height: 5.h),
+                          const SizedBox(height: 7),
 
                           Text(
                             'share_account_description'.tr(),
-                            style: TextStyle(
-                              fontSize: 13.5.sp,
-                              height: 1.4,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.color
-                                  ?.withOpacity(.65),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              height: 1.5,
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    SizedBox(width: 8.w),
+                    const SizedBox(width: 10),
 
                     IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(
-                        Icons.close_rounded,
-                        size: 24.sp,
-                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).closeButtonTooltip,
+                      icon: const Icon(Icons.close_rounded),
                     ),
                   ],
                 ),
 
-                SizedBox(height: 24.h),
+                const SizedBox(height: 30),
 
-                // Email label
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Text(
-                    'email'.tr(),
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
+                Text(
+                  'email'.tr(),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
 
-                SizedBox(height: 8.h),
+                const SizedBox(height: 9),
 
-                // Email field
                 TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => _sendInvitation(),
+                  onSubmitted: (_) {
+                    _sendInvitation();
+                  },
                   decoration: InputDecoration(
                     hintText: 'enter_account_email'.tr(),
                     prefixIcon: Icon(
@@ -191,89 +172,67 @@ class _SendInvitationBottomSheetState
                       color: colors.primary,
                     ),
                     filled: true,
-                    fillColor: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainerHighest
-                        .withOpacity(.45),
+                    fillColor: theme.colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.40),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.r),
+                      borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.r),
+                      borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.r),
-                      borderSide: BorderSide(
-                        color: colors.primary,
-                        width: 1.5,
-                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: colors.primary, width: 1.5),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 17.h,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 17,
                     ),
                   ),
                 ),
 
-                SizedBox(height: 22.h),
+                const SizedBox(height: 24),
 
-                // Send button
                 BlocBuilder<AccountSharingCubit, AccountSharingState>(
                   builder: (context, state) {
-                    final isLoading =
-                        state is AccountSharingLoading;
+                    final isLoading = state is AccountSharingLoading;
 
                     return SizedBox(
                       width: double.infinity,
-                      height: 54.h,
-                      child: ElevatedButton(
-                        onPressed:
-                            isLoading ? null : _sendInvitation,
-                        style: ElevatedButton.styleFrom(
+                      height: 50,
+                      child: FilledButton.icon(
+                        onPressed: isLoading ? null : _sendInvitation,
+                        style: FilledButton.styleFrom(
                           backgroundColor: colors.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(16.r),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        child: isLoading
-                            ? SizedBox(
-                                width: 22.w,
-                                height: 22.w,
-                                child:
-                                    const CircularProgressIndicator(
-                                  strokeWidth: 2.5,
+                        icon: isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.2,
                                   color: Colors.white,
                                 ),
                               )
-                            : Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.send_rounded,
-                                    size: 20.sp,
-                                  ),
-                                  SizedBox(width: 9.w),
-                                  Text(
-                                    'send_invitation'.tr(),
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            : const Icon(Icons.send_rounded, size: 20),
+                        label: Text(
+                          'send_invitation'.tr(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                          ),
+                        ),
                       ),
                     );
                   },
                 ),
-
-                SizedBox(height: 6.h),
               ],
             ),
           ),

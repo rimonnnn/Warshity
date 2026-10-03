@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
 
-class SharedAccountStatusWidget extends StatelessWidget {
+class SharedAccountStatusWidget
+    extends StatelessWidget {
   const SharedAccountStatusWidget({
     super.key,
     required this.status,
@@ -16,10 +16,13 @@ class SharedAccountStatusWidget extends StatelessWidget {
     switch (status) {
       case 'accepted':
         return Colors.green;
+
       case 'pending':
         return Colors.orange;
+
       case 'rejected':
         return context.colors.error;
+
       default:
         return context.colors.onSurfaceVariant;
     }
@@ -29,10 +32,13 @@ class SharedAccountStatusWidget extends StatelessWidget {
     switch (status) {
       case 'accepted':
         return Icons.check_circle_outline;
+
       case 'pending':
         return Icons.hourglass_empty;
+
       case 'rejected':
         return Icons.cancel_outlined;
+
       default:
         return Icons.info_outline;
     }
@@ -42,10 +48,13 @@ class SharedAccountStatusWidget extends StatelessWidget {
     switch (status) {
       case 'accepted':
         return 'accepted'.tr();
+
       case 'pending':
         return 'pending'.tr();
+
       case 'rejected':
         return 'rejected'.tr();
+
       default:
         return 'unknown_status'.tr();
     }
@@ -60,15 +69,15 @@ class SharedAccountStatusWidget extends StatelessWidget {
       children: [
         Icon(
           _getIcon(),
-          size: 15.sp,
+          size: 14,
           color: color,
         ),
-        SizedBox(width: 5.w),
+        const SizedBox(width: 4),
         Text(
           _getText(),
           style: TextStyle(
             color: color,
-            fontSize: 13.sp,
+            fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
         ),

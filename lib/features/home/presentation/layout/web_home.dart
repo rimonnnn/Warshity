@@ -29,6 +29,7 @@ class WebHome extends StatelessWidget {
       child: Scaffold(
         backgroundColor: context.colors.surface,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
