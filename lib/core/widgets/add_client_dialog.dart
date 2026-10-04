@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/helper/app_validators.dart';
@@ -11,7 +12,6 @@ import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/customer_balance_type.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
-import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
 import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 
@@ -50,7 +50,6 @@ class _AddClientDialogState extends State<AddClientDialog> {
       name: nameController.text.trim(),
       phone: phoneController.text.trim(),
       balance: balance,
-
       address: addressController.text.trim(),
       hasDebt: hasDebt,
     );
@@ -67,7 +66,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
 
           showAnimatedSnackDialog(
             context,
-            message: "client_added_successfully".tr(),
+            message: 'client_added_successfully'.tr(),
             type: AnimatedSnackBarType.success,
           );
         }
@@ -75,96 +74,169 @@ class _AddClientDialogState extends State<AddClientDialog> {
         if (state is AddClientError) {
           showAnimatedSnackDialog(
             context,
-            message: "something_error".tr(),
+            message: 'something_error'.tr(),
             type: AnimatedSnackBarType.error,
           );
         }
       },
-
       builder: (context, state) {
-        final isLoading = state is AddClientLoading;
+        final bool isLoading = state is AddClientLoading;
 
-        return Dialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final double screenWidth = MediaQuery.sizeOf(context).width;
+            final double screenHeight = MediaQuery.sizeOf(context).height;
 
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-          ),
+            final bool isMobile = screenWidth < 600;
+            final bool isSmallMobile = screenWidth < 380;
 
-          backgroundColor: context.colors.surface,
+            final double dialogWidth = isMobile
+                ? (screenWidth - 32).clamp(280.0, 560.0)
+                : 560.0;
 
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 500.w,
-              maxHeight: MediaQuery.of(context).size.height * .90,
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(16.sp),
-              child: Form(
-                key: _formKey,
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'add_client'.tr(),
-                        style: context.text.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+            final double horizontalPadding = isSmallMobile ? 16 : 22;
+            final double verticalPadding = isSmallMobile ? 16 : 20;
 
-                      HeightSpace(20),
+            return Dialog(
+              insetPadding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 16 : 24,
+                vertical: isMobile ? 20 : 28,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+              ),
+              backgroundColor: context.colors.surface,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: 280,
+                  maxWidth: dialogWidth,
+                  maxHeight: screenHeight - (isMobile ? 40 : 80),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: verticalPadding,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: isMobile ? 44 : 48,
+                                height: isMobile ? 44 : 48,
+                                decoration: BoxDecoration(
+                                  color: context.colors.primary.withValues(
+                                    alpha: .10,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  Icons.person_add_alt_1_rounded,
+                                  size: isMobile ? 21 : 23,
+                                  color: context.colors.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 11),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    'add_client'.tr(),
+                                    style: context.text.titleLarge?.copyWith(
+                                      fontSize: isMobile ? 20 : 21,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: isLoading
+                                    ? null
+                                    : () => context.pop(),
+                                tooltip: 'cancel'.tr(),
+                                visualDensity: VisualDensity.compact,
+                                icon: Icon(
+                                  Icons.close_rounded,
+                                  size: 20,
+                                  color: context.colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
 
-                      CustomTextField(
-                        label: 'client_name'.tr(),
-                        hint: 'client_name_hint'.tr(),
-                        prefixIconData: Icons.person,
-                        controller: nameController,
-                        keyboardType: TextInputType.name,
-                        validator: AppValidators.clientName,
-                      ),
+                          const SizedBox(height: 18),
 
-                      HeightSpace(16),
+                          CustomTextField(
+                            iconSize: isMobile ? 18.sp : 19,
+                            label: 'client_name'.tr(),
+                            hint: 'client_name_hint'.tr(),
+                            prefixIconData: Icons.person_outline_rounded,
+                            controller: nameController,
+                            keyboardType: TextInputType.name,
+                            validator: AppValidators.clientName,
+                          ),
 
-                      CustomTextField(
-                        label: 'phone'.tr(),
-                        hint: 'phone_hint'.tr(),
-                        controller: phoneController,
-                        keyboardType: TextInputType.phone,
-                        validator: AppValidators.phone,
-                        prefixIconData: Icons.phone,
-                      ),
+                          const SizedBox(height: 14),
 
-                      HeightSpace(16),
+                          CustomTextField(
+                            iconSize: isMobile ? 18.sp : 19,
+                            label: 'phone'.tr(),
+                            hint: 'phone_hint'.tr(),
+                            controller: phoneController,
+                            keyboardType: TextInputType.phone,
+                            validator: AppValidators.phone,
+                            prefixIconData: Icons.phone_outlined,
+                          ),
 
-                      CustomTextField(
-                        label: 'address'.tr(),
-                        hint: 'address_hint'.tr(),
-                        controller: addressController,
-                        keyboardType: TextInputType.streetAddress,
-                        prefixIconData: Icons.location_on,
-                        validator: AppValidators.address,
-                      ),
+                          const SizedBox(height: 14),
 
-                      HeightSpace(16),
+                          CustomTextField(
+                            iconSize: isMobile ? 18.sp : 19,
+                            label: 'address'.tr(),
+                            hint: 'address_hint'.tr(),
+                            controller: addressController,
+                            keyboardType: TextInputType.streetAddress,
+                            prefixIconData: Icons.location_on_outlined,
+                            validator: AppValidators.address,
+                          ),
 
-                      CustomerBalanceType(
-                        value: hasDebt,
-                        onChanged: isLoading
-                            ? null
-                            : (value) {
-                                setState(() {
-                                  hasDebt = value;
-                                });
-                              },
-                      ),
+                          const SizedBox(height: 14),
 
-                      HeightSpace(16),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: context.colors.primary.withValues(
+                                alpha: .035,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: context.colors.outlineVariant,
+                              ),
+                            ),
+                            child: CustomerBalanceType(
+                              value: hasDebt,
+                              onChanged: isLoading
+                                  ? null
+                                  : (value) {
+                                      setState(() {
+                                        hasDebt = value;
+                                      });
+                                    },
+                            ),
+                          ),
 
-                      hasDebt == true
-                          ? CustomTextField(
+                          if (hasDebt) ...[
+                            const SizedBox(height: 14),
+                            CustomTextField(
+                              iconSize: isMobile ? 18.sp : 19,
                               label: 'debt_amount'.tr(),
                               hint: 'debt_amount_hint'.tr(),
                               controller: balanceController,
@@ -174,48 +246,109 @@ class _AddClientDialogState extends State<AddClientDialog> {
                                   ),
                               prefixIconData: Icons.payments_outlined,
                               validator: AppValidators.amount,
-                            )
-                          : SizedBox.shrink(),
-                      HeightSpace(24),
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: PrimaryButtonWidget(
-                              iconData: Icons.cancel_outlined,
-                              iconeColor: Colors.white,
-                              textColor: Colors.white,
-                              fontSize: 16.sp,
-                              iconSize: 20.sp,
-                              buttonColor: context.colors.error,
-                              buttonText: isLoading ? ''.tr() : 'cancel'.tr(),
-                              borderRadius: AppRadius.sm,
-                              onPress: isLoading ? null : () => context.pop(),
                             ),
+                          ],
+
+                          const SizedBox(height: 20),
+
+                          BlocBuilder<AddClientCubit, AddClientState>(
+                            buildWhen: (previous, current) {
+                              final bool previousLoading =
+                                  previous is AddClientLoading;
+                              final bool currentLoading =
+                                  current is AddClientLoading;
+
+                              return previousLoading != currentLoading;
+                            },
+                            builder: (context, state) {
+                              final bool loading = state is AddClientLoading;
+
+                              if (isSmallMobile) {
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    PrimaryButtonWidget(
+                                      iconData: Icons.cancel_outlined,
+                                      iconeColor: context.colors.onError,
+                                      textColor: context.colors.onError,
+                                      fontSize: 13,
+                                      iconSize: 18,
+                                      buttonColor: context.colors.error,
+                                      buttonText: loading ? '' : 'cancel'.tr(),
+                                      borderRadius: AppRadius.sm,
+                                      onPress: loading
+                                          ? null
+                                          : () => context.pop(),
+                                    ),
+                                    const SizedBox(height: 9),
+                                    PrimaryButtonWidget(
+                                      iconData: Icons.save_outlined,
+                                      iconSize: 18,
+                                      iconeColor: context.colors.onPrimary,
+                                      textColor: context.colors.onPrimary,
+                                      fontSize: 13,
+                                      buttonText: loading ? '' : 'save'.tr(),
+                                      borderRadius: AppRadius.sm,
+                                      onPress: loading ? null : _onSave,
+                                    ),
+                                  ],
+                                );
+                              }
+
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    child: PrimaryButtonWidget(
+                                      iconData: Icons.cancel_outlined,
+                                      iconeColor: context.colors.onError,
+                                      textColor: context.colors.onError,
+                                      fontSize: isMobile ? 13 : 14,
+                                      iconSize: isMobile ? 18 : 19,
+                                      buttonColor: context.colors.error,
+                                      buttonText: loading ? '' : 'cancel'.tr(),
+                                      borderRadius: AppRadius.sm,
+                                      onPress: loading
+                                          ? null
+                                          : () => context.pop(),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: PrimaryButtonWidget(
+                                      iconData: Icons.save_outlined,
+                                      iconSize: isMobile ? 18 : 19,
+                                      iconeColor: context.colors.onPrimary,
+                                      textColor: context.colors.onPrimary,
+                                      fontSize: isMobile ? 13 : 14,
+                                      buttonText: loading ? '' : 'save'.tr(),
+                                      borderRadius: AppRadius.sm,
+                                      onPress: loading ? null : _onSave,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
 
-                          SizedBox(width: 12.w),
-
-                          Expanded(
-                            child: PrimaryButtonWidget(
-                              iconData: Icons.save,
-                              iconSize: 20.sp,
-                              iconeColor: Colors.white,
-                              textColor: Colors.white,
-                              fontSize: 16.sp,
-                              buttonText: isLoading ? ''.tr() : 'save'.tr(),
-                              borderRadius: AppRadius.sm,
-                              onPress: isLoading ? null : _onSave,
+                          if (isLoading) ...[
+                            const SizedBox(height: 12),
+                            LinearProgressIndicator(
+                              minHeight: 3,
+                              borderRadius: BorderRadius.circular(10),
+                              color: context.colors.primary,
+                              backgroundColor: context.colors.primary
+                                  .withValues(alpha: .10),
                             ),
-                          ),
+                          ],
                         ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

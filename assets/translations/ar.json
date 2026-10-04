@@ -497,6 +497,7 @@
   "failed_to_load_shared_accounts": "فشل تحميل الحسابات المشتركة",
   "failed_to_delete_shared_account": "فشل حذف الحساب المشترك"
 ,
+"no_customers": "لا يوجد عملاء",
 "total_quantity": "إجمالي الكمية",
 "inventory_value": "قيمة المخزون",
 "out_of_stock": "نفد من المخزون",
