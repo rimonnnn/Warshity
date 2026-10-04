@@ -20,12 +20,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
     final bool hasDebt = selected.hasDebt == true;
     final String address = selected.address?.trim().isNotEmpty == true
         ? selected.address!.trim()
-        : _tr(
-            context,
-            'not_available',
-            ar: 'غير متوفر',
-            en: 'Not available',
-          );
+        : 'not_available'.tr();
 
     return Container(
       clipBehavior: Clip.antiAlias,
@@ -62,12 +57,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _tr(
-                          context,
-                          'customer_details',
-                          ar: 'تفاصيل العميل',
-                          en: 'Customer Details',
-                        ),
+                        'customer_details'.tr(),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               fontSize: 10,
                               color: context.colors.onSurfaceVariant,
@@ -92,23 +82,13 @@ class _CustomerDetailsPanel extends StatelessWidget {
             const SizedBox(height: 16),
             _InfoRow(
               icon: Icons.phone_outlined,
-              title: _tr(
-                context,
-                'phone',
-                ar: 'رقم الهاتف',
-                en: 'Phone',
-              ),
+              title: 'phone'.tr(),
               value: selected.phone ?? '-',
             ),
             const SizedBox(height: 9),
             _InfoRow(
               icon: Icons.location_on_outlined,
-              title: _tr(
-                context,
-                'address',
-                ar: 'العنوان',
-                en: 'Address',
-              ),
+              title: 'address'.tr(),
               value: address,
             ),
             const SizedBox(height: 16),
@@ -122,12 +102,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    _tr(
-                      context,
-                      'recent_invoices',
-                      ar: 'سجل الفواتير الأخيرة',
-                      en: 'Recent Invoice History',
-                    ),
+                    'recent_invoices'.tr(),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -143,12 +118,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
                       );
                     },
                     child: Text(
-                      _tr(
-                        context,
-                        'show_all',
-                        ar: 'عرض الكل',
-                        en: 'Show All',
-                      ),
+                      'show_all'.tr(),
                       style: TextStyle(
                         fontSize: 10,
                         color: context.colors.primary,
@@ -166,12 +136,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: _MiniStat(
-                    title: _tr(
-                      context,
-                      'total_purchases',
-                      ar: 'إجمالي المشتريات',
-                      en: 'Total Purchases',
-                    ),
+                    title: 'total_purchases'.tr(),
                     value: selected.totalPurchases.toString(),
                     icon: Icons.trending_up_rounded,
                   ),
@@ -179,12 +144,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
                 const SizedBox(width: 9),
                 Expanded(
                   child: _MiniStat(
-                    title: _tr(
-                      context,
-                      'order_count',
-                      ar: 'عدد الطلبات',
-                      en: 'Order Count',
-                    ),
+                    title: 'order_count'.tr(),
                     value: selected.orderCount.toString(),
                     icon: Icons.shopping_bag_outlined,
                   ),

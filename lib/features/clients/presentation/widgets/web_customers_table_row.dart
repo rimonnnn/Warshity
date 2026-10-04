@@ -209,20 +209,8 @@ class _StatusBadge extends StatelessWidget {
             Flexible(
               child: Text(
                 hasDebt
-                    ? _tr(
-                        context,
-                        'customer_debt',
-                        ar: 'مديونية {0} ج.م',
-                        en: 'Debt: {0} EGP',
-                        args: [amount],
-                      )
-                    : _tr(
-                        context,
-                        'customer_balance',
-                        ar: 'حساب متزن: {0} ج.م',
-                        en: 'Balanced: {0}',
-                        args: [amount],
-                      ),
+                    ? 'customer_debt'.tr(args: [amount])
+                    : 'customer_balance'.tr(args: [amount]),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

@@ -36,12 +36,7 @@ class _Toolbar extends StatelessWidget {
               children: [
                 ProductSearchWidget(
                   controller: controller,
-                  hintText: _tr(
-                    context,
-                    'search_client',
-                    ar: 'إبحث باسم العميل أو رقم الهاتف...',
-                    en: 'Search by customer name or phone number...',
-                  ),
+                  hintText: 'search_client'.tr(),
                   onChanged: onSearch,
                 ),
                 const SizedBox(height: 10),
@@ -59,12 +54,7 @@ class _Toolbar extends StatelessWidget {
               Expanded(
                 child: ProductSearchWidget(
                   controller: controller,
-                  hintText: _tr(
-                    context,
-                    'search_client',
-                    ar: 'إبحث باسم العميل أو رقم الهاتف...',
-                    en: 'Search by customer name or phone number...',
-                  ),
+                  hintText: 'search_client'.tr(),
                   onChanged: onSearch,
                 ),
               ),
