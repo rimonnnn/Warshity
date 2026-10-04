@@ -327,6 +327,13 @@
   "validator_address_too_short": "Address is too short.",
 "total_quantity": "Total Quantity",
 "inventory_value": "Inventory Value",
+  "total_customer_debt": "Total Customer Debt",
+  "total_debt": "Total debt",
+  "empty_filter": "No customers match the current filter",
+  "select_customer": "Select a customer",
+  "select_customer_hint": "Select a customer from the table to view details",
+  "loading_clients": "Loading customers..."
+,
 "no_customers" : "No Customers",
 "out_of_stock": "Out of Stock",
   "amount_required": "Amount is required.",

@@ -51,24 +51,14 @@ class _EmptyTableContent extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            _tr(
-              context,
-              'no_customers',
-              ar: 'لا يوجد عملاء',
-              en: 'No customers',
-            ),
+            'no_customers'.tr(),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
           ),
           const SizedBox(height: 5),
           Text(
-            _tr(
-              context,
-              'empty_filter',
-              ar: 'لا توجد نتائج مطابقة للفلاتر الحالية',
-              en: 'No customers match the current filter',
-            ),
+            'empty_filter'.tr(),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: context.colors.onSurfaceVariant,
@@ -115,24 +105,14 @@ class _EmptyCustomerDetails extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            _tr(
-              context,
-              'select_customer',
-              ar: 'اختر عميلاً',
-              en: 'Select a customer',
-            ),
+            'select_customer'.tr(),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
           ),
           const SizedBox(height: 6),
           Text(
-            _tr(
-              context,
-              'select_customer_hint',
-              ar: 'حدد عميلاً من الجدول لعرض تفاصيله',
-              en: 'Select a customer from the table to view details',
-            ),
+            'select_customer_hint'.tr(),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: context.colors.onSurfaceVariant,
@@ -179,24 +159,14 @@ class _DeliveryOrdersPlaceholder extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _tr(
-                    context,
-                    'delivery_orders',
-                    ar: 'طلبات التوصيل المنتظرة',
-                    en: 'Pending Delivery Orders',
-                  ),
+                  'delivery_orders'.tr(),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  _tr(
-                    context,
-                    'waiting_customers',
-                    ar: '0 عملاء بانتظار الاستلام',
-                    en: '0 customers waiting for delivery',
-                  ),
+                  'waiting_customers'.tr(),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: context.colors.onSurfaceVariant,
                       ),

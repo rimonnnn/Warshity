@@ -126,7 +126,7 @@ class _CustomersTable extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '${_tr(context, 'customers', ar: 'العملاء', en: 'Customers')}: ${customers.length}',
+                  '${'customers'.tr()}: ${customers.length}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontSize: 10,
                         color: context.colors.onSurfaceVariant,
@@ -167,48 +167,28 @@ class _TableHeader extends StatelessWidget {
           Expanded(
             flex: 3,
             child: Text(
-              _tr(
-              context,
-              'customer',
-              ar: 'العميل',
-              en: 'Customer',
-            ),
+              'customer'.tr(),
               style: _tableHeaderStyle(context),
             ),
           ),
           Expanded(
             flex: 2,
             child: Text(
-              _tr(
-              context,
-              'phone',
-              ar: 'رقم الهاتف',
-              en: 'Phone',
-            ),
+              'phone'.tr(),
               style: _tableHeaderStyle(context),
             ),
           ),
           Expanded(
             flex: 2,
             child: Text(
-              _tr(
-              context,
-              'address',
-              ar: 'العنوان',
-              en: 'Address',
-            ),
+              'address'.tr(),
               style: _tableHeaderStyle(context),
             ),
           ),
           Expanded(
             flex: 1,
             child: Text(
-              _tr(
-              context,
-              'order_count',
-              ar: 'عدد الطلبات',
-              en: 'Order Count',
-            ),
+              'order_count'.tr(),
               style: _tableHeaderStyle(context),
               textAlign: TextAlign.center,
             ),
@@ -216,12 +196,7 @@ class _TableHeader extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(
-              _tr(
-              context,
-              'status',
-              ar: 'الحالة',
-              en: 'Status',
-            ),
+              'status'.tr(),
               style: _tableHeaderStyle(context),
             ),
           ),

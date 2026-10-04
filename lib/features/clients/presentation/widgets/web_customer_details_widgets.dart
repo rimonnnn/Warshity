@@ -32,12 +32,7 @@ class _DebtSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            _tr(
-              context,
-              'current_debt',
-              ar: 'إجمالي المديونية الحالية',
-              en: 'Current Total Debt',
-            ),
+            'current_debt'.tr(),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontSize: 10,
                   color: context.colors.onSurfaceVariant,
@@ -45,7 +40,7 @@ class _DebtSummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '${balance.toString()} ${_tr(context, 'EGP', ar: 'ج.م', en: 'EGP')}',
+            '${balance.toString()} ${'EGP'.tr()}',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
@@ -63,12 +58,7 @@ class _DebtSummaryCard extends StatelessWidget {
                   size: 17,
                 ),
                 label: Text(
-                  _tr(
-                    context,
-                    'pay_debt',
-                    ar: 'سداد دفعة من الدين',
-                    en: 'Pay Debt',
-                  ),
+                  'pay_debt'.tr(),
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,

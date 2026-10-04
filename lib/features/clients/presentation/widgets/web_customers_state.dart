@@ -118,12 +118,7 @@ class _WebCustomersState extends State<WebCustomers> {
                           height: constraints.maxHeight,
                           child: Center(
                             child: LoadingWidget(
-                              message: _tr(
-                                context,
-                                'loading_clients',
-                                ar: 'جاري تحميل العملاء...',
-                                en: 'Loading customers...',
-                              ),
+                              message: 'loading_clients'.tr(),
                             ),
                           ),
                         );
@@ -162,24 +157,9 @@ class _WebCustomersState extends State<WebCustomers> {
                           _Toolbar(
                             controller: searchController,
                             filters: [
-                              _tr(
-                                context,
-                                'all',
-                                ar: 'الكل',
-                                en: 'All',
-                              ),
-                              _tr(
-                                context,
-                                'debt',
-                                ar: 'مديونية',
-                                en: 'Debt',
-                              ),
-                              _tr(
-                                context,
-                                'balanced',
-                                ar: 'حساب متزن',
-                                en: 'Balanced',
-                              ),
+                              'all'.tr(),
+                              'debt'.tr(),
+                              'balanced'.tr(),
                             ],
                             selectedIndex: _filterIndex(state.filter),
                             onFilterSelected: _applyFilter,

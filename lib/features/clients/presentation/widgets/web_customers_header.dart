@@ -41,12 +41,7 @@ class _PageHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _tr(
-                    context,
-                    'customers',
-                    ar: 'العملاء',
-                    en: 'Customers',
-                  ),
+                  'customers'.tr(),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontSize: 23,
                         fontWeight: FontWeight.w800,
@@ -54,12 +49,7 @@ class _PageHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _tr(
-                    context,
-                    'search_client',
-                    ar: 'إبحث باسم العميل أو رقم الهاتف...',
-                    en: 'Search by customer name or phone number...',
-                  ),
+                  'search_client'.tr(),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: context.colors.onSurfaceVariant,
                       ),
@@ -77,7 +67,7 @@ class _PageHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
             ),
             child: Text(
-              '$count ${_tr(context, 'customers', ar: 'العملاء', en: 'Customers')}',
+              '$count ${'customers'.tr()}',
               style: TextStyle(
                 color: context.colors.primary,
                 fontSize: 12,
@@ -93,12 +83,7 @@ class _PageHeader extends StatelessWidget {
               size: 19,
             ),
             label: Text(
-              _tr(
-                context,
-                'new_customer',
-                ar: 'عميل جديد',
-                en: 'New Customer',
-              ),
+              'new_customer'.tr(),
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -158,71 +143,31 @@ class _StatsSection extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           children: [
             _StatCard(
-              title: _tr(
-                context,
-                'total_customer_debt',
-                ar: 'إجمالي مديونيات العملاء',
-                en: 'Total Customer Debt',
-              ),
+              title: 'total_customer_debt'.tr(),
               value:
-                  '${totalDebt.toStringAsFixed(0)} ${_tr(context, 'EGP', ar: 'ج.م', en: 'EGP')}',
-              subtitle: _tr(
-                context,
-                'customer_debt',
-                ar: 'إجمالي المديونية',
-                en: 'Customer debt',
-              ),
+                  '${totalDebt.toStringAsFixed(0)} ${'EGP'.tr()}',
+              subtitle: 'total_debt'.tr(),
               icon: Icons.account_balance_wallet_outlined,
               iconColor: context.colors.error,
             ),
             _StatCard(
-              title: _tr(
-                context,
-                'debt',
-                ar: 'مديونية',
-                en: 'Debt',
-              ),
+              title: 'debt'.tr(),
               value: debtCustomers.length.toString(),
-              subtitle: _tr(
-                context,
-                'customers',
-                ar: 'العملاء',
-                en: 'Customers',
-              ),
+              subtitle: 'customers'.tr(),
               icon: Icons.person_outline_rounded,
               iconColor: Colors.orange,
             ),
             _StatCard(
-              title: _tr(
-                context,
-                'balanced_customers',
-                ar: 'حساب متزن',
-                en: 'Balanced Accounts',
-              ),
+              title: 'balanced_customers'.tr(),
               value: balancedCustomers.toString(),
-              subtitle: _tr(
-                context,
-                'customers',
-                ar: 'العملاء',
-                en: 'Customers',
-              ),
+              subtitle: 'customers'.tr(),
               icon: Icons.verified_outlined,
               iconColor: Colors.teal,
             ),
             _StatCard(
-              title: _tr(
-                context,
-                'delivery_orders',
-                ar: 'طلبات التوصيل المنتظرة',
-                en: 'Pending Delivery Orders',
-              ),
+              title: 'delivery_orders'.tr(),
               value: '0',
-              subtitle: _tr(
-                context,
-                'waiting_customers',
-                ar: '0 عملاء بانتظار الاستلام',
-                en: '0 customers waiting for delivery',
-              ),
+              subtitle: 'waiting_customers'.tr(),
               icon: Icons.local_shipping_outlined,
               iconColor: Colors.cyan,
             ),

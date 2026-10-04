@@ -29,33 +29,6 @@ part '../widgets/web_customers_table_row.dart';
 part '../widgets/web_customer_details.dart';
 part '../widgets/web_customer_details_widgets.dart';
 part '../widgets/web_customer_states.dart';
-
-String _tr(
-  BuildContext context,
-  String key, {
-  required String ar,
-  required String en,
-  List<String>? args,
-}) {
-  final String translated = args == null ? key.tr() : key.tr(args: args);
-
-  if (translated != key) {
-    return translated;
-  }
-
-  final String languageCode = context.locale.languageCode;
-
-  if (languageCode == 'ar') {
-    return ar;
-  }
-
-  if (languageCode == 'en') {
-    return en;
-  }
-
-  return key;
-}
-
 class WebCustomers extends StatefulWidget {
   const WebCustomers({super.key});
 
