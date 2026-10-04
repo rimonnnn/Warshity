@@ -327,6 +327,7 @@
   "validator_address_too_short": "Address is too short.",
 "total_quantity": "Total Quantity",
 "inventory_value": "Inventory Value",
+"no_customers" : "No Customers",
 "out_of_stock": "Out of Stock",
   "amount_required": "Amount is required.",
   "invalid_amount": "Please enter a valid amount.",
