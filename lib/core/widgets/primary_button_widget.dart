@@ -71,7 +71,7 @@ class PrimaryButtonWidget extends StatelessWidget {
                   color: iconeColor ?? context.colors.onSurfaceVariant,
                   size: iconSize ?? 20,
                 ),
-                WidthSpace(12),
+                WidthSpace(buttonspacing ?? 12),
                 Text(
                   buttonText ?? "",
                   style: context.text.titleMedium?.copyWith(

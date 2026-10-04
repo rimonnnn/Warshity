@@ -1,10 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:warshity/core/extensions/context_extension.dart';
-import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/theme/cubit/theme_cubit.dart';
 
 import 'web_settings_rows.dart';
@@ -13,15 +10,11 @@ import 'web_settings_shared_widgets.dart';
 class LanguageAndThemeSection extends StatelessWidget {
   final bool isDark;
 
-  const LanguageAndThemeSection({
-    super.key,
-    required this.isDark,
-  });
+  const LanguageAndThemeSection({super.key, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
-    final isEnglish =
-        context.locale.languageCode == 'en';
+    final isEnglish = context.locale.languageCode == 'en';
 
     final themeIcon = isDark
         ? Icons.dark_mode_outlined
@@ -29,15 +22,12 @@ class LanguageAndThemeSection extends StatelessWidget {
 
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SettingsPageHeader(
             title: 'language'.tr(),
             subtitle: 'theme'.tr(),
-            icon: isDark
-                ? Icons.dark_mode_outlined
-                : Icons.language_outlined,
+            icon: isDark ? Icons.dark_mode_outlined : Icons.language_outlined,
           ),
 
           const SizedBox(height: 20),
@@ -49,20 +39,15 @@ class LanguageAndThemeSection extends StatelessWidget {
               icon: Icons.language_outlined,
               title: 'language'.tr(),
               trailing: TextButton(
-                onPressed: () {
-                  final newLocale = isEnglish
+                onPressed: () async {
+                  final newLocale = context.locale.languageCode == 'en'
                       ? const Locale('ar')
                       : const Locale('en');
 
-                  context.push(
-                    AppRoutes.splashScreen,
-                    extra: newLocale,
-                  );
+                  await context.setLocale(newLocale);
                 },
                 child: Text(
-                  isEnglish
-                      ? 'English'
-                      : 'العربية',
+                  isEnglish ? 'English' : 'العربية',
                   style: TextStyle(
                     color: context.colors.primary,
                     fontWeight: FontWeight.w600,
@@ -82,14 +67,9 @@ class LanguageAndThemeSection extends StatelessWidget {
               title: 'theme'.tr(),
               trailing: IconButton(
                 onPressed: () {
-                  context
-                      .read<ThemeCubit>()
-                      .toggleTheme();
+                  context.read<ThemeCubit>().toggleTheme();
                 },
-                icon: Icon(
-                  themeIcon,
-                  color: context.colors.primary,
-                ),
+                icon: Icon(themeIcon, color: context.colors.primary),
               ),
             ),
           ),

@@ -188,12 +188,11 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   showDivider: true,
 
                   trailing: TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final newLocale = context.locale.languageCode == 'en'
                           ? const Locale('ar')
                           : const Locale('en');
-
-                      context.push(AppRoutes.splashScreen, extra: newLocale);
+                      context.goNamed(AppRoutes.splashScreen, extra: newLocale);
                     },
 
                     child: Text(

@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:warshity/core/theme/cubit/theme_cubit.dart';
 
-import 'web_settings_category.dart';
-import 'web_settings_sidebar.dart';
-import 'web_settings_language_section.dart';
-import 'web_settings_sharing_section.dart';
-import 'web_settings_store_section.dart';
+import '../widgets/web_settings_category.dart';
+import '../widgets/web_settings_sidebar.dart';
+import '../widgets/web_settings_language_section.dart';
+import '../widgets/web_settings_sharing_section.dart';
+import '../widgets/web_settings_store_section.dart';
 
 class WebSettingsScreen extends StatefulWidget {
   const WebSettingsScreen({super.key});
