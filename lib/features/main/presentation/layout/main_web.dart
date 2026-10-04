@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
 import 'package:warshity/features/main/presentation/widgets/side_bar.dart';
+import 'package:warshity/features/main/presentation/widgets/web_top_bar_widget.dart';
 
 class MainWeb extends StatefulWidget {
   const MainWeb({super.key, required this.navItems});
@@ -24,12 +25,25 @@ class _MainWebState extends State<MainWeb> {
           Sidebar(
             navItems: widget.navItems,
             currentIndex: _currentIndex,
-            onSelect: (index) => setState(() => _currentIndex = index),
+            onSelect: (index) {
+              setState(() => _currentIndex = index);
+            },
           ),
+
           Expanded(
-            child: IndexedStack(
-              index: _currentIndex,
-              children: widget.navItems.map((item) => item.screen).toList(),
+            child: Column(
+              children: [
+                const WebTopBar(),
+
+                Expanded(
+                  child: IndexedStack(
+                    index: _currentIndex,
+                    children: widget.navItems
+                        .map((item) => item.screen)
+                        .toList(),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
