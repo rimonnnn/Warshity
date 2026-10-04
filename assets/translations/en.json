@@ -314,8 +314,6 @@
   "your_buddiness_under_controle": "Your Business. Under Control",
   "not_debit": "Not debit",
 
-
-
   "validator_client_name_required": "Client name is required.",
 
   "validator_phone_required": "Phone number is required.",
@@ -327,7 +325,9 @@
 
   "validator_address_required": "Address is required.",
   "validator_address_too_short": "Address is too short.",
-
+"total_quantity": "Total Quantity",
+"inventory_value": "Inventory Value",
+"out_of_stock": "Out of Stock",
   "amount_required": "Amount is required.",
   "invalid_amount": "Please enter a valid amount.",
   "amount_cannot_be_negative": "Amount cannot be negative.",

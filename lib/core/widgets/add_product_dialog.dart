@@ -1,40 +1,67 @@
-import 'dart:typed_data';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/widgets/add_product_form_fields.dart';
 import 'package:warshity/core/widgets/dialog_action_buttons.dart';
-import 'package:warshity/core/widgets/product_image_picker.dart';
-import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/add_product_state.dart';
-import 'package:warshity/features/products/presentation/widgets/product_controllers.dart';
-import 'package:warshity/features/products/presentation/widgets/product_form_fields.dart';
 
 class AddProductDialog extends StatefulWidget {
-  const AddProductDialog({super.key, this.imagecontainerheight});
+  const AddProductDialog({
+    super.key,
+    this.imagecontainerheight,
+    this.productnamefieldheight,
+    this.productcodefieldheight,
+    this.sellingpricefieldheight,
+    this.currentquantityfieldheight,
+    this.savebuttonheight,
+    this.cancelbuttonheight,
+  });
+
   final double? imagecontainerheight;
+  final double? productnamefieldheight;
+  final double? productcodefieldheight;
+  final double? sellingpricefieldheight;
+  final double? currentquantityfieldheight;
+  final double? savebuttonheight;
+  final double? cancelbuttonheight;
+
   @override
   State<AddProductDialog> createState() => _AddProductDialogState();
 }
 
 class _AddProductDialogState extends State<AddProductDialog> {
   final _formKey = GlobalKey<FormState>();
-  final controllers = ProductControllers();
+
+  final nameController = TextEditingController();
+  final barcodeController = TextEditingController();
+  final priceController = TextEditingController();
+  final quantityController = TextEditingController();
+
   final ImagePicker _picker = ImagePicker();
+
   XFile? selectedImage;
   Uint8List? selectedImageBytes;
+
   String? selectedCategory;
   String selectedUnit = 'Piece'.tr();
+
   bool isSaving = false;
+
   final units = ['Piece'.tr(), 'Meter'.tr(), 'Kg'.tr()];
+
   @override
   void dispose() {
-    controllers.dispose();
+    nameController.dispose();
+    barcodeController.dispose();
+    priceController.dispose();
+    quantityController.dispose();
     super.dispose();
   }
 
@@ -44,17 +71,19 @@ class _AddProductDialogState extends State<AddProductDialog> {
         source: ImageSource.gallery,
         imageQuality: 80,
       );
+
       if (image == null) return;
+
       final bytes = await image.readAsBytes();
+
       if (!mounted) return;
+
       setState(() {
         selectedImage = image;
         selectedImageBytes = bytes;
       });
     } catch (e) {
-      if (mounted) {
-        _message(e.toString());
-      }
+      debugPrint('Image Picker Error: $e');
     }
   }
 
@@ -62,43 +91,61 @@ class _AddProductDialogState extends State<AddProductDialog> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    if (selectedCategory == null || selectedCategory!.isEmpty) {
+
+    if (selectedCategory == null) {
       _message('Please select a category'.tr());
       return;
     }
+
     if (isSaving) return;
-    setState(() => isSaving = true);
+
+    setState(() {
+      isSaving = true;
+    });
+
     try {
       final product = ProductModel(
         id: '',
-        name: controllers.name.text.trim(),
-        barcode: controllers.barcode.text.trim(),
+        name: nameController.text.trim(),
+        barcode: barcodeController.text.trim(),
         category: selectedCategory!,
-        price: double.tryParse(controllers.price.text.trim()) ?? 0,
-        quantity: int.tryParse(controllers.quantity.text.trim()) ?? 0,
+        price: double.tryParse(priceController.text.trim()) ?? 0,
+        quantity: int.tryParse(quantityController.text.trim()) ?? 0,
         unit: selectedUnit,
         imageUrl: '',
       );
+
       await context.read<AddProductCubit>().addProduct(
         product: product,
         imageBytes: selectedImageBytes,
         imageName: selectedImage?.name,
       );
+
       if (!mounted) return;
+
       final state = context.read<AddProductCubit>().state;
+
       if (state is AddProductSuccess) {
         _message('Product added successfully'.tr());
 
         Navigator.pop(context);
         return;
       }
+
       if (state is AddProductError) {
         _message(state.message);
       }
-      setState(() => isSaving = false);
+
+      setState(() {
+        isSaving = false;
+      });
     } catch (e) {
       if (!mounted) return;
-      setState(() => isSaving = false);
+
+      setState(() {
+        isSaving = false;
+      });
+
       _message(e.toString());
     }
   }
@@ -111,79 +158,125 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 24.h),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
 
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
+        final bool isWeb = kIsWeb;
+        final bool compact = screenWidth < 700;
 
-      backgroundColor: context.colors.surface,
+        final double dialogWidth = isWeb
+            ? (screenWidth * 0.70).clamp(620.0, 820.0)
+            : (screenWidth - 32).clamp(280.0, 520.0);
 
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: 500.w,
-          maxHeight: MediaQuery.of(context).size.height * .90,
-        ),
+        final double dialogMaxHeight = screenHeight * 0.90;
+        final double imageHeight = isWeb ? 155.0 : 135.0;
+        final double horizontalPadding = isWeb ? 28.0 : 20.0;
 
-        child: Padding(
-          padding: EdgeInsets.all(24.w),
+        return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: compact ? 12 : 24,
+            vertical: 20,
+          ),
+          backgroundColor: context.colors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ),
+          child: SizedBox(
+            width: dialogWidth,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: dialogWidth,
+                maxHeight: dialogMaxHeight,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(horizontalPadding),
+                child: Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Add New Product'.tr(),
+                                style: Theme.of(context).textTheme.headlineSmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: isWeb ? 22 : 20,
+                                    ),
+                              ),
+                            ),
+                            IconButton(
+                              tooltip: MaterialLocalizations.of(
+                                context,
+                              ).closeButtonTooltip,
+                              onPressed: isSaving
+                                  ? null
+                                  : () => Navigator.pop(context),
+                              icon: const Icon(Icons.close_rounded),
+                            ),
+                          ],
+                        ),
 
-          child: Form(
-            key: _formKey,
+                        SizedBox(height: isWeb ? 20 : 16),
 
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
+                        AddProductFormFields(
+                          isWeb: isWeb,
+                          isSaving: isSaving,
+                          nameController: nameController,
+                          barcodeController: barcodeController,
+                          priceController: priceController,
+                          quantityController: quantityController,
+                          selectedImageBytes: selectedImageBytes,
+                          selectedCategory: selectedCategory,
+                          selectedUnit: selectedUnit,
+                          units: units,
+                          imageHeight:
+                              widget.imagecontainerheight ?? imageHeight,
+                          productNameFieldHeight: widget.productnamefieldheight,
+                          productCodeFieldHeight: widget.productcodefieldheight,
+                          sellingPriceFieldHeight:
+                              widget.sellingpricefieldheight,
+                          currentQuantityFieldHeight:
+                              widget.currentquantityfieldheight,
+                          onPickImage: _pickImage,
+                          onCategoryChanged: (value) {
+                            setState(() => selectedCategory = value);
+                          },
+                          onUnitChanged: (unit) {
+                            setState(() => selectedUnit = unit);
+                          },
+                        ),
 
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                        SizedBox(height: isWeb ? 24 : 22),
 
-                children: [
-                  Text(
-                    'Add New Product'.tr(),
-                    style: context.text.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                        DialogActionButtons(
+                          cancelbuttonheight: widget.cancelbuttonheight,
+                          savebuttonheight: widget.savebuttonheight,
+                          fontSize: isWeb ? 20 : 16.sp,
+                          isLoading: isSaving,
+                          fontSize1: isWeb ? 20 : 16.sp,
+                          onCancel: isSaving
+                              ? null
+                              : () => Navigator.pop(context),
+                          onSave: _save,
+                        ),
+
+                        const SizedBox(height: 4),
+                      ],
                     ),
                   ),
-
-                  HeightSpace(20.h),
-
-                  ProductImagePicker(
-                    imageBytes: selectedImageBytes,
-                    height: widget.imagecontainerheight,
-                    onPick: _pickImage,
-                    enabled: !isSaving,
-                  ),
-
-                  HeightSpace(20.h),
-
-                  ProductFormFields(
-                    controllers: controllers,
-                    selectedCategory: selectedCategory,
-                    selectedUnit: selectedUnit,
-                    units: units,
-                    enabled: !isSaving,
-                    onCategoryChanged: (value) {
-                      setState(() => selectedCategory = value);
-                    },
-                    onUnitChanged: (value) {
-                      setState(() => selectedUnit = value);
-                    },
-                  ),
-
-                  HeightSpace(30.h),
-
-                  DialogActionButtons(
-                    isLoading: isSaving,
-                    onCancel: isSaving ? null : () => Navigator.pop(context),
-                    onSave: _save,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

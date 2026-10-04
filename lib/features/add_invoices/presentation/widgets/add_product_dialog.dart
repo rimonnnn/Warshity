@@ -9,8 +9,6 @@ import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/custom_dropdown_products.dart';
 
-/// نتيجة الديالوج بعد ما المستخدم يحفظ البيانات.
-/// موديل بسيط بدل ما نرجع Map عشان يبقى فيه type safety.
 class ProductsData {
   const ProductsData({required this.name, this.price, this.category});
 
@@ -20,8 +18,6 @@ class ProductsData {
   final String? category;
 }
 
-/// Dialog لإضافة بيانات العميل + تفاصيل الفاتورة (السعر والتصنيف) مع بعض.
-/// بيرجع null لو المستخدم عمل إلغاء، أو ClientAndProductData لو حفظ بنجاح.
 class AddProductDialog extends StatefulWidget {
   const AddProductDialog({super.key});
 
@@ -36,7 +32,6 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
   final TextEditingController priceController = TextEditingController();
 
-  // TODO: استبدل القايمة دي بالتصنيفات الفعلية بتاعتك (ممكن تيجي من enum أو من API)
   static const List<String> _categories = [
     'wood',
     'glue',
@@ -125,8 +120,6 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   items: _categories.map((c) => c.tr()).toList(),
                   selectedItem: _selectedCategory?.tr(),
                   onSelected: (value) {
-                    // بما إن العناصر المعروضة مترجمة، لازم نرجع نلاقي المفتاح
-                    // الأصلي المطابق للقيمة المختارة قبل ما نخزنها
                     final key = _categories.firstWhere(
                       (c) => c.tr() == value,
                       orElse: () => value ?? '',
