@@ -6,11 +6,7 @@ import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 
 class InvoiceCard extends StatelessWidget {
-  const InvoiceCard({
-    super.key,
-    required this.invoice,
-    this.onTap,
-  });
+  const InvoiceCard({super.key, required this.invoice, this.onTap});
 
   final InvoiceModel invoice;
   final VoidCallback? onTap;
@@ -35,13 +31,9 @@ class InvoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isPaid = invoice.remainingAmount <= 0;
 
-    final statusColor = isPaid
-        ? Colors.green
-        : context.colors.error;
+    final statusColor = isPaid ? Colors.green : context.colors.error;
 
-    final paymentMethod = isPaid
-        ? 'paid'.tr()
-        : 'unpaid'.tr();
+    final paymentMethod = isPaid ? 'paid'.tr() : 'unpaid'.tr();
 
     return InkWell(
       onTap: onTap,
@@ -55,21 +47,17 @@ class InvoiceCard extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 42.w,
-              height: 42.w,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: statusColor.withOpacity(.1),
-                borderRadius: BorderRadius.circular(
-                  AppRadius.sm,
-                ),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
-              child: Icon(
-                Icons.receipt_long_outlined,
-                color: statusColor,
-              ),
+              child: Icon(Icons.receipt_long_outlined, color: statusColor),
             ),
 
-            SizedBox(width: 12.w),
+            SizedBox(width: 12),
 
             Expanded(
               child: Column(
@@ -112,10 +100,7 @@ class InvoiceCard extends StatelessWidget {
                 SizedBox(height: 4.h),
 
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 8.w,
-                    vertical: 3.h,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(.1),
                     borderRadius: BorderRadius.circular(20.r),

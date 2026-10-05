@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/widgets/app_loading_indicator.dart';
-import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/clients/presentation/cubit/debt_cubit.dart';
@@ -16,10 +15,7 @@ import 'package:warshity/features/clients_details/presentation/widgets/decrease_
 import 'package:warshity/features/clients_details/presentation/widgets/invoice_list.dart';
 
 class WebCustomerDetails extends StatelessWidget {
-  const WebCustomerDetails({
-    super.key,
-    required this.customerId,
-  });
+  const WebCustomerDetails({super.key, required this.customerId});
 
   final String customerId;
 
@@ -31,32 +27,24 @@ class WebCustomerDetails extends StatelessWidget {
       stream: repository.watchClient(customerId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(
-            child: Text('something_error'.tr()),
-          );
+          return Center(child: Text('something_error'.tr()));
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: AppLoadingIndicator(size: 32),
-          );
+          return const Center(child: AppLoadingIndicator(size: 32));
         }
 
         final customer = snapshot.data;
 
         if (customer == null) {
-          return Center(
-            child: Text('something_error'.tr()),
-          );
+          return Center(child: Text('something_error'.tr()));
         }
 
         return SingleChildScrollView(
           padding: EdgeInsets.all(32.w),
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 1200,
-              ),
+              constraints: const BoxConstraints(maxWidth: 1200),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -67,7 +55,7 @@ class WebCustomerDetails extends StatelessWidget {
                     ),
                   ),
 
-                  HeightSpace(24),
+                  SizedBox(height: 32),
 
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,23 +73,20 @@ class WebCustomerDetails extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(width: 20.w),
+                      SizedBox(width: 20),
 
                       Expanded(
                         child: CustomerDebtCard(
-                          amount:
-                              customer.balance?.toString() ?? '0',
+                          amount: customer.balance?.toString() ?? '0',
                           onPayDebt: () {
                             showDialog(
                               context: context,
                               builder: (_) {
                                 return BlocProvider(
-                                  create: (_) =>
-                                      getIt<DebtCubit>(),
+                                  create: (_) => getIt<DebtCubit>(),
                                   child: DecreaseDebtDialog(
                                     clientId: customer.id!,
-                                    currentBalance:
-                                        customer.balance ?? 0,
+                                    currentBalance: customer.balance ?? 0,
                                   ),
                                 );
                               },
@@ -112,7 +97,7 @@ class WebCustomerDetails extends StatelessWidget {
                     ],
                   ),
 
-                  HeightSpace(32),
+                  SizedBox(height: 32),
 
                   Row(
                     children: [
@@ -131,32 +116,28 @@ class WebCustomerDetails extends StatelessWidget {
                     ],
                   ),
 
-                  HeightSpace(12),
+                  SizedBox(height: 16),
 
-                  InvoiceList(
-                    customerId: customer.id!,
-                  ),
+                  InvoiceList(customerId: customer.id!),
 
-                  HeightSpace(24),
+                  SizedBox(height: 22),
 
                   Row(
                     children: [
                       Expanded(
                         child: CustomerStatCard(
                           title: 'total_purchases'.tr(),
-                          value:
-                              customer.totalPurchases.toString(),
+                          value: customer.totalPurchases.toString(),
                           icon: Icons.trending_up,
                         ),
                       ),
 
-                      SizedBox(width: 20.w),
+                      SizedBox(width: 20),
 
                       Expanded(
                         child: CustomerStatCard(
                           title: 'order_count'.tr(),
-                          value:
-                              customer.orderCount.toString(),
+                          value: customer.orderCount.toString(),
                           icon: Icons.shopping_bag_outlined,
                         ),
                       ),

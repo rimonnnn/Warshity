@@ -50,7 +50,7 @@ class CustomerHeaderCard extends StatelessWidget {
                 Icon(Icons.person, color: context.colors.primary, size: 28.sp),
           ),
 
-          SizedBox(width: 16.w),
+          SizedBox(width: 16),
 
           Expanded(
             child: Column(
