@@ -34,7 +34,7 @@ class MobileHome extends StatelessWidget {
 
         title: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, authState) {
-            String shopName = 'wershity'.tr();
+            String shopName = 'masiter'.tr();
 
             if (authState is UserLoaded) {
               shopName = authState.user.shopName;

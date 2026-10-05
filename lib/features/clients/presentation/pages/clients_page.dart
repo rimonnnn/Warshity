@@ -9,9 +9,6 @@ class ClientsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<ClientsCubit>()..watchClients(),
-      child: const CleintsScreen(),
-    );
+    return const CleintsScreen();
   }
 }

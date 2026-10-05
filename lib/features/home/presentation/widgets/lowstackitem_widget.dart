@@ -26,10 +26,7 @@ class LowStockItem extends StatelessWidget {
         return Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 18.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
               child: Row(
                 children: [
                   Expanded(
@@ -63,12 +60,9 @@ class LowStockItem extends StatelessWidget {
                     onPressed: onPressed,
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.orange,
-                      minimumSize: Size(
-                        isMobile ? 90.w : 120.w,
-                        44.h,
-                      ),
+                      minimumSize: Size(isMobile ? 90.w : 120, 44),
                       padding: EdgeInsets.symmetric(
-                        horizontal: isMobile ? 12.w : 18.w,
+                        horizontal: isMobile ? 12.w : 18,
                         vertical: 12.h,
                       ),
                       shape: RoundedRectangleBorder(
@@ -79,6 +73,10 @@ class LowStockItem extends StatelessWidget {
                       child: Text(
                         buttonText ?? "order".tr(),
                         maxLines: 1,
+                        style: context.text.bodySmall!.copyWith(
+                          color: context.colors.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

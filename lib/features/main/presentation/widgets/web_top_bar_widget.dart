@@ -1,18 +1,37 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/theme/cubit/theme_cubit.dart';
 import 'package:warshity/core/widgets/search_widget.dart';
+import 'package:warshity/features/clients/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/main/presentation/widgets/top_bar_button.dart';
 import 'package:warshity/features/main/presentation/widgets/top_bar_icon_button.dart';
 
-class WebTopBar extends StatelessWidget {
+class WebTopBar extends StatefulWidget {
   const WebTopBar({super.key});
+
+  @override
+  State<WebTopBar> createState() => _WebTopBarState();
+}
+
+class _WebTopBarState extends State<WebTopBar> {
+  final searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final currentDate = DateFormat.yMMMMEEEEd(
       context.locale.languageCode,
     ).format(DateTime.now());
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
       height: 72,
@@ -26,7 +45,14 @@ class WebTopBar extends StatelessWidget {
           // Search
           Expanded(
             flex: 5,
-            child: CustomSearchTextField(height: 36, hintText: 'search1'.tr()),
+            child: CustomSearchTextField(
+              height: 36,
+              hintText: 'search1'.tr(),
+              onChanged: (value) {
+                context.read<ClientsCubit>().searchClients(value);
+              },
+              controller: searchController,
+            ),
           ),
 
           const SizedBox(width: 16),
@@ -64,33 +90,30 @@ class WebTopBar extends StatelessWidget {
           const SizedBox(width: 8),
 
           // Language
-          TopBarIconButton(icon: Icons.translate, onPressed: () {}),
+          TopBarIconButton(
+            icon: Icons.translate,
+            onPressed: () {
+              final isArabic = context.locale.languageCode == 'ar';
+
+              context.setLocale(
+                isArabic ? const Locale('en') : const Locale('ar'),
+              );
+            },
+          ),
 
           const SizedBox(width: 8),
 
-          // Notifications
-          Stack(
-            children: [
-              TopBarIconButton(
-                icon: Icons.notifications_none,
-                onPressed: () {},
-              ),
-              Positioned(
-                top: 7,
-                right: 7,
-                child: Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    color: Colors.orange,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
+          // Theme
+          TopBarIconButton(
+            icon: isDark ? Icons.dark_mode : Icons.light_mode,
+            onPressed: () {
+              context.read<ThemeCubit>().toggleTheme();
+            },
           ),
-          // Left actions
+
           const Spacer(),
+
+          // Actions
           Row(
             children: [
               TopBarButton(

@@ -547,7 +547,25 @@
   "debt_payment_success": "تم تسجيل سداد المديونية بنجاح.",
   "loading_preparing": "جاري تجهيز التطبيق...",
   "change_language": "تغيير اللغة",
-  "change_theme": "تغيير المظهر"
+  "change_theme": "تغيير المظهر",
+   "quick_actions": "إجراءات سريعة",
+    "quick_new_invoice": "فاتورة بيع جديدة",
+    "quick_new_invoice_sub": "تسجيل مبيعات نقدية أو آجل",
+    "quick_add_product": "إضافة صنف للمخزون",
+    "quick_add_product_sub": "تسعير وحدود المخزون الأدنى",
+    "quick_add_client": "تسجيل عميل جديد",
+    "quick_add_client_sub": "فتح ملف رصيد وحساب مالي",
+    "quick_export": "تصدير جرد اليوم",
+    "quick_export_sub": "تقرير PDF / Excel فوري",
+    "weekly_sales_flow": "تدفق المبيعات الأسبوعي",
+    "weekly_sales_subtitle": "حركة المعاملات المكتملة لآخر 7 أيام",
+    "workshop_sales": "مبيعات الورشة",
+    "device_status": "حالة الفرع والأجهزة",
+    "operation_customer": "العميل",
+    "operation_date": "التاريخ",
+    "operation_amount": "القيمة",
+    "no_recent_operations": "لا توجد عمليات حديثة",
+    "new_invoice": "فاتورة جديدة"
 }
 
 
