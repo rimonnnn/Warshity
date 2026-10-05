@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
@@ -71,6 +70,27 @@ class HomeCubit extends Cubit<HomeState> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
+  /// مبيعات آخر 7 أيام، من الأقدم للأحدث (آخر عنصر = النهارده)
+  List<double> _weeklySales() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return List.generate(7, (i) {
+      final day = today.subtract(Duration(days: 6 - i));
+
+      return _invoices
+          .where((invoice) {
+            final date = _parseDate(invoice.createdAt);
+
+            return date != null &&
+                date.year == day.year &&
+                date.month == day.month &&
+                date.day == day.day;
+          })
+          .fold<double>(0, (sum, invoice) => sum + invoice.total);
+    });
+  }
+
   void _emitLoaded() {
     final now = DateTime.now();
 
@@ -122,6 +142,7 @@ class HomeCubit extends Cubit<HomeState> {
         productCount: _products.length,
         lowStockProducts: lowStockProducts,
         recentInvoices: lastFiveInvoices,
+        weeklySales: _weeklySales(),
       ),
     );
   }

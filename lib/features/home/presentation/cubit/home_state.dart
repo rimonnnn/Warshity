@@ -20,6 +20,8 @@ class HomeLoaded extends HomeState {
   final int productCount;
   final List<ProductModel> lowStockProducts;
   final List<InvoiceModel> recentInvoices;
+  final List<double> weeklySales;
+  
 
   const HomeLoaded({
     required this.todaySales,
@@ -28,6 +30,12 @@ class HomeLoaded extends HomeState {
     required this.productCount,
     this.lowStockProducts = const [],
     this.recentInvoices = const [],
+  
+
+
+this.weeklySales = const [],
+
+
   });
 }
 

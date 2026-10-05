@@ -538,7 +538,25 @@
   "debt_payment_success": "Debt payment recorded successfully.",
   "loading_preparing": "Preparing the app...",
   "change_language": "Change Language",
-  "change_theme": "Change Theme"
+  "change_theme": "Change Theme",
+   "quick_actions": "Quick Actions",
+    "quick_new_invoice": "New Sales Invoice",
+    "quick_new_invoice_sub": "Record cash or credit sales",
+    "quick_add_product": "Add Product",
+    "quick_add_product_sub": "Set price and minimum stock limit",
+    "quick_add_client": "Register New Client",
+    "quick_add_client_sub": "Open a balance and account file",
+    "quick_export": "Export Today's Inventory",
+    "quick_export_sub": "Instant PDF / Excel report",
+    "weekly_sales_flow": "Weekly Sales Flow",
+    "weekly_sales_subtitle": "Completed transactions in the last 7 days",
+    "workshop_sales": "Workshop sales",
+    "device_status": "Branch & Devices Status",
+    "operation_customer": "Customer",
+    "operation_date": "Date",
+    "operation_amount": "Amount",
+    "no_recent_operations": "No recent operations",
+    "new_invoice": "New Invoice"
 }
 
 

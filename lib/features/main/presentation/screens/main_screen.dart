@@ -7,9 +7,10 @@ import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/app_responsive.dart';
-import 'package:warshity/features/clients/presentation/pages/clients_page.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
+import 'package:warshity/features/clients/presentation/cubit/clients_cubit.dart';
+import 'package:warshity/features/clients/presentation/pages/clients_page.dart';
 import 'package:warshity/features/home/presentation/layout/web_home.dart';
 import 'package:warshity/features/home/presentation/pages/home_page.dart';
 import 'package:warshity/features/invoices/presentation/layout/invoice_web.dart';
@@ -134,15 +135,11 @@ class _MainScreenState extends State<MainScreen> {
                   type: AnimatedSnackBarType.success,
                 );
 
-                await Future<void>.delayed(
-                  const Duration(seconds: 2),
-                );
+                await Future<void>.delayed(const Duration(seconds: 2));
 
                 if (!context.mounted) return;
 
-                context.goNamed(
-                  AppRoutes.splashScreen,
-                );
+                context.goNamed(AppRoutes.splashScreen);
               }
 
               if (state is AccountInvitationRejectedRemotely) {
@@ -160,20 +157,24 @@ class _MainScreenState extends State<MainScreen> {
                   type: AnimatedSnackBarType.error,
                 );
 
-                await Future<void>.delayed(
-                  const Duration(seconds: 2),
-                );
+                await Future<void>.delayed(const Duration(seconds: 2));
 
                 if (!context.mounted) return;
 
-                context.goNamed(
-                  AppRoutes.splashScreen,
-                );
+                context.goNamed(AppRoutes.splashScreen);
               }
             },
             child: AppResponsive(
               mobile: MainMobile(navItems: _mobileNavItems),
-              desktop: MainWeb(navItems: _webNavItems),
+              desktop: MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) => getIt<ClientsCubit>()..watchClients(),
+                  ),
+                ],
+
+                child: MainWeb(navItems: _webNavItems),
+              ),
             ),
           );
         },
