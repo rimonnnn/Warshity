@@ -49,7 +49,7 @@ class CardWidget extends StatelessWidget {
               color: color ?? context.colors.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.md),
             ),
-            padding: EdgeInsets.all(padding ?? (isMobile ? 12.sp : 16.sp)),
+            padding: EdgeInsets.all(padding ?? (isMobile ? 12.sp : 16)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -70,7 +70,7 @@ class CardWidget extends StatelessWidget {
 
                     Icon(
                       icon ?? Icons.people,
-                      size: iconSize ?? (isMobile ? 18.sp : 20.sp),
+                      size: iconSize ?? (isMobile ? 18.sp : 20),
                       color: context.colors.onSurfaceVariant,
                     ),
                   ],
