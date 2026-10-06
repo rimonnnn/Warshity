@@ -517,6 +517,11 @@
   "no_accounts_to_show": "لا توجد حسابات لعرضها",
   "invitation_already_pending": "توجد بالفعل دعوة معلقة لهذا الحساب."
 ,
+  "partially_paid": "مدفوعة جزئياً",
+  "total_collected": "إجمالي المحصّل",
+  "invoices_list": "قائمة الفواتير",
+  "invoice_status": "الحالة",
+  "select_invoice_to_review": "اختر فاتورة لمراجعتها",
 "Deleting...": "حذف...",
   "product_deleted_successfully": "تم حذف المنتج بنجاح",
   "failed_to_delete_product": "فشل حذف المنتج",
