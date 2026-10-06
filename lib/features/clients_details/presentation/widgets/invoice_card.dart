@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
@@ -39,29 +38,31 @@ class InvoiceCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: Container(
-        padding: EdgeInsets.all(14.sp),
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: context.colors.surface,
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                // ignore: deprecated_member_use
                 color: statusColor.withOpacity(.1),
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Icon(Icons.receipt_long_outlined, color: statusColor),
             ),
 
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
 
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     invoice.customerName,
@@ -72,43 +73,59 @@ class InvoiceCard extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(height: 4.h),
+                  const SizedBox(height: 6),
 
-                  Text(
-                    _formatDate(invoice.createdAt),
-                    style: context.text.bodySmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                  SizedBox(
+                    width: 165,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        _formatDate(invoice.createdAt),
+                        maxLines: 1,
+                        softWrap: false,
+                        style: context.text.bodySmall?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(width: 12.w),
+            const SizedBox(width: 16),
 
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   invoice.total.toStringAsFixed(2),
+                  maxLines: 1,
                   style: context.text.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: context.colors.primary,
                   ),
                 ),
 
-                SizedBox(height: 4.h),
+                const SizedBox(height: 4),
 
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(.1),
-                    borderRadius: BorderRadius.circular(20.r),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     paymentMethod,
+                    maxLines: 1,
                     style: context.text.labelSmall?.copyWith(
                       color: statusColor,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

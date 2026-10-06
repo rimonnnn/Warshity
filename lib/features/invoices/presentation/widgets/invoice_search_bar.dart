@@ -1,32 +1,52 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:warshity/core/constants/app_padding.dart';
-import 'package:warshity/core/styling/app_assets.dart';
-import 'package:warshity/core/widgets/primary_text_field.dart';
-
-import 'package:warshity/features/invoices/presentation/cubit/invoice_history_cubit.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 
 class InvoiceSearchBar extends StatelessWidget {
-  const InvoiceSearchBar({super.key});
+  const InvoiceSearchBar({
+    super.key,
+    this.controller,
+    this.onChanged,
+    this.onSubmitted,
+    this.hintText,
+  });
+
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final String? hintText;
 
   @override
+
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppPadding.md,
-        vertical: 8.h,
-      ),
-      child: CustomTextField(
-        hint: 'search_invoice'.tr(),
-        prefixIcon: AppAssets.searchIcon,
-        onChanged: (value) {
-          context
-              .read<InvoiceHistoryCubit>()
-              .searchInvoices(value);
-        },
+    return SizedBox(
+      width: 560,
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
+        decoration: InputDecoration(
+          hintText: hintText ?? "search_invoice".tr(),
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.r),
+            borderSide: BorderSide(
+              color: context.colors.outlineVariant,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.r),
+            borderSide: BorderSide(
+              color: context.colors.primary,
+            ),
+          ),
+          filled: true,
+          fillColor: context.colors.surface,
+        ),
       ),
     );
   }
