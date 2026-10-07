@@ -32,13 +32,27 @@ class ContainerWidget extends StatelessWidget {
 
         final imageSize = isDesktop ? 80.0 : 80.0;
         final horizontalPadding = isDesktop ? 40.0 : 20.0;
+        final scheme = context.colors;
+
+        final gradient = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.lerp(scheme.primaryContainer, scheme.surface, 0.35)!,
+            scheme.surfaceContainer,
+          ],
+        );
 
         return Container(
           width: width ?? double.infinity,
           height: height ?? (isDesktop ? 220 : 150),
           decoration: BoxDecoration(
-            color: color ?? context.colors.surfaceContainerHigh,
+            color: color, // لو اتبعت لون يدوي يتغلب على الـ gradient
+            gradient: color == null ? gradient : null,
             borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.md),
+            border: Border.all(
+              color: scheme.primary.withValues(alpha: 0.18), // حد teal خفيف
+            ),
           ),
           child: Stack(
             children: [
@@ -94,7 +108,7 @@ class ContainerWidget extends StatelessWidget {
                                         ? context.text.headlineMedium
                                         : context.text.bodyLarge)
                                     ?.copyWith(
-                                      color: context.colors.primary,
+                                      color: context.colors.onSurface,
                                       fontWeight: FontWeight.bold,
                                       fontSize: isDesktop ? 24 : 18,
                                     ),

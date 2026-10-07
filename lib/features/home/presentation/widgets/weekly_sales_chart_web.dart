@@ -36,6 +36,7 @@ class WeeklySalesChartWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
     final height = chartHeight ?? 160;
     final maxValue = values.fold<double>(0, math.max);
     final today = DateTime.now();
@@ -45,9 +46,9 @@ class WeeklySalesChartWeb extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(padding ?? 20),
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerLow,
+        color: scheme.surfaceContainer, // موحّد مع باقي الكروت
         borderRadius: BorderRadius.circular(borderRadius ?? 12),
-        border: Border.all(color: context.colors.outlineVariant),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,6 +65,7 @@ class WeeklySalesChartWeb extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: context.text.titleMedium?.copyWith(
+                        color: scheme.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -75,7 +77,7 @@ class WeeklySalesChartWeb extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: context.text.bodySmall?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                        color: scheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -90,7 +92,7 @@ class WeeklySalesChartWeb extends StatelessWidget {
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: context.colors.primary,
+                      color: scheme.primary,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -100,7 +102,7 @@ class WeeklySalesChartWeb extends StatelessWidget {
                   Text(
                     legend ?? 'workshop_sales'.tr(),
                     style: context.text.bodySmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -156,6 +158,7 @@ class _SalesBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
     final barHeight = maxValue <= 0
         ? 4.0
         : math.max(4.0, value / maxValue * maxHeight);
@@ -170,9 +173,10 @@ class _SalesBar extends StatelessWidget {
             height: barHeight,
             width: double.infinity,
             decoration: BoxDecoration(
+              // اليوم: primary كامل، باقي الأيام: نفس اللون بشفافية
               color: isToday
-                  ? context.colors.primary
-                  : context.colors.primaryContainer,
+                  ? scheme.primary
+                  : scheme.primary.withValues(alpha: 0.35),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(8),
               ),
@@ -187,9 +191,7 @@ class _SalesBar extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: context.text.bodySmall?.copyWith(
-            color: isToday
-                ? context.colors.onSurface
-                : context.colors.onSurfaceVariant,
+            color: isToday ? scheme.onSurface : scheme.onSurfaceVariant,
             fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
           ),
         ),

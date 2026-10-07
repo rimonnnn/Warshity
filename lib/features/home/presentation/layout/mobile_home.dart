@@ -12,8 +12,8 @@ import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/home/data/recent_operation_model.dart';
 import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
 import 'package:warshity/features/home/presentation/cubit/home_state.dart';
-import 'package:warshity/features/home/presentation/widgets/card_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/container_widget.dart';
+import 'package:warshity/features/home/presentation/widgets/dashboard_statistics.dart';
 import 'package:warshity/features/home/presentation/widgets/home_shimmer.dart';
 import 'package:warshity/features/home/presentation/widgets/lowstackitem_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/lowstockcard_widget.dart';
@@ -120,7 +120,7 @@ class MobileHome extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final item = statistics[index];
 
-                        return CardWidget(
+                        return DashBoardStatistics(
                           title: item.$1,
                           icon: item.$2,
                           value: item.$3,
