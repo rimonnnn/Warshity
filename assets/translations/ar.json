@@ -17,9 +17,11 @@
 
 
   "create_account": "إنشاء حساب",
-  "start": "ابدأ في إدارة متجرك خلال دقائق",
-  "labelname_of_shop": "اسم الورشة / المتجر",
-  "hintname_of_shop": "مثال: ورشة الحرف الذهبية",
+"start": "ابدأ بإدارة نشاطك التجاري في دقائق",
+
+"labelname_of_shop": "اسم النشاط التجاري",
+
+"hintname_of_shop": "مثال: متجر جولدن",
   "accountname": "اسم صاحب الحساب",
   "thirdname": "الاسم الثالث",
   "email": "البريد الإلكتروني",
@@ -98,7 +100,7 @@
     "currency": "ج.م",
     "unit": "قطعة",
     "welcome_actor" : "أهلاً!",
-    "welcome_message" : "نظرة عامة على ورشتك اليوم وجاهزية المخزون.",
+"welcome_message": "إليك نظرة سريعة على نشاطك التجاري والمخزون اليوم.",
     "total_clients" : "اجمالي العملاء",
     "number_of_clients" : "85 عميل",
     "daily_sales" : "مبيعات اليوم",
@@ -564,7 +566,7 @@
     "quick_export_sub": "تقرير PDF / Excel فوري",
     "weekly_sales_flow": "تدفق المبيعات الأسبوعي",
     "weekly_sales_subtitle": "حركة المعاملات المكتملة لآخر 7 أيام",
-    "workshop_sales": "مبيعات الورشة",
+    "workshop_sales": "المبيعات",
     "device_status": "حالة الفرع والأجهزة",
     "operation_customer": "العميل",
     "operation_date": "التاريخ",

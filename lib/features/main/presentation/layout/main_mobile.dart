@@ -86,7 +86,7 @@ class _MainMobileState extends State<MainMobile> {
           ),
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 16.h),
               child: GNav(
                 selectedIndex: _currentIndex,
                 onTabChange: (index) {

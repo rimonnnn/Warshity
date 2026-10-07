@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 
 class DialogActionButtons extends StatelessWidget {
@@ -26,6 +26,8 @@ class DialogActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return Row(
       children: [
         Expanded(
@@ -33,11 +35,11 @@ class DialogActionButtons extends StatelessWidget {
             width: double.infinity,
             height: cancelbuttonheight ?? 56.h,
             buttonText: 'Cancel'.tr(),
-            buttonColor: Colors.red,
-            textColor: Colors.white,
+            buttonColor: scheme.error, // كانت Colors.red
+            textColor: scheme.onError, // كانت Colors.white
             fontSize: fontSize,
             iconData: Icons.cancel_outlined,
-            iconeColor: Colors.white,
+            iconeColor: scheme.onError,
             iconSize: 20,
             buttonspacing: 3,
             onPress: onCancel,
@@ -51,11 +53,12 @@ class DialogActionButtons extends StatelessWidget {
             width: double.infinity,
             height: savebuttonheight ?? 56.h,
             buttonText: 'save'.tr(),
-            textColor: Colors.white,
+            buttonColor: scheme.primary,
+            textColor: scheme.onPrimary, // كانت Colors.white
             iconData: Icons.save,
 
             fontSize: fontSize1,
-            iconeColor: Colors.white,
+            iconeColor: scheme.onPrimary,
             iconSize: 20,
             buttonspacing: 3,
             isLoading: isLoading,

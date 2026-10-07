@@ -10,6 +10,8 @@ import 'package:warshity/features/invoices/presentation/widgets/invoice_summary_
 class InvoiceSummaryRow extends StatelessWidget {
   const InvoiceSummaryRow({super.key});
 
+  static const _spacing = 12.0;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<InvoiceHistoryCubit, InvoiceHistoryState>(
@@ -41,6 +43,7 @@ class InvoiceSummaryRow extends StatelessWidget {
             title: 'today_invoices'.tr(),
             value: '${loaded?.todayInvoices ?? 0}',
             color: context.colors.secondary,
+            valueColor: context.colors.onSurface, // الرقم أبيض زي الصورة
           ),
           InvoiceSummaryCard(
             icon: Icons.receipt_long_outlined,
@@ -50,13 +53,23 @@ class InvoiceSummaryRow extends StatelessWidget {
           ),
         ];
 
-        return Row(
-          children: [
-            for (var i = 0; i < cards.length; i++) ...[
-              Expanded(child: cards[i]),
-              if (i != cards.length - 1) const SizedBox(width: 12),
-            ],
-          ],
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            // 4 كروت في صف واحد على الشاشات العريضة، و2×2 على الموبايل
+            final columns = constraints.maxWidth >= 600 ? 4 : 2;
+            final cardWidth =
+                ((constraints.maxWidth - _spacing * (columns - 1)) / columns)
+                    .floorToDouble();
+
+            return Wrap(
+              spacing: _spacing,
+              runSpacing: _spacing,
+              children: [
+                for (final card in cards)
+                  SizedBox(width: cardWidth, child: card),
+              ],
+            );
+          },
         );
       },
     );

@@ -11,7 +11,7 @@ class InvoiceDetailsPlaceholder extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: context.colors.outlineVariant),
       ),
       alignment: Alignment.center,

@@ -1,9 +1,11 @@
 {
 
   "create_account": "Create Account",
-  "start" : "Start managing your workshop and store in minutes",
-  "labelname_of_shop": "Name of Shop / Workshop",
-  "hintname_of_shop": "Example: Golden Crafts Workshop",
+"start": "Start managing your business in minutes",
+
+"labelname_of_shop": "Business Name",
+
+"hintname_of_shop": "Example: Golden Store",
   "accountname": "Account Owner Name",
   "thirdname": "Third Name",
   "email": "Email Address",
@@ -98,7 +100,7 @@
   "currency": "EGP",
   "unit": "pcs",
   "welcome_actor": "Welcome!",
-  "welcome_message": "Here's an overview of your workshop and inventory status today.",
+ "welcome_message": "Here’s a quick look at your business and inventory today.",
   "total_clients": "Total Clients",
   "number_of_clients": "85 Clients",
   "daily_sales": "Today's Sales",
@@ -555,7 +557,7 @@
     "quick_export_sub": "Instant PDF / Excel report",
     "weekly_sales_flow": "Weekly Sales Flow",
     "weekly_sales_subtitle": "Completed transactions in the last 7 days",
-    "workshop_sales": "Workshop sales",
+    "workshop_sales": "Sales",
     "device_status": "Branch & Devices Status",
     "operation_customer": "Customer",
     "operation_date": "Date",

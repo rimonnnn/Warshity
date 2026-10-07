@@ -21,7 +21,7 @@ class TopImageWidget extends StatelessWidget {
       width: width ?? 240.w,
       height: height ?? 240.h,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         color: context.colors.surfaceContainer,
       ),
       child: Image.asset(imageUrl, fit: BoxFit.contain),

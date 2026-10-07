@@ -26,10 +26,15 @@ class InvoiceRow extends StatelessWidget {
 
     return Material(
       color: selected
-          ? colors.primary.withValues(alpha: 0.08)
+          ? colors.primary.withValues(alpha: 0.14)
           : (background ?? Colors.transparent),
       child: InkWell(
         onTap: onTap,
+        hoverColor: header
+            ? Colors.transparent
+            : colors.primary.withValues(alpha: 0.06),
+        splashColor: colors.primary.withValues(alpha: 0.08),
+
         child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: 16,

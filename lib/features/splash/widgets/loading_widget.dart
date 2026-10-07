@@ -49,9 +49,10 @@ class _LoadingWidgetState extends State<LoadingWidget>
   @override
   Widget build(BuildContext context) {
     final msg = widget.messageKey.tr();
+    final scheme = context.colors;
 
     return Scaffold(
-      backgroundColor: context.colors.surface,
+      backgroundColor: scheme.surface,
       body: Center(
         child: FadeTransition(
           opacity: CurvedAnimation(parent: _intro, curve: Curves.easeOut),
@@ -68,7 +69,10 @@ class _LoadingWidgetState extends State<LoadingWidget>
                       turns: _spin,
                       child: CustomPaint(
                         size: const Size(150, 150),
-                        painter: _RingPainter(),
+                        painter: _RingPainter(
+                          startColor: scheme.primary,
+                          endColor: context.appColors.success,
+                        ),
                       ),
                     ),
                     ScaleTransition(
@@ -96,44 +100,13 @@ class _LoadingWidgetState extends State<LoadingWidget>
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
-                  color: context.colors.primary,
+                  color: scheme.primary,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'your_buddiness_under_controle'.tr(),
-                style: TextStyle(fontSize: 14, color: context.colors.onSurface),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: 220,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: TweenAnimationBuilder<double>(
-                    tween: Tween(end: widget.progress ?? 0),
-                    duration: const Duration(milliseconds: 300),
-                    builder: (_, v, __) => LinearProgressIndicator(
-                      value: widget.progress == null ? null : v,
-                      minHeight: 4,
-                      backgroundColor: Colors.grey.shade300,
-                      valueColor: const AlwaysStoppedAnimation(
-                        Color(0xFF1AA6B7),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: Text(
-                  msg,
-                  key: ValueKey(msg),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: context.colors.onSurface,
-                  ),
-                ),
+                style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -144,6 +117,11 @@ class _LoadingWidgetState extends State<LoadingWidget>
 }
 
 class _RingPainter extends CustomPainter {
+  const _RingPainter({required this.startColor, required this.endColor});
+
+  final Color startColor;
+  final Color endColor;
+
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
@@ -151,13 +129,14 @@ class _RingPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.round
-      ..shader = const SweepGradient(
-        colors: [Color(0x001AA6B7), Color(0xFF1AA6B7), Color(0xFF2E9E5B)],
-        stops: [0.0, 0.7, 1.0],
+      ..shader = SweepGradient(
+        colors: [startColor.withValues(alpha: 0), startColor, endColor],
+        stops: const [0.0, 0.7, 1.0],
       ).createShader(rect);
     canvas.drawArc(rect.deflate(4), 0, math.pi * 1.5, false, paint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter old) => false;
+  bool shouldRepaint(covariant _RingPainter old) =>
+      old.startColor != startColor || old.endColor != endColor;
 }

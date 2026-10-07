@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:warshity/core/helper/app_validators.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/core/widgets/product_image_picker.dart';
@@ -135,11 +134,7 @@ class AddProductFormFields extends StatelessWidget {
 
             if (narrow) {
               return Column(
-                children: [
-                  codeField,
-                  const SizedBox(height: 12),
-                  priceField,
-                ],
+                children: [codeField, const SizedBox(height: 12), priceField],
               );
             }
 

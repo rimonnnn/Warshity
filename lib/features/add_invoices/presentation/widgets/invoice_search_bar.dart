@@ -8,7 +8,11 @@ import 'package:warshity/core/widgets/primary_text_field.dart';
 import 'package:warshity/features/add_invoices/presentation/widgets/add_product_button.dart';
 
 class InvoiceSearchBar extends StatelessWidget {
-  const InvoiceSearchBar({super.key, this.onSearchChanged,required this.onAddProduct});
+  const InvoiceSearchBar({
+    super.key,
+    this.onSearchChanged,
+    required this.onAddProduct,
+  });
 
   final ValueChanged<String>? onSearchChanged;
   final VoidCallback? onAddProduct;
@@ -27,9 +31,11 @@ class InvoiceSearchBar extends StatelessWidget {
             borderRadius: AppRadius.md,
             height: 48,
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 12.h),
+          // AlignmentDirectional بدل Alignment.bottomLeft:
+          // الزر على نفس جهة زر "إضافة عميل" في كارت العميل، في العربي والإنجليزي
           Align(
-            alignment: Alignment.bottomLeft,
+            alignment: AlignmentDirectional.centerEnd,
             child: AddProductButton(onTap: onAddProduct),
           ),
         ],

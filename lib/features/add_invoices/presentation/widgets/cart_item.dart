@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
 import 'package:warshity/core/constants/app_padding.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
@@ -33,9 +32,7 @@ class CartItem extends StatelessWidget {
     }
   }
 
-  Future<void> _showQuantityBottomSheet(
-    BuildContext context,
-  ) async {
+  Future<void> _showQuantityBottomSheet(BuildContext context) async {
     if (onQuantityChanged == null) {
       return;
     }
@@ -50,104 +47,114 @@ class CartItem extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: EdgeInsets.all(AppPadding.sm),
-    decoration: BoxDecoration(
-      color: context.colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 44,
-          height: 44,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: context.colors.primaryContainer,
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-          ),
-          child: Icon(
-            Icons.inventory_2_outlined,
-            size: 20,
-            color: context.colors.onPrimaryContainer,
-          ),
-        ),
+  Widget build(BuildContext context) {
+    final scheme = context.colors;
 
-        WidthSpace(AppPadding.sm),
-
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                productName,
-                style: context.text.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const HeightSpace(2),
-              Text(
-                '\$${unitPrice.toStringAsFixed(2)} × $quantity',
-                style: context.text.bodySmall?.copyWith(
-                  color: context.colors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        WidthSpace(AppPadding.sm),
-
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '\$${_subtotal.toStringAsFixed(2)}',
-              style: context.text.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: context.colors.primary,
-              ),
+    return Container(
+      padding: EdgeInsets.all(AppPadding.sm),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
+            child: Icon(
+              Icons.inventory_2_outlined,
+              size: 20,
+              // primary: نفس لون أيقونات باقي الشاشات فوق primaryContainer
+              color: scheme.primary,
+            ),
+          ),
 
-            const HeightSpace(6),
+          WidthSpace(AppPadding.sm),
 
-            Row(
-              mainAxisSize: MainAxisSize.min,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _QuantityStepper(
-                  quantity: quantity,
-                  onIncrement: onQuantityChanged != null
-                      ? () => onQuantityChanged!(quantity + 1)
-                      : null,
-                  onDecrement:
-                      onQuantityChanged != null || onDelete != null
-                      ? _handleDecrement
-                      : null,
+                Text(
+                  productName,
+                  style: context.text.bodyLarge?.copyWith(
+                    color: scheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-
-                const SizedBox(width: 6),
-
-                GestureDetector(
-                  onTap: () {
-                    _showQuantityBottomSheet(context);
-                  },
-                  child: Icon(
-                    Icons.edit_outlined,
-                    size: 18,
-                    color: context.colors.onSurfaceVariant,
+                const HeightSpace(2),
+                Text(
+                  '\$${unitPrice.toStringAsFixed(2)} × $quantity',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
-      ],
-    ),
-  );
+          ),
+
+          WidthSpace(AppPadding.sm),
+
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '\$${_subtotal.toStringAsFixed(2)}',
+                style: context.text.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: scheme.primary,
+                ),
+              ),
+
+              const HeightSpace(6),
+
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _QuantityStepper(
+                    quantity: quantity,
+                    onIncrement: onQuantityChanged != null
+                        ? () => onQuantityChanged!(quantity + 1)
+                        : null,
+                    onDecrement: onQuantityChanged != null || onDelete != null
+                        ? _handleDecrement
+                        : null,
+                  ),
+
+                  const SizedBox(width: 2),
+
+                  // IconButton بدل GestureDetector: ripple + tooltip + مساحة لمس 40px
+                  IconButton(
+                    onPressed: () {
+                      _showQuantityBottomSheet(context);
+                    },
+                    tooltip: 'quantity'.tr(),
+                    visualDensity: VisualDensity.compact,
+                    iconSize: 18,
+                    icon: Icon(
+                      Icons.edit_outlined,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _QuantityStepper extends StatelessWidget {
@@ -163,47 +170,40 @@ class _QuantityStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
     final atMinimum = quantity <= 1;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(
-          AppRadius.sm,
-        ),
-        border: Border.all(
-          color: context.colors.outlineVariant,
-        ),
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           _StepperButton(
-            icon: atMinimum
-                ? Icons.delete_outline
-                : Icons.remove,
-            tooltip: atMinimum
-                ? 'remove_item'.tr()
-                : 'decrease_quantity'.tr(),
+            icon: atMinimum ? Icons.delete_outline : Icons.remove,
+            tooltip: atMinimum ? 'remove_item'.tr() : 'decrease_quantity'.tr(),
             onPressed: onDecrement,
-            foreground: atMinimum
-                ? context.colors.error
-                : context.colors.onSurfaceVariant,
+            foreground: atMinimum ? scheme.error : scheme.onSurfaceVariant,
           ),
 
           SizedBox(
-            width: 22,
+            width: 26,
             child: Text(
               '$quantity',
               textAlign: TextAlign.center,
               style: context.text.bodyMedium?.copyWith(
+                color: scheme.onSurface,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
 
           _StepperButton(
-            icon: Icons.add_box,
+            // Icons.add بدل add_box: دايرة فيها علامة + بدل مربع جوه دايرة
+            icon: Icons.add,
             tooltip: 'increase_quantity'.tr(),
             onPressed: onIncrement,
             filled: true,
@@ -231,31 +231,29 @@ class _StepperButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
     final disabled = onPressed == null;
 
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: filled && !disabled
-            ? context.colors.primary
-            : Colors.transparent,
+        color: filled && !disabled ? scheme.primary : Colors.transparent,
         shape: const CircleBorder(),
         child: InkWell(
           onTap: onPressed,
           customBorder: const CircleBorder(),
           child: SizedBox(
-            width: 28,
-            height: 28,
+            // 32 بدل 28: مساحة لمس أكبر من غير ما الـ stepper يكبر كتير
+            width: 32,
+            height: 32,
             child: Icon(
               icon,
-              size: 20,
+              size: 18,
               color: disabled
-                  ? context.colors.onSurfaceVariant
-                      .withValues(alpha: 0.35)
+                  ? scheme.onSurfaceVariant.withValues(alpha: 0.35)
                   : filled
-                      ? context.colors.onPrimary
-                      : foreground ??
-                          context.colors.onSurfaceVariant,
+                  ? scheme.onPrimary
+                  : foreground ?? scheme.onSurfaceVariant,
             ),
           ),
         ),

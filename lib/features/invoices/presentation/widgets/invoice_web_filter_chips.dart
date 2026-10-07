@@ -80,15 +80,18 @@ class InvoiceWebFilterChips extends StatelessWidget {
       label: Text(label),
       selected: selected,
       onSelected: (_) => onTap(),
-      selectedColor: colors.primary.withValues(alpha: 0.1),
-      backgroundColor: colors.surfaceContainerLow,
-      labelStyle: context.text.labelMedium?.copyWith(
-        color: selected ? colors.primary : colors.onSurfaceVariant,
-        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+      showCheckmark: true,
+      checkmarkColor: colors.primary,
+      selectedColor: colors.primaryContainer,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      side: BorderSide(
+        color: selected ? colors.primary : colors.outlineVariant,
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: colors.outlineVariant),
+      shape: const StadiumBorder(),
+      labelStyle: context.text.labelMedium?.copyWith(
+        color: selected ? colors.primary : colors.onSurface,
+        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
       ),
     );
   }

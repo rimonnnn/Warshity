@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/helper/app_validators.dart';
@@ -104,8 +103,10 @@ class _AddClientDialogState extends State<AddClientDialog> {
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.lg),
+                side: BorderSide(color: context.colors.outlineVariant),
               ),
-              backgroundColor: context.colors.surface,
+              // surfaceContainer بدل surface، عشان الـ dialog يبان فوق الخلفية
+              backgroundColor: context.colors.surfaceContainer,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minWidth: 280,
@@ -133,9 +134,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
                                 width: isMobile ? 44 : 48,
                                 height: isMobile ? 44 : 48,
                                 decoration: BoxDecoration(
-                                  color: context.colors.primary.withValues(
-                                    alpha: .10,
-                                  ),
+                                  color: context.colors.primaryContainer,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
@@ -213,9 +212,8 @@ class _AddClientDialogState extends State<AddClientDialog> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: context.colors.primary.withValues(
-                                alpha: .035,
-                              ),
+                              // أغمق من الـ dialog عشان يظهر كمنطقة منفصلة
+                              color: context.colors.surfaceContainerLow,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: context.colors.outlineVariant,
@@ -337,8 +335,7 @@ class _AddClientDialogState extends State<AddClientDialog> {
                               minHeight: 3,
                               borderRadius: BorderRadius.circular(10),
                               color: context.colors.primary,
-                              backgroundColor: context.colors.primary
-                                  .withValues(alpha: .10),
+                              backgroundColor: context.colors.primaryContainer,
                             ),
                           ],
                         ],

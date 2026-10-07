@@ -2,8 +2,6 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 
@@ -22,14 +20,10 @@ class QuantityBottomSheet extends StatefulWidget {
     required int quantity,
     required Future<void> Function(int newQuantity) onQuantityChanged,
   }) async {
+    // الشكل واللون جايين من bottomSheetTheme في الـ ThemeData
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
-      ),
       builder: (_) {
         return QuantityBottomSheet(
           quantity: quantity,
@@ -56,9 +50,7 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
   }
 
   Future<void> _confirmQuantity() async {
-    final value = int.tryParse(
-      controller.text.trim(),
-    );
+    final value = int.tryParse(controller.text.trim());
 
     if (value == null || value <= 0) {
       return;
@@ -136,10 +128,7 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
 
       showAnimatedSnackDialog(
         context,
-        message: e.toString().replaceFirst(
-              'Exception: ',
-              '',
-            ),
+        message: e.toString().replaceFirst('Exception: ', ''),
         type: AnimatedSnackBarType.error,
       );
     } finally {
@@ -153,6 +142,8 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
@@ -160,9 +151,7 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
             left: 20.w,
             right: 20.w,
             top: 20.h,
-            bottom:
-                MediaQuery.of(context).viewInsets.bottom +
-                20.h,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -170,6 +159,7 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
               Text(
                 'quantity'.tr(),
                 style: context.text.titleLarge?.copyWith(
+                  color: scheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -178,7 +168,7 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
                 children: [
                   Expanded(
                     child: ChoiceChip(
-                      label: Text('increase'.tr()),
+                      label: Center(child: Text('increase'.tr())),
                       selected: increase,
                       onSelected: (_) {
                         setState(() {
@@ -190,7 +180,7 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
                   SizedBox(width: 10.w),
                   Expanded(
                     child: ChoiceChip(
-                      label: Text('decrease'.tr()),
+                      label: Center(child: Text('decrease'.tr())),
                       selected: !increase,
                       onSelected: (_) {
                         setState(() {
@@ -202,17 +192,11 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
                 ],
               ),
               SizedBox(height: 16.h),
+              // الحدود والـ fill جايين من inputDecorationTheme
               TextField(
                 controller: controller,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'enter_quantity'.tr(),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      AppRadius.md,
-                    ),
-                  ),
-                ),
+                decoration: InputDecoration(hintText: 'enter_quantity'.tr()),
               ),
               SizedBox(height: 20.h),
               SizedBox(
@@ -223,8 +207,10 @@ class _QuantityBottomSheetState extends State<QuantityBottomSheet> {
                       ? SizedBox(
                           width: 20.w,
                           height: 20.w,
-                          child: const CircularProgressIndicator(
+                          child: CircularProgressIndicator(
                             strokeWidth: 2,
+                            // primary فوق primary كان مش بيبان
+                            color: scheme.onPrimary,
                           ),
                         )
                       : Text('confirm'.tr()),
