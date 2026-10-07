@@ -19,7 +19,7 @@ class ProductsStatistics extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final products = state.products;
+        final products = context.read<ProductsCubit>().allProducts;
 
         final totalProducts = products.length;
 

@@ -17,7 +17,8 @@ class WebProduct extends StatefulWidget {
 }
 
 class _WebProductState extends State<WebProduct> {
-  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController =
+      TextEditingController();
 
   int _selectedCategory = 0;
   int _currentPage = 1;
@@ -49,13 +50,15 @@ class _WebProductState extends State<WebProduct> {
       create: (_) => getIt<CategoriesCubit>()..watchCategories(),
       child: Builder(
         builder: (context) {
-          final categoriesCubit = context.read<CategoriesCubit>();
+          final categoriesCubit =
+              context.read<CategoriesCubit>();
 
           return Scaffold(
             backgroundColor: context.colors.surface,
             body: LayoutBuilder(
               builder: (context, constraints) {
-                final isCompact = constraints.maxWidth < 1000;
+                final isCompact =
+                    constraints.maxWidth < 1000;
 
                 return SingleChildScrollView(
                   padding: EdgeInsets.symmetric(
@@ -64,9 +67,12 @@ class _WebProductState extends State<WebProduct> {
                   ),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1350),
+                      constraints: const BoxConstraints(
+                        maxWidth: 1350,
+                      ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.stretch,
                         children: [
                           const ProductsHeader(),
 
@@ -77,16 +83,21 @@ class _WebProductState extends State<WebProduct> {
                           const SizedBox(height: 18),
 
                           ProductsActions(
-                            searchController: _searchController,
-                            categoriesCubit: categoriesCubit,
+                            searchController:
+                                _searchController,
+                            categoriesCubit:
+                                categoriesCubit,
                           ),
 
                           const SizedBox(height: 16),
 
                           ProductsCategories(
-                            selectedIndex: _selectedCategory,
+                            selectedIndex:
+                                _selectedCategory,
                             onSelected: (index) {
-                              if (_selectedCategory == index) return;
+                              if (_selectedCategory == index) {
+                                return;
+                              }
 
                               setState(() {
                                 _selectedCategory = index;
@@ -98,8 +109,8 @@ class _WebProductState extends State<WebProduct> {
                           const SizedBox(height: 18),
 
                           ProductsTable(
-                            search: _searchController.text,
-                            selectedCategory: _selectedCategory,
+                            selectedCategory:
+                                _selectedCategory,
                             currentPage: _currentPage,
                             itemsPerPage: _itemsPerPage,
                             compact: isCompact,

@@ -6,6 +6,7 @@ class DeveloperCreditWidget extends StatelessWidget {
   const DeveloperCreditWidget({super.key});
 
   static const _phone = '01206174130';
+  static const _phone1 = '01279914491';
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,14 @@ class DeveloperCreditWidget extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             _phone,
+            style: context.text.labelMedium?.copyWith(
+              // ignore: deprecated_member_use
+              color: context.colors.onSurface.withOpacity(0.7),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            _phone1,
             style: context.text.labelMedium?.copyWith(
               // ignore: deprecated_member_use
               color: context.colors.onSurface.withOpacity(0.7),

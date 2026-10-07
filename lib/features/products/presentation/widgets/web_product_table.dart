@@ -17,7 +17,6 @@ import 'web_product_widgets.dart';
 class ProductsTable extends StatelessWidget {
   const ProductsTable({
     super.key,
-    required this.search,
     required this.selectedCategory,
     required this.currentPage,
     required this.itemsPerPage,
@@ -25,7 +24,6 @@ class ProductsTable extends StatelessWidget {
     required this.onPageChanged,
   });
 
-  final String search;
   final int selectedCategory;
   final int currentPage;
   final int itemsPerPage;
@@ -34,17 +32,6 @@ class ProductsTable extends StatelessWidget {
 
   List<ProductModel> _filter(BuildContext context, List<ProductModel> all) {
     var products = List<ProductModel>.from(all);
-
-    final query = search.trim().toLowerCase();
-
-    if (query.isNotEmpty) {
-      products = products.where((product) {
-        final name = product.name.toLowerCase();
-        final barcode = product.barcode.toLowerCase();
-
-        return name.contains(query) || barcode.contains(query);
-      }).toList();
-    }
 
     if (selectedCategory != 0) {
       final categoryState = context.read<CategoriesCubit>().state;
@@ -98,9 +85,13 @@ class ProductsTable extends StatelessWidget {
 
         final totalItems = products.length;
         final totalPages = (totalItems / itemsPerPage).ceil();
+
         final safePage = currentPage.clamp(1, totalPages);
+
         final start = (safePage - 1) * itemsPerPage;
+
         final end = (start + itemsPerPage).clamp(0, products.length);
+
         final visibleProducts = products.sublist(start, end);
 
         return Container(

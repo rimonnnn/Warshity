@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/invoices/data/models/invoice_item_model.dart';
 
@@ -8,24 +9,76 @@ class AmountAndPriceWidget extends StatelessWidget {
 
   final List<InvoiceItemModel> items;
 
+  Widget _headerText(
+    BuildContext context,
+    String text, {
+    TextAlign align = TextAlign.center,
+  }) {
+    return Expanded(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: align == TextAlign.start
+            ? AlignmentDirectional.centerStart
+            : align == TextAlign.end
+            ? AlignmentDirectional.centerEnd
+            : Alignment.center,
+        child: Text(
+          text,
+          maxLines: 1,
+          textAlign: align,
+          style: context.text.bodyLarge,
+        ),
+      ),
+    );
+  }
+
+  Widget _itemText(
+    BuildContext context,
+    String text, {
+    TextAlign align = TextAlign.center,
+    FontWeight? fontWeight,
+  }) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: align == TextAlign.start
+              ? AlignmentDirectional.centerStart
+              : align == TextAlign.end
+              ? AlignmentDirectional.centerEnd
+              : Alignment.center,
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: align,
+            style: context.text.bodyMedium?.copyWith(fontWeight: fontWeight),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
-          margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
           width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
           decoration: BoxDecoration(
             color: context.colors.outlineVariant,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("catagory".tr(), style: context.text.bodyLarge),
-              Text("amount".tr(), style: context.text.bodyLarge),
-              Text("the_price".tr(), style: context.text.bodyLarge),
+              _headerText(context, 'catagory'.tr(), align: TextAlign.start),
+              const SizedBox(width: 8),
+              _headerText(context, 'amount'.tr()),
+              const SizedBox(width: 8),
+              _headerText(context, 'the_price'.tr(), align: TextAlign.end),
             ],
           ),
         ),
@@ -37,29 +90,19 @@ class AmountAndPriceWidget extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Text(
-                      item.productName,
-                      style: context.text.bodyMedium,
-                    ),
-                  ),
+                  _itemText(context, item.productName, align: TextAlign.start),
 
-                  Expanded(
-                    child: Text(
-                      item.quantity.toString(),
-                      textAlign: TextAlign.center,
-                      style: context.text.bodyLarge,
-                    ),
-                  ),
+                  const SizedBox(width: 8),
 
-                  Expanded(
-                    child: Text(
-                      item.price.toStringAsFixed(2),
-                      textAlign: TextAlign.end,
-                      style: context.text.bodyMedium,
-                    ),
+                  _itemText(context, item.quantity.toString()),
+
+                  const SizedBox(width: 8),
+
+                  _itemText(
+                    context,
+                    item.price.toStringAsFixed(2),
+                    align: TextAlign.end,
                   ),
                 ],
               ),
