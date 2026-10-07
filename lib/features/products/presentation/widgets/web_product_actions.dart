@@ -7,6 +7,7 @@ import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
+import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 
 class ProductsHeader extends StatelessWidget {
   const ProductsHeader({super.key});
@@ -89,6 +90,9 @@ class ProductsActions extends StatelessWidget {
         Expanded(
           child: TextField(
             controller: searchController,
+            onChanged: (value) {
+              context.read<ProductsCubit>().searchProducts(value);
+            },
             decoration: InputDecoration(
               hintText: 'search_product'.tr(),
               prefixIcon: const Icon(Icons.search),

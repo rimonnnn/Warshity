@@ -13,6 +13,11 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   StreamSubscription<List<ProductModel>>? _productsSubscription;
 
+  List<ProductModel> _allProducts = [];
+  String _searchQuery = '';
+
+  List<ProductModel> get allProducts => List.unmodifiable(_allProducts);
+
   void watchProducts() {
     emit(ProductsLoading());
 
@@ -20,14 +25,37 @@ class ProductsCubit extends Cubit<ProductsState> {
 
     _productsSubscription = repository.watchProducts().listen(
       (products) {
-        emit(ProductsSuccess(products));
+        _allProducts = products;
+        _emitFilteredProducts();
       },
       onError: (error) {
-        emit(
-          ProductsError(error.toString()),
-        );
+        emit(ProductsError(error.toString()));
       },
     );
+  }
+
+  void searchProducts(String query) {
+    _searchQuery = query.trim().toLowerCase();
+
+    if (state is ProductsSuccess) {
+      _emitFilteredProducts();
+    }
+  }
+
+  void _emitFilteredProducts() {
+    if (_searchQuery.isEmpty) {
+      emit(ProductsSuccess(List.of(_allProducts)));
+      return;
+    }
+
+    final filteredProducts = _allProducts.where((product) {
+      final name = product.name.toLowerCase();
+      final barcode = product.barcode.toLowerCase();
+
+      return name.contains(_searchQuery) || barcode.contains(_searchQuery);
+    }).toList();
+
+    emit(ProductsSuccess(filteredProducts));
   }
 
   Future<void> increaseQuantity(String productId) async {

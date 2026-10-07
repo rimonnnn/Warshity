@@ -30,26 +30,8 @@ class _MobileProductsState extends State<MobileProduct> {
   int selectedCategory = 0;
 
   @override
-  void initState() {
-    super.initState();
-
-    searchController.addListener(_onSearchChanged);
-  }
-
-  void _onSearchChanged() {
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {});
-  }
-
-  @override
   void dispose() {
-    searchController.removeListener(_onSearchChanged);
-
     searchController.dispose();
-
     super.dispose();
   }
 
@@ -57,7 +39,6 @@ class _MobileProductsState extends State<MobileProduct> {
   Widget build(BuildContext context) {
     return BlocProvider<CategoriesCubit>(
       create: (_) => getIt<CategoriesCubit>()..watchCategories(),
-
       child: Builder(
         builder: (context) {
           final categoriesCubit = context.read<CategoriesCubit>();
@@ -70,15 +51,12 @@ class _MobileProductsState extends State<MobileProduct> {
                 showDialog(
                   context: context,
                   barrierDismissible: true,
-
                   builder: (dialogContext) {
                     return MultiBlocProvider(
                       providers: [
                         BlocProvider.value(value: categoriesCubit),
-
                         BlocProvider(create: (_) => getIt<AddProductCubit>()),
                       ],
-
                       child: const AddProductDialog(),
                     );
                   },
@@ -88,16 +66,19 @@ class _MobileProductsState extends State<MobileProduct> {
 
             body: Padding(
               padding: EdgeInsets.all(16.w),
-
               child: RefreshIndicator(
                 onRefresh: () async {
                   await Future<void>.delayed(const Duration(milliseconds: 300));
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-
                   children: [
-                    ProductSearchWidget(controller: searchController),
+                    ProductSearchWidget(
+                      controller: searchController,
+                      onChanged: (value) {
+                        context.read<ProductsCubit>().searchProducts(value);
+                      },
+                    ),
 
                     HeightSpace(16.h),
 
@@ -112,7 +93,6 @@ class _MobileProductsState extends State<MobileProduct> {
 
                           final List<String> categoryNames = [
                             'all'.tr(),
-
                             ...categories.map((category) => category.name),
                           ];
 
@@ -124,9 +104,7 @@ class _MobileProductsState extends State<MobileProduct> {
 
                           return ProductCategoryTabs(
                             categories: categoryNames,
-
                             selectedIndex: safeSelectedCategory,
-
                             onSelected: (index) {
                               if (index == selectedCategory) {
                                 return;
@@ -142,7 +120,6 @@ class _MobileProductsState extends State<MobileProduct> {
                         if (categoryState is CategoriesError) {
                           return SizedBox(
                             height: 40.h,
-
                             child: Center(child: Text(categoryState.message)),
                           );
                         }
@@ -166,23 +143,6 @@ class _MobileProductsState extends State<MobileProduct> {
 
                           if (productState is ProductsSuccess) {
                             var products = List.of(productState.products);
-
-                            final String search = searchController.text
-                                .trim()
-                                .toLowerCase();
-
-                            if (search.isNotEmpty) {
-                              products = products.where((product) {
-                                final String productName = product.name
-                                    .toLowerCase();
-
-                                final String productBarcode = product.barcode
-                                    .toLowerCase();
-
-                                return productName.contains(search) ||
-                                    productBarcode.contains(search);
-                              }).toList();
-                            }
 
                             if (selectedCategory != 0) {
                               final categoryState = categoriesCubit.state;
@@ -211,10 +171,8 @@ class _MobileProductsState extends State<MobileProduct> {
 
                             return SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
-
                               child: ProductList(
                                 products: products,
-
                                 onDelete: (product) async {
                                   try {
                                     await context

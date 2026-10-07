@@ -1,7 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/features/invoices/presentation/cubit/invoice_history_cubit.dart';
 
 class InvoiceSearchBar extends StatelessWidget {
   const InvoiceSearchBar({
@@ -18,32 +20,34 @@ class InvoiceSearchBar extends StatelessWidget {
   final String? hintText;
 
   @override
-
   Widget build(BuildContext context) {
     return SizedBox(
       width: 560,
       child: TextField(
         controller: controller,
-        onChanged: onChanged,
+
+        onChanged:
+            onChanged ?? context.read<InvoiceHistoryCubit>().searchInvoices,
+
         onSubmitted: onSubmitted,
+
         decoration: InputDecoration(
-          hintText: hintText ?? "search_invoice".tr(),
+          hintText: hintText ?? 'search_invoice'.tr(),
+
           prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
-          ),
+
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.r)),
+
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide(
-              color: context.colors.outlineVariant,
-            ),
+            borderSide: BorderSide(color: context.colors.outlineVariant),
           ),
+
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide(
-              color: context.colors.primary,
-            ),
+            borderSide: BorderSide(color: context.colors.primary),
           ),
+
           filled: true,
           fillColor: context.colors.surface,
         ),

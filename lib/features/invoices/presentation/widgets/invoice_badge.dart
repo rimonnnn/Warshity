@@ -1,38 +1,29 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/features/invoices/presentation/widgets/invoice_status_utils.dart';
 
 class InvoiceStatusBadge extends StatelessWidget {
-  final String status;
-
   const InvoiceStatusBadge({super.key, required this.status});
+
+  final InvoiceStatus status;
 
   @override
   Widget build(BuildContext context) {
-    Color color;
-
-    switch (status.toLowerCase()) {
-      case 'paid':
-        color = context.appColors.success;
-        break;
-
-      case 'unpaid':
-        color = context.colors.error;
-        break;
-
-      default:
-        color = context.colors.primary;
-    }
+    final (color, label) = switch (status) {
+      InvoiceStatus.paid => (context.appColors.success, 'paid'),
+      InvoiceStatus.partial => (context.appColors.warning, 'partially_paid'),
+      InvoiceStatus.unpaid => (context.colors.error, 'unpaid'),
+    };
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        status.tr(),
+        label.tr(),
         style: context.text.labelSmall?.copyWith(
           color: color,
           fontWeight: FontWeight.bold,

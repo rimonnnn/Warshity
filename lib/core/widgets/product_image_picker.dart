@@ -2,11 +2,9 @@ import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
-import 'package:warshity/core/widgets/spacing_widgets.dart';
 
 class ProductImagePicker extends StatelessWidget {
   const ProductImagePicker({
@@ -28,38 +26,39 @@ class ProductImagePicker extends StatelessWidget {
       onTap: enabled ? onPick : null,
       child: Container(
         width: double.infinity,
-        height: height ?? 150.h,
+        height: height ?? 150,
         decoration: BoxDecoration(
-          border: Border.all(
-            color: context.colors.outline,
-          ),
-          borderRadius: BorderRadius.circular(
-            AppRadius.md,
-          ),
+          border: Border.all(color: context.colors.outline),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         clipBehavior: Clip.antiAlias,
         child: imageBytes != null
             ? Image.memory(
                 imageBytes!,
+                width: double.infinity,
+                height: double.infinity,
                 fit: BoxFit.cover,
               )
             : Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     Icons.add_photo_alternate_outlined,
-                    size: 48.sp,
+                    size: 48,
                     color: context.colors.primary,
                   ),
-                  HeightSpace(8.h),
+
+                  const SizedBox(height: 8),
+
                   Text(
                     'Upload Product Image'.tr(),
+                    textAlign: TextAlign.center,
                   ),
-                  HeightSpace(4.h),
-                  Text(
-                    'PNG, JPG',
-                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text('PNG, JPG'.tr(), textAlign: TextAlign.center),
                 ],
               ),
       ),
