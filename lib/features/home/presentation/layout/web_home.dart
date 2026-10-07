@@ -5,13 +5,16 @@ import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
+import 'package:warshity/core/widgets/add_client_dialog.dart';
+import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/quantity_bottom_sheet.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/home/data/recent_operation_model.dart';
 import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
 import 'package:warshity/features/home/presentation/cubit/home_state.dart';
-import 'package:warshity/features/home/presentation/widgets/card_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/container_widget.dart';
+import 'package:warshity/features/home/presentation/widgets/dashboard_statistics.dart';
 import 'package:warshity/features/home/presentation/widgets/lowstackitem_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/lowstockcard_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/quick_action_model.dart';
@@ -19,10 +22,13 @@ import 'package:warshity/features/home/presentation/widgets/quick_actions_web.da
 import 'package:warshity/features/home/presentation/widgets/recent_operation_model.dart';
 import 'package:warshity/features/home/presentation/widgets/section_header.dart';
 import 'package:warshity/features/home/presentation/widgets/weekly_sales_chart_web.dart';
+import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
+import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 
 class WebHome extends StatelessWidget {
-  const WebHome({super.key});
+  final ValueChanged<int>? onNavigate;
+  const WebHome({super.key, this.onNavigate});
 
   @override
   Widget build(BuildContext context) {
@@ -48,24 +54,28 @@ class WebHome extends StatelessWidget {
             // الترتيب زي الصورة: المبيعات - الفواتير - المنتجات - العملاء
             final statistics = [
               (
-                'daily_sales'.tr(),
-                Icons.trending_up_outlined,
-                'EGP ${state.todaySales.toStringAsFixed(2)}',
+                title: 'daily_sales'.tr(),
+                icon: Icons.trending_up_outlined,
+                value: 'EGP ${state.todaySales.toStringAsFixed(2)}',
+                destination: 0,
               ),
               (
-                'number_of_Invoices'.tr(),
-                Icons.receipt_long_outlined,
-                '${state.invoiceCount} ${'invoice'.tr()}',
+                title: 'number_of_Invoices'.tr(),
+                icon: Icons.receipt_long_outlined,
+                value: '${state.invoiceCount} ${'invoice'.tr()}',
+                destination: 1,
               ),
               (
-                'total_products'.tr(),
-                Icons.inventory_2_outlined,
-                '${state.productCount} ${'product'.tr()}',
+                title: 'total_products'.tr(),
+                icon: Icons.inventory_2_outlined,
+                value: '${state.productCount} ${'product'.tr()}',
+                destination: 2,
               ),
               (
-                'total_clients'.tr(),
-                Icons.group_outlined,
-                '${state.clientCount} ${'client'.tr()}',
+                title: 'total_clients'.tr(),
+                icon: Icons.group_outlined,
+                value: '${state.clientCount} ${'client'.tr()}',
+                destination: 3,
               ),
             ];
 
@@ -75,7 +85,7 @@ class WebHome extends StatelessWidget {
                 subtitle: 'quick_new_invoice_sub'.tr(),
                 icon: Icons.note_add_outlined,
                 onTap: () {
-                  // TODO: context.pushNamed(AppRoutes.xxx);
+                  context.pushNamed(AppRoutes.addInvoicesScreen);
                 },
               ),
               QuickActionModel(
@@ -83,7 +93,16 @@ class WebHome extends StatelessWidget {
                 subtitle: 'quick_add_product_sub'.tr(),
                 icon: Icons.inventory_2_outlined,
                 onTap: () {
-                  // TODO: context.pushNamed(AppRoutes.xxx);
+                  showDialog(
+                    context: context,
+                    builder: (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider(create: (_) => getIt<CategoriesCubit>()),
+                        BlocProvider(create: (_) => getIt<AddProductCubit>()),
+                      ],
+                      child: const AddProductDialog(),
+                    ),
+                  );
                 },
               ),
               QuickActionModel(
@@ -91,7 +110,13 @@ class WebHome extends StatelessWidget {
                 subtitle: 'quick_add_client_sub'.tr(),
                 icon: Icons.person_add_alt_1_outlined,
                 onTap: () {
-                  // TODO: context.pushNamed(AppRoutes.xxx);
+                  showDialog(
+                    context: context,
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<AddClientCubit>(),
+                      child: const AddClientDialog(),
+                    ),
+                  );
                 },
               ),
             ];
@@ -126,7 +151,7 @@ class WebHome extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final item = statistics[index];
 
-                        return CardWidget(
+                        return DashBoardStatistics(
                           width: 222,
                           height: 130,
                           borderRadius: 12,
@@ -134,10 +159,10 @@ class WebHome extends StatelessWidget {
                           padding: 22,
                           iconSize: 30,
                           color: context.colors.surfaceContainerLow,
-                          onTap: () {},
-                          title: item.$1,
-                          icon: item.$2,
-                          value: item.$3,
+                          onTap: () => onNavigate?.call(item.destination),
+                          title: item.title,
+                          icon: item.icon,
+                          value: item.value,
                         );
                       },
                     ),

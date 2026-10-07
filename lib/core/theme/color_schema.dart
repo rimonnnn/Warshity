@@ -52,44 +52,45 @@ const lightColorScheme = ColorScheme(
 const darkColorScheme = ColorScheme(
   brightness: Brightness.dark,
 
-  primary: Color(0xFF14B8A6),
-  onPrimary: Color(0xFF042F2E),
-  primaryContainer: Color(0xFF115E59),
-  onPrimaryContainer: Color(0xFFCCFBF1),
+  primary: Color(0xFF1DD3C4),
+  onPrimary: Color(0xFF04201F),
+  primaryContainer: Color(0xFF0E4650),
+  onPrimaryContainer: Color(0xFFCFFAF5),
 
-  secondary: Color(0xFF2DD4BF),
-  onSecondary: Color(0xFF042F2E),
-  secondaryContainer: Color(0xFF134E4A),
-  onSecondaryContainer: Color(0xFF99F6E4),
+  secondary: Color(0xFF6FE3D8),
+  onSecondary: Color(0xFF04201F),
+  secondaryContainer: Color(0xFF0E3A44),
+  onSecondaryContainer: Color(0xFFBFF5EF),
 
-  tertiary: Color(0xFFFBBF24),
-  onTertiary: Color(0xFF422006),
-  tertiaryContainer: Color(0xFF78350F),
-  onTertiaryContainer: Color(0xFFFEF3C7),
+  tertiary: Color(0xFFFFB020), // Amber (تنبيه المخزون / طلب توريد)
+  onTertiary: Color(0xFF3A2500),
+  tertiaryContainer: Color(0xFF5A3A00),
+  onTertiaryContainer: Color(0xFFFFE2A8),
 
-  error: Color(0xFFEF4444),
-  onError: Color(0xFF450A0A),
-  errorContainer: Color(0xFF7F1D1D),
-  onErrorContainer: Color(0xFFFEE2E2),
+  error: Color(0xFFFF5A5F),
+  onError: Color(0xFF3F0508),
+  errorContainer: Color(0xFF4A1D2A),
+  onErrorContainer: Color(0xFFFFD9DB),
 
-  surface: Color(0xFF0F172A),
-  onSurface: Color(0xFFF1F5F9),
+  surface: Color(0xFF081426), // Background
+  onSurface: Color(0xFFFFFFFF),
+  onSurfaceVariant: Color(0xFFA5B4CA), // Text secondary (مكانه ناقص عندك)
 
-  surfaceContainerHighest: Color(0xFF334155),
-  surfaceContainerHigh: Color(0xFF293548),
-  surfaceContainer: Color(0xFF1E293B),
-  surfaceContainerLow: Color(0xFF172033),
-  surfaceContainerLowest: Color(0xFF020617),
+  surfaceContainerLowest: Color(0xFF050E1B),
+  surfaceContainerLow: Color(0xFF0B1A2F),
+  surfaceContainer: Color(0xFF0F2038), // الكروت
+  surfaceContainerHigh: Color(0xFF142A44),
+  surfaceContainerHighest: Color(0xFF18304D),
 
-  outline: Color(0xFF94A3B8),
-  outlineVariant: Color(0xFF475569),
+  outline: Color(0xFF8EA2BF),
+  outlineVariant: Color(0xFF1C3452), // Border
 
   shadow: Color(0xFF000000),
   scrim: Color(0xFF000000),
 
   inverseSurface: Color(0xFFF1F5F9),
-  onInverseSurface: Color(0xFF1E293B),
+  onInverseSurface: Color(0xFF081426),
   inversePrimary: Color(0xFF0F766E),
 
-  surfaceTint: Color(0xFF14B8A6),
+  surfaceTint: Colors.transparent, // يمنع الـ tint فوق الكروت
 );

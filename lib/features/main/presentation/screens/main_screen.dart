@@ -9,14 +9,17 @@ import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/app_responsive.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
-import 'package:warshity/features/clients/presentation/cubit/clients_cubit.dart';
+import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/clients/presentation/pages/clients_page.dart';
+import 'package:warshity/features/global_search/presentation/cubit/global_search_cubit.dart';
 import 'package:warshity/features/home/presentation/layout/web_home.dart';
 import 'package:warshity/features/home/presentation/pages/home_page.dart';
+import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
 import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
 import 'package:warshity/features/main/presentation/layout/main_mobile.dart';
 import 'package:warshity/features/main/presentation/layout/main_web.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
+import 'package:warshity/features/products/data/repo/products_repository.dart';
 import 'package:warshity/features/products/presentation/pages/product_pages.dart';
 import 'package:warshity/features/settings/presentation/pages/settings_page.dart';
 
@@ -168,10 +171,13 @@ class _MainScreenState extends State<MainScreen> {
               desktop: MultiBlocProvider(
                 providers: [
                   BlocProvider(
-                    create: (_) => getIt<ClientsCubit>()..watchClients(),
+                    create: (_) => GlobalSearchCubit(
+                      clientsRepository: getIt<ClientsRepository>(),
+                      productsRepository: getIt<ProductsRepository>(),
+                      invoiceRepository: getIt<InvoiceRepository>(),
+                    ),
                   ),
                 ],
-
                 child: MainWeb(navItems: _webNavItems),
               ),
             ),

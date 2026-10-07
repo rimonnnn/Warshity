@@ -1,13 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/constants/app_padding.dart';
 import 'package:warshity/core/constants/app_radius.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 
-import 'invoice_status_badge.dart';
 import 'invoice_popup_menu.dart';
+import 'invoice_status_badge.dart';
 
 class InvoiceCard extends StatelessWidget {
   const InvoiceCard({
@@ -40,12 +39,14 @@ class InvoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return Card(
       margin: EdgeInsets.symmetric(horizontal: AppPadding.md, vertical: 6.h),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        side: BorderSide(color: context.colors.outlineVariant),
+        side: BorderSide(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: EdgeInsets.all(AppPadding.md),
@@ -55,13 +56,18 @@ class InvoiceCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '#$invoiceNumber',
-                  overflow: TextOverflow.ellipsis,
-                  style: context.text.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Flexible(
+                  child: Text(
+                    '#$invoiceNumber',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 8),
                 InvoiceStatusBadge(status: status),
               ],
             ),
@@ -71,6 +77,7 @@ class InvoiceCard extends StatelessWidget {
             Text(
               customerName,
               style: context.text.bodyLarge?.copyWith(
+                color: scheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -80,11 +87,11 @@ class InvoiceCard extends StatelessWidget {
             Text(
               date,
               style: context.text.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+                color: scheme.onSurfaceVariant,
               ),
             ),
 
-            const Divider(),
+            Divider(color: scheme.outlineVariant),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,10 +102,15 @@ class InvoiceCard extends StatelessWidget {
                     Text(
                       'item_count'.tr(),
                       style: context.text.labelLarge?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                        color: scheme.onSurfaceVariant,
                       ),
                     ),
-                    Text('$itemCount ${'item_count'.tr()}', style: context.text.bodyMedium),
+                    Text(
+                      '$itemCount ${'item_count'.tr()}',
+                      style: context.text.bodyMedium?.copyWith(
+                        color: scheme.onSurface,
+                      ),
+                    ),
                   ],
                 ),
 
@@ -108,12 +120,13 @@ class InvoiceCard extends StatelessWidget {
                     Text(
                       'total_price'.tr(),
                       style: context.text.labelLarge?.copyWith(
-                        color: context.colors.primary,
+                        color: scheme.primary,
                       ),
                     ),
                     Text(
                       totalPrice,
                       style: context.text.bodyLarge?.copyWith(
+                        color: scheme.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -122,10 +135,28 @@ class InvoiceCard extends StatelessWidget {
               ],
             ),
 
+            SizedBox(height: 8.h),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(paymentMethod),
+                // طريقة الدفع كـ pill زي الصورة
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                  ),
+                  child: Text(
+                    paymentMethod,
+                    style: context.text.bodyMedium?.copyWith(
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                ),
 
                 const SizedBox(width: 8),
 

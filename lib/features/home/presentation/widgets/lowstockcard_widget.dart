@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/theme/app_theme_extension.dart'; // عشان context.semantic
 
 class LowStockCard extends StatelessWidget {
   final String? title;
@@ -31,55 +31,49 @@ class LowStockCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+    final warning = sideIndicatorColor ?? context.semantic.warning;
+
     return Container(
       width: width,
       margin: margin,
+      clipBehavior: Clip.antiAlias, // يقص المؤشر الجانبي على حواف الكارت
       decoration: BoxDecoration(
-        color: backgroundColor ?? context.colors.surfaceContainerLow,
+        color: backgroundColor ?? scheme.surfaceContainer,
         borderRadius: borderRadius ?? BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: AppRadius.md,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Stack(
         children: [
-          Positioned(
+          // المؤشر الجانبي: على جهة الـ start (يمين في العربي، شمال في الإنجليزي)
+          PositionedDirectional(
             top: 0,
             bottom: 0,
-            right: 0,
-            child: Container(
-              width: 4,
-              decoration: BoxDecoration(
-                color: sideIndicatorColor ?? Colors.orange,
-                borderRadius: const BorderRadius.horizontal(
-                  right: Radius.circular(20),
-                ),
-              ),
-            ),
+            start: 0,
+            child: Container(width: 4, color: warning),
           ),
           Column(
             children: [
               Padding(
                 padding: padding ?? EdgeInsets.all(20.sp),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(icon, color: Colors.orange, size: 20.sp),
+                    Icon(icon, color: warning, size: 20.sp),
                     SizedBox(width: 8.w),
                     Expanded(
                       child: Text(
                         title ?? "warning".tr(),
                         textAlign: TextAlign.start,
+                        style: context.text.bodyLarge?.copyWith(
+                          color: scheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Divider(height: 1.h),
+              Divider(height: 1.h, color: scheme.outlineVariant),
               ...children,
             ],
           ),
