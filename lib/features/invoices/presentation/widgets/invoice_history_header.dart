@@ -16,6 +16,7 @@ class InvoiceHistoryHeader extends StatelessWidget {
           child: Text(
             'invoice_history'.tr(),
             style: context.text.headlineSmall?.copyWith(
+              color: context.colors.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -24,12 +25,8 @@ class InvoiceHistoryHeader extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: () => context.pushNamed(AppRoutes.addInvoicesScreen),
             style: ElevatedButton.styleFrom(
-              backgroundColor: context.colors.primary,
-              foregroundColor: context.colors.onPrimary,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 14,
-              ),
+              minimumSize: const Size(0, 48), // يلغي infinity من الـ theme
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -37,10 +34,7 @@ class InvoiceHistoryHeader extends StatelessWidget {
             icon: const Icon(Icons.add),
             label: Text(
               'add_invoice'.tr(),
-              style: context.text.bodyMedium?.copyWith(
-                color: context.colors.onPrimary,
-                fontWeight: FontWeight.w700,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
         ),

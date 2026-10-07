@@ -18,20 +18,28 @@ class CreateInvoiceButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppPadding.md,
-        vertical: AppPadding.sm,
-      ),
-      child: PrimaryButtonWidget(
-        iconeColor: context.colors.surface,
-        iconData: Icons.receipt_long_outlined,
-        onPress: onPressed,
-        buttonText: 'create_invoice'.tr(),
-        height: 56,
-        fontSize: fontSize,
-        buttonColor: context.colors.primary,
-        isLoading: isLoading,
+    final scheme = context.colors;
+
+    // SafeArea من تحت بس: يمنع الزر من الالتصاق بشريط الـ gestures
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppPadding.md,
+          vertical: AppPadding.sm,
+        ),
+        child: PrimaryButtonWidget(
+          // onPrimary: النص والأيقونة غامقين فوق الـ teal الفاتح في الـ dark
+          iconeColor: scheme.onPrimary,
+          textColor: scheme.onPrimary,
+          iconData: Icons.receipt_long_outlined,
+          onPress: onPressed,
+          buttonText: 'create_invoice'.tr(),
+          height: 56,
+          fontSize: fontSize,
+          buttonColor: scheme.primary,
+          isLoading: isLoading,
+        ),
       ),
     );
   }

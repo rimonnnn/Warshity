@@ -19,53 +19,45 @@ class InvoiceStatisticsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color cardColor;
-    switch (color) {
-      case 'primary':
-        cardColor = context.colors.primary;
-        break;
-      case 'secondary':
-        cardColor = context.colors.secondary;
-        break;
-      case 'success':
-        cardColor = context.appColors.success;
-        break;
-      case 'error':
-        cardColor = context.colors.error;
-        break;
-      default:
-        cardColor = context.colors.primary;
-    }
+    final scheme = context.colors;
+
+    final cardColor = switch (color) {
+      'primary' => scheme.primary,
+      'secondary' => scheme.secondary,
+      'success' => context.appColors.success,
+      'error' => scheme.error,
+      _ => scheme.primary,
+    };
 
     return Container(
       width: 140.w,
-      padding: EdgeInsets.all(AppPadding.md),
+      padding: EdgeInsets.all(AppPadding.sm),
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerLow,
+        color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        boxShadow: [
-          BoxShadow(
-            color: context.colors.shadow.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title.tr(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: context.text.labelLarge?.copyWith(
-              color: context.colors.onSurfaceVariant,
+              color: scheme.onSurfaceVariant,
             ),
           ),
           SizedBox(height: 8.h),
-          Text(
-            value,
-            style: context.text.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: cardColor,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              value,
+              style: context.text.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: cardColor,
+              ),
             ),
           ),
         ],

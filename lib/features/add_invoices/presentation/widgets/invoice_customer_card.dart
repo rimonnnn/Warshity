@@ -24,43 +24,110 @@ class InvoiceCustomerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     final hasSelectedCustomer =
         selectedCustomerName != null && selectedCustomerName!.isNotEmpty;
 
     return Card(
       margin: EdgeInsets.symmetric(horizontal: AppPadding.sm),
+      // تحديد shape هنا بيلغي حد الـ cardTheme، فبنرجعه
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        side: BorderSide(color: scheme.outlineVariant),
       ),
       elevation: 0,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppPadding.sm,
-          vertical: AppPadding.sm,
-        ),
+        padding: EdgeInsets.all(AppPadding.sm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // العنوان وزر إضافة عميل فوق، قبل الحقل
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'customer'.tr(),
+                  style: context.text.titleMedium?.copyWith(
+                    color: scheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                Material(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: onTap,
+                    splashColor: scheme.primary.withValues(alpha: 0.12),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 40),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.person_add,
+                              size: 18,
+                              color: scheme.primary,
+                            ),
+
+                            const SizedBox(width: 6),
+
+                            Text(
+                              'add_client'.tr(),
+                              style: context.text.bodyMedium?.copyWith(
+                                color: scheme.onPrimaryContainer,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            HeightSpace(12),
+
             if (hasSelectedCustomer)
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+                  horizontal: 12,
+                  vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: context.colors.surfaceContainerLow,
+                  color: scheme.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(AppRadius.md),
+                  // حد primary خفيف يوضح إن فيه عميل مختار
+                  border: Border.all(
+                    color: scheme.primary.withValues(alpha: 0.4),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    CircleAvatar(child: const Icon(Icons.person)),
+                    CircleAvatar(
+                      backgroundColor: scheme.primaryContainer,
+                      foregroundColor: scheme.primary,
+                      child: const Icon(Icons.person),
+                    ),
 
                     const SizedBox(width: 12),
 
                     Expanded(
                       child: Text(
                         selectedCustomerName!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: context.text.titleMedium?.copyWith(
+                          color: scheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -68,76 +135,21 @@ class InvoiceCustomerCard extends StatelessWidget {
 
                     IconButton(
                       onPressed: onClearCustomer,
-                      icon: const Icon(Icons.close),
+                      tooltip: 'cancel'.tr(),
+                      icon: Icon(Icons.close, color: scheme.onSurfaceVariant),
                     ),
                   ],
                 ),
               )
             else
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: context.colors.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: CustomTextField(
-                  hint: 'search_clients'.tr(),
-                  prefixIcon: AppAssets.searchIcon,
-                  onChanged: onSearchChanged ?? (_) {},
-                  borderRadius: AppRadius.md,
-                  height: 48,
-                ),
+              // الحقل ليه fill وحد خاصين بيه، فمفيش داعي للـ Container اللي حواليه
+              CustomTextField(
+                hint: 'search_clients'.tr(),
+                prefixIcon: AppAssets.searchIcon,
+                onChanged: onSearchChanged ?? (_) {},
+                borderRadius: AppRadius.md,
+                height: 48,
               ),
-
-            HeightSpace(8),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'customer'.tr(),
-                  style: context.text.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                InkWell(
-                  onTap: onTap,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.person_add,
-                          size: 16,
-                          color: context.colors.onPrimaryContainer,
-                        ),
-
-                        const SizedBox(width: 4),
-
-                        Text(
-                          'add_client'.tr(),
-                          style: context.text.bodyMedium?.copyWith(
-                            color: context.colors.onPrimaryContainer,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),

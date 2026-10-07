@@ -10,7 +10,7 @@ class InvoiceWebEmptyPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerLow,
+        color: context.colors.outline,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: context.colors.outlineVariant),
       ),

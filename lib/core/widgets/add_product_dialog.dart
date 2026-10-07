@@ -158,6 +158,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = MediaQuery.of(context).size.width;
@@ -179,9 +181,11 @@ class _AddProductDialogState extends State<AddProductDialog> {
             horizontal: compact ? 12 : 24,
             vertical: 20,
           ),
-          backgroundColor: context.colors.surface,
+          // surfaceContainer بدل surface، عشان الـ dialog يبان فوق الخلفية
+          backgroundColor: scheme.surfaceContainer,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.lg),
+            side: BorderSide(color: scheme.outlineVariant),
           ),
           child: SizedBox(
             width: dialogWidth,
@@ -206,6 +210,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                                 'Add New Product'.tr(),
                                 style: Theme.of(context).textTheme.headlineSmall
                                     ?.copyWith(
+                                      color: scheme.onSurface,
                                       fontWeight: FontWeight.bold,
                                       fontSize: isWeb ? 22 : 20,
                                     ),
@@ -218,7 +223,10 @@ class _AddProductDialogState extends State<AddProductDialog> {
                               onPressed: isSaving
                                   ? null
                                   : () => Navigator.pop(context),
-                              icon: const Icon(Icons.close_rounded),
+                              icon: Icon(
+                                Icons.close_rounded,
+                                color: scheme.onSurfaceVariant,
+                              ),
                             ),
                           ],
                         ),

@@ -1,42 +1,42 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/theme/app_theme_extension.dart';
 
 class InvoiceStatusBadge extends StatelessWidget {
-  final String status;
-
   const InvoiceStatusBadge({super.key, required this.status});
+
+  final String status;
 
   @override
   Widget build(BuildContext context) {
-    Color color;
+    final scheme = context.colors;
+    final semantic = context.semantic;
+    final isPaid = status.toLowerCase() == 'paid';
 
-    switch (status.toLowerCase()) {
-      case 'paid':
-        color = context.appColors.success;
-        break;
-
-      case 'unpaid':
-        color = context.colors.error;
-        break;
-
-      default:
-        color = context.colors.primary;
-    }
+    final fg = isPaid ? semantic.success : scheme.error;
+    final bg = isPaid ? semantic.successContainer : scheme.errorContainer;
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20.r),
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(
-        status.tr(),
-        style: context.text.labelSmall?.copyWith(
-          color: color,
-          fontWeight: FontWeight.bold,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: fg, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            (isPaid ? 'paid' : 'unpaid').tr(),
+            style: context.text.labelLarge?.copyWith(color: fg),
+          ),
+        ],
       ),
     );
   }

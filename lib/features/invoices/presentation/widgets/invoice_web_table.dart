@@ -7,8 +7,8 @@ import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_cubit.dart';
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_state.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_list_item.dart';
-import 'package:warshity/features/invoices/presentation/widgets/invoice_table_row.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_status_utils.dart';
+import 'package:warshity/features/invoices/presentation/widgets/invoice_table_row.dart';
 
 // Keeps old imports working (InvoiceStatus, invoiceStatusOf, money).
 export 'package:warshity/features/invoices/presentation/widgets/invoice_status_utils.dart';
@@ -32,7 +32,12 @@ class InvoiceWebTable extends StatelessWidget {
     return BlocBuilder<InvoiceHistoryCubit, InvoiceHistoryState>(
       builder: (context, state) {
         if (state is InvoiceHistoryError && state.invoices.isEmpty) {
-          return Center(child: Text(state.message));
+          return Center(
+            child: Text(
+              state.message,
+              style: context.text.bodyMedium?.copyWith(color: colors.error),
+            ),
+          );
         }
 
         var invoices = state is InvoiceHistoryLoaded
@@ -47,8 +52,9 @@ class InvoiceWebTable extends StatelessWidget {
 
         return Container(
           decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
+            // surfaceContainer بدل surface، عشان الجدول يبان فوق الخلفية
+            color: colors.surfaceContainer,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             border: Border.all(color: colors.outlineVariant),
           ),
           clipBehavior: Clip.antiAlias,
@@ -59,7 +65,14 @@ class InvoiceWebTable extends StatelessWidget {
               invoices.isEmpty
                   ? Padding(
                       padding: const EdgeInsets.all(24),
-                      child: Center(child: Text('no_invoice_found'.tr())),
+                      child: Center(
+                        child: Text(
+                          'no_invoice_found'.tr(),
+                          style: context.text.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
                     )
                   : Column(
                       children: [
@@ -91,6 +104,7 @@ class InvoiceWebTable extends StatelessWidget {
           Text(
             'invoices_list'.tr(),
             style: context.text.titleMedium?.copyWith(
+              color: colors.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -98,7 +112,7 @@ class InvoiceWebTable extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.1),
+              color: colors.primaryContainer,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -117,7 +131,7 @@ class InvoiceWebTable extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return InvoiceRow(
       header: true,
-      background: context.colors.surfaceContainerLow,
+      background: context.colors.surfaceContainerHigh,
       cells: [
         _headerText(context, 'invoice_numer'.tr()),
         _headerText(context, 'customer'.tr()),

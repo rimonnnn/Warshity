@@ -9,64 +9,67 @@ class InvoiceSummaryCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.color,
+    this.valueColor,
   });
 
   final IconData icon;
   final String title;
   final String value;
+
+  /// لون الأيقونة وخلفيتها (ابعته من الـ theme، مش hardcoded)
   final Color color;
+
+  /// لون الرقم. لو null بيستخدم [color]
+  final Color? valueColor;
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerLow,
+        color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        boxShadow: [
-          BoxShadow(
-            color: context.colors.shadow.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: scheme.outlineVariant),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+          Row(
+            children: [
+              Expanded(
+                child: Text(
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: context.text.labelLarge?.copyWith(
-                    color: context.colors.onSurfaceVariant,
+                    color: scheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 4),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Text(
-                    value,
-                    style: context.text.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
-                  ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ],
+                child: Icon(icon, color: color, size: 18),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              value,
+              style: context.text.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: valueColor ?? color,
+              ),
             ),
           ),
         ],

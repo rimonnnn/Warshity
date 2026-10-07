@@ -20,49 +20,57 @@ class InvoiceSummaryCard extends StatelessWidget {
   String _money(double value) => '\$${value.toStringAsFixed(2)}';
 
   @override
-  Widget build(BuildContext context) => Card(
-    margin: EdgeInsets.zero,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppRadius.md),
-    ),
-    elevation: 0,
-    child: Padding(
-      padding: EdgeInsets.all(AppPadding.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'invoice_summary'.tr(),
-            style: context.text.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+  Widget build(BuildContext context) {
+    final scheme = context.colors;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      // تحديد shape بيلغي حد الـ cardTheme، فبنرجعه
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+      elevation: 0,
+      child: Padding(
+        padding: EdgeInsets.all(AppPadding.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'invoice_summary'.tr(),
+              style: context.text.titleMedium?.copyWith(
+                color: scheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const HeightSpace(12),
-          _SummaryRow(label: 'subtotal'.tr(), value: _money(subtotal)),
-          if (discount > 0) ...[
-            const HeightSpace(8),
+            const HeightSpace(12),
+            _SummaryRow(label: 'subtotal'.tr(), value: _money(subtotal)),
+            if (discount > 0) ...[
+              const HeightSpace(8),
+              _SummaryRow(
+                label: 'discount'.tr(),
+                value: '- ${_money(discount)}',
+                valueColor: scheme.tertiary,
+              ),
+            ],
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: AppPadding.sm),
+              child: Divider(height: 1, color: scheme.outlineVariant),
+            ),
             _SummaryRow(
-              label: 'discount'.tr(),
-              value: '- ${_money(discount)}',
-              valueColor: context.colors.tertiary,
+              label: 'final_total'.tr(),
+              value: _money(total),
+              isBold: true,
+              labelStyle: context.text.titleSmall,
+              valueStyle: context.text.titleLarge,
+              labelColor: scheme.onSurface,
+              valueColor: scheme.primary,
             ),
           ],
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: AppPadding.sm),
-            child: Divider(height: 1, color: context.colors.outlineVariant),
-          ),
-          _SummaryRow(
-            label: 'final_total'.tr(),
-            value: _money(total),
-            isBold: true,
-            labelStyle: context.text.titleSmall,
-            valueStyle: context.text.titleMedium,
-            valueColor: context.colors.primary,
-          ),
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _SummaryRow extends StatelessWidget {
@@ -72,6 +80,7 @@ class _SummaryRow extends StatelessWidget {
     this.isBold = false,
     this.labelStyle,
     this.valueStyle,
+    this.labelColor,
     this.valueColor,
   });
 
@@ -80,26 +89,40 @@ class _SummaryRow extends StatelessWidget {
   final bool isBold;
   final TextStyle? labelStyle;
   final TextStyle? valueStyle;
+  final Color? labelColor;
   final Color? valueColor;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text(
-        label,
-        style: (labelStyle ?? context.text.bodyLarge)?.copyWith(
-          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-          color: context.colors.onSurfaceVariant,
+  Widget build(BuildContext context) {
+    final scheme = context.colors;
+    final weight = isBold ? FontWeight.bold : FontWeight.normal;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: (labelStyle ?? context.text.bodyLarge)?.copyWith(
+              fontWeight: weight,
+              // الصفوف العادية ثانوية، وصف الإجمالي النهائي بلون النص الأساسي
+              color: labelColor ?? scheme.onSurfaceVariant,
+            ),
+          ),
         ),
-      ),
-      Text(
-        value,
-        style: (valueStyle ?? context.text.bodyLarge)?.copyWith(
-          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-          color: valueColor,
+        const SizedBox(width: 12),
+        Text(
+          value,
+          style: (valueStyle ?? context.text.bodyLarge)?.copyWith(
+            fontWeight: weight,
+            // الأرقام العادية بلون النص الأساسي بدل لون افتراضي غير محدد
+            color: valueColor ?? scheme.onSurface,
+          ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
