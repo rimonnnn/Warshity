@@ -29,7 +29,7 @@ class LogoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = context.colors;
 
-    // زر تدميري هادي (tonal): errorContainer بنص error،
+    // زر تدميري هادي (tonal): errorContainer بنص error，
     // بدل أحمر مليان بيصرخ في آخر الشاشة. الـ parameters لسه بتغلب لو اتبعتت.
     final bg = backgroundColor ?? scheme.errorContainer;
     final fg = foregroundColor ?? scheme.error;

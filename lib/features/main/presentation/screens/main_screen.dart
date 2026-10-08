@@ -12,7 +12,6 @@ import 'package:warshity/features/account_sharing/presentation/cubit/account_sha
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/clients/presentation/pages/clients_page.dart';
 import 'package:warshity/features/global_search/presentation/cubit/global_search_cubit.dart';
-import 'package:warshity/features/home/presentation/layout/web_home.dart';
 import 'package:warshity/features/home/presentation/pages/home_page.dart';
 import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
 import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
@@ -94,7 +93,7 @@ class _MainScreenState extends State<MainScreen> {
       icon: Icons.home_outlined,
       selectedIcon: Icons.home,
       labelKey: 'home',
-      screen: WebHome(),
+      screen: HomePage(),
     ),
     MainNavItem(
       icon: Icons.receipt_long_outlined,

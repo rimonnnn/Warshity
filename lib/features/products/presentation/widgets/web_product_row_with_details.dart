@@ -59,10 +59,7 @@ class ProductRow extends StatelessWidget {
             onTap: onTap,
             child: SizedBox(
               width: 40,
-              child: Text(
-                '$index',
-                style: textTheme.bodySmall,
-              ),
+              child: Text('$index', style: textTheme.bodySmall),
             ),
           ),
 
@@ -135,18 +132,9 @@ class ProductRow extends StatelessWidget {
             ),
           ),
 
-          Expanded(
-            flex: 2,
-            child: _ProductQuantityControls(product: product),
-          ),
+          Expanded(flex: 2, child: _ProductQuantityControls(product: product)),
 
-          SizedBox(
-            width: 45,
-            child: _DeleteButton(
-              product: product,
-              size: 21,
-            ),
-          ),
+          SizedBox(width: 45, child: _DeleteButton(product: product, size: 21)),
         ],
       ),
     );
@@ -203,10 +191,7 @@ class ProductRow extends StatelessWidget {
 
           _ProductQuantityControls(product: product),
 
-          _DeleteButton(
-            product: product,
-            size: 20,
-          ),
+          _DeleteButton(product: product, size: 20),
         ],
       ),
     );
@@ -214,9 +199,7 @@ class ProductRow extends StatelessWidget {
 }
 
 class _ProductQuantityControls extends StatelessWidget {
-  const _ProductQuantityControls({
-    required this.product,
-  });
+  const _ProductQuantityControls({required this.product});
 
   final ProductModel product;
 
@@ -247,10 +230,7 @@ class _ProductQuantityControls extends StatelessWidget {
 }
 
 class _DeleteButton extends StatelessWidget {
-  const _DeleteButton({
-    required this.product,
-    required this.size,
-  });
+  const _DeleteButton({required this.product, required this.size});
 
   final ProductModel product;
   final double size;
@@ -260,11 +240,7 @@ class _DeleteButton extends StatelessWidget {
     return IconButton(
       tooltip: 'delete'.tr(),
       onPressed: () => deleteProduct(context, product),
-      icon: Icon(
-        Icons.delete_outline,
-        color: context.colors.error,
-        size: size,
-      ),
+      icon: Icon(Icons.delete_outline, color: context.colors.error, size: size),
     );
   }
 }

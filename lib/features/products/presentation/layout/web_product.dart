@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
+import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
+import 'package:warshity/features/products/presentation/widgets/web_product_details.dart';
 import 'package:warshity/features/products/presentation/widgets/web_product_actions.dart';
 import 'package:warshity/features/products/presentation/widgets/web_product_categories.dart';
 import 'package:warshity/features/products/presentation/widgets/web_product_statistics.dart';
@@ -17,8 +19,7 @@ class WebProduct extends StatefulWidget {
 }
 
 class _WebProductState extends State<WebProduct> {
-  final TextEditingController _searchController =
-      TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   int _selectedCategory = 0;
   int _currentPage = 1;
@@ -50,15 +51,13 @@ class _WebProductState extends State<WebProduct> {
       create: (_) => getIt<CategoriesCubit>()..watchCategories(),
       child: Builder(
         builder: (context) {
-          final categoriesCubit =
-              context.read<CategoriesCubit>();
+          final categoriesCubit = context.read<CategoriesCubit>();
 
           return Scaffold(
             backgroundColor: context.colors.surface,
             body: LayoutBuilder(
               builder: (context, constraints) {
-                final isCompact =
-                    constraints.maxWidth < 1000;
+                final isCompact = constraints.maxWidth < 1000;
 
                 return SingleChildScrollView(
                   padding: EdgeInsets.symmetric(
@@ -67,12 +66,9 @@ class _WebProductState extends State<WebProduct> {
                   ),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 1350,
-                      ),
+                      constraints: const BoxConstraints(maxWidth: 1350),
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           const ProductsHeader(),
 
@@ -83,17 +79,14 @@ class _WebProductState extends State<WebProduct> {
                           const SizedBox(height: 18),
 
                           ProductsActions(
-                            searchController:
-                                _searchController,
-                            categoriesCubit:
-                                categoriesCubit,
+                            searchController: _searchController,
+                            categoriesCubit: categoriesCubit,
                           ),
 
                           const SizedBox(height: 16),
 
                           ProductsCategories(
-                            selectedIndex:
-                                _selectedCategory,
+                            selectedIndex: _selectedCategory,
                             onSelected: (index) {
                               if (_selectedCategory == index) {
                                 return;
@@ -109,8 +102,7 @@ class _WebProductState extends State<WebProduct> {
                           const SizedBox(height: 18),
 
                           ProductsTable(
-                            selectedCategory:
-                                _selectedCategory,
+                            selectedCategory: _selectedCategory,
                             currentPage: _currentPage,
                             itemsPerPage: _itemsPerPage,
                             compact: isCompact,
@@ -118,6 +110,18 @@ class _WebProductState extends State<WebProduct> {
                               setState(() {
                                 _currentPage = page;
                               });
+                            },
+                            onProductTap: (product) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => BlocProvider.value(
+                                    value: context.read<ProductsCubit>(),
+                                    child: WebProductDetails(
+                                      productId: product.id,
+                                    ),
+                                  ),
+                                ),
+                              );
                             },
                           ),
                         ],
