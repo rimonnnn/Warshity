@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/global_search/data/model/global_search_result.dart';
@@ -9,6 +11,8 @@ import 'package:warshity/features/global_search/presentation/cubit/global_search
 import 'package:warshity/features/global_search/presentation/cubit/global_search_state.dart';
 import 'package:warshity/features/global_search/presentation/widgets/search_results_container.dart';
 import 'package:warshity/features/global_search/presentation/widgets/search_results_section.dart';
+import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
+import 'package:warshity/features/products/presentation/widgets/web_product_details.dart';
 
 class GlobalSearchResults extends StatelessWidget {
   const GlobalSearchResults({super.key});
@@ -74,7 +78,9 @@ class GlobalSearchResults extends StatelessWidget {
                       title: 'clients'.tr(),
                       icon: Icons.people_outline,
                       results: state.clients,
-                      onTap: (result) => _openResult(context, result),
+                      onTap: (result) {
+                        _openResult(context, result);
+                      },
                     ),
 
                   if (state.products.isNotEmpty)
@@ -82,7 +88,9 @@ class GlobalSearchResults extends StatelessWidget {
                       title: 'products'.tr(),
                       icon: Icons.inventory_2_outlined,
                       results: state.products,
-                      onTap: (result) => _openResult(context, result),
+                      onTap: (result) {
+                        _openResult(context, result);
+                      },
                     ),
 
                   if (state.invoices.isNotEmpty)
@@ -90,7 +98,9 @@ class GlobalSearchResults extends StatelessWidget {
                       title: 'invoices'.tr(),
                       icon: Icons.receipt_long_outlined,
                       results: state.invoices,
-                      onTap: (result) => _openResult(context, result),
+                      onTap: (result) {
+                        _openResult(context, result);
+                      },
                     ),
                 ],
               ),
@@ -110,7 +120,16 @@ class GlobalSearchResults extends StatelessWidget {
         break;
 
       case GlobalSearchResultType.product:
-        context.push(AppRoutes.addproductScreen);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) {
+              return BlocProvider(
+                create: (_) => getIt<ProductsCubit>()..watchProducts(),
+                child: WebProductDetails(productId: result.id),
+              );
+            },
+          ),
+        );
         break;
 
       case GlobalSearchResultType.invoice:

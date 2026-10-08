@@ -32,6 +32,7 @@ class WebHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final productsCubit = context.read<ProductsCubit>();
     return BlocProvider(
       create: (_) => getIt<HomeCubit>(),
       child: Scaffold(
@@ -51,7 +52,6 @@ class WebHome extends StatelessWidget {
               return const SizedBox.shrink();
             }
 
-            // الترتيب زي الصورة: المبيعات - الفواتير - المنتجات - العملاء
             final statistics = [
               (
                 title: 'daily_sales'.tr(),
@@ -127,16 +127,10 @@ class WebHome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // =========================
-                    // Welcome Banner
-                    // =========================
                     ContainerWidget(height: 120, borderRadius: 12),
 
                     const HeightSpace(24),
 
-                    // =========================
-                    // Statistics
-                    // =========================
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -169,9 +163,6 @@ class WebHome extends StatelessWidget {
 
                     const HeightSpace(24),
 
-                    // =========================
-                    // Low Stock (full width)
-                    // =========================
                     if (state.lowStockProducts.isNotEmpty) ...[
                       LowStockCard(
                         padding: EdgeInsets.symmetric(
@@ -190,12 +181,10 @@ class WebHome extends StatelessWidget {
                                     context: context,
                                     quantity: product.quantity,
                                     onQuantityChanged: (newQuantity) async {
-                                      await context
-                                          .read<ProductsCubit>()
-                                          .updateQuantity(
-                                            productId: product.id,
-                                            quantity: newQuantity,
-                                          );
+                                      await productsCubit.updateQuantity(
+                                        productId: product.id,
+                                        quantity: newQuantity,
+                                      );
                                     },
                                   );
                                 },
@@ -207,15 +196,9 @@ class WebHome extends StatelessWidget {
                       const HeightSpace(24),
                     ],
 
-                    // =========================
-                    // Recent Operations + Side Column
-                    // =========================
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // =========================
-                        // Recent Operations + Weekly Chart
-                        // =========================
                         Expanded(
                           flex: 2,
                           child: Column(
@@ -252,9 +235,6 @@ class WebHome extends StatelessWidget {
 
                         const SizedBox(width: 24),
 
-                        // =========================
-                        // Side Column
-                        // =========================
                         Expanded(
                           flex: 1,
                           child: Column(

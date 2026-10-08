@@ -173,16 +173,16 @@ class _TableHeader extends StatelessWidget {
       ),
       child: compact
           ? const SizedBox.shrink()
-          : Row(
+          : const Row(
               children: [
-                const SizedBox(width: 40),
-                Expanded(flex: 4, child: HeaderText('Product'.tr())),
-                Expanded(flex: 2, child: HeaderText('Barcode'.tr())),
-                Expanded(flex: 2, child: HeaderText('Category'.tr())),
-                Expanded(flex: 1, child: HeaderText('Unit'.tr())),
-                Expanded(flex: 2, child: HeaderText('Price'.tr())),
-                Expanded(flex: 2, child: HeaderText('Quantity'.tr())),
-                const SizedBox(width: 55),
+                SizedBox(width: 40),
+                Expanded(flex: 4, child: HeaderText('Product')),
+                Expanded(flex: 2, child: HeaderText('Barcode')),
+                Expanded(flex: 2, child: HeaderText('Category')),
+                Expanded(flex: 1, child: HeaderText('Unit')),
+                Expanded(flex: 2, child: HeaderText('Price')),
+                Expanded(flex: 2, child: HeaderText('Quantity')),
+                SizedBox(width: 55),
               ],
             ),
     );
