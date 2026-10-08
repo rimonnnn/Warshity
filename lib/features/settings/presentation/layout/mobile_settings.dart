@@ -11,15 +11,12 @@ import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/theme/cubit/theme_cubit.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
+import 'package:warshity/features/account_sharing/presentation/screens/shared_accounts_screen.dart';
 import 'package:warshity/features/account_sharing/presentation/widgets/received_invitations_bottom_sheet.dart';
 import 'package:warshity/features/account_sharing/presentation/widgets/send_invitation_bottom_sheet.dart';
-import 'package:warshity/features/account_sharing/presentation/screens/shared_accounts_screen.dart';
-
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
-
 import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_state.dart';
 import 'package:warshity/features/settings/presentation/widgets/change_password_bottom_sheet.dart';
@@ -82,18 +79,87 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
     );
   }
 
+  void _openChangePassword() {
+    final authCubit = context.read<AuthCubit>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return BlocProvider.value(
+          value: authCubit,
+          child: const ChangePasswordBottomSheet(),
+        );
+      },
+    );
+  }
+
+  // نفس منطق تبديل اللغة اللي كان جوه الـ TextButton، بس بقى متاح للصف كله
+  void _toggleLanguage() {
+    final newLocale = context.locale.languageCode == 'en'
+        ? const Locale('ar')
+        : const Locale('en');
+    context.goNamed(AppRoutes.splashScreen, extra: newLocale);
+  }
+
+  void _toggleTheme() {
+    context.read<ThemeCubit>().toggleTheme();
+  }
+
+  void _confirmLogout() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        final scheme = dialogContext.colors;
+
+        return AlertDialog(
+          title: Text("logout".tr()),
+          content: Text("logout_confirmation".tr()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text("cancel".tr()),
+            ),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(80.w, 40.h),
+                backgroundColor: scheme.error,
+                // onError بدل Colors.white: التباين الصح فوق الأحمر في الـ dark والـ light
+                foregroundColor: scheme.onError,
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+
+                context.read<SettingsCubit>().logOut();
+              },
+              child: Text("logout".tr()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scheme = context.colors;
 
     return Scaffold(
       appBar: AppBar(title: Text("settings1".tr())),
 
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.fromLTRB(16.w, 16.w, 16.w, 0),
 
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // ---------------- STORE INFO ----------------
             SettingsSection(
               title: "store_information".tr(),
 
@@ -126,7 +192,8 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                     return InfoItem(
                       title: "activity".tr(),
                       value: activity,
-                      icon: Icons.location_on_outlined,
+                      // كانت location_on: النشاط مش موقع
+                      icon: Icons.work_outline,
                       showDivider: false,
                     );
                   },
@@ -136,8 +203,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
             HeightSpace(20.h),
 
-            HeightSpace(20.h),
-
+            // ---------------- ACCOUNT & SHARING ----------------
             SettingsSection(
               title: "security".tr(),
 
@@ -145,22 +211,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                 SettingsTile(
                   title: "change_password".tr(),
                   icon: Icons.lock_outline,
-                  onTap: () {
-                    final authCubit = context.read<AuthCubit>();
-
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      useSafeArea: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) {
-                        return BlocProvider.value(
-                          value: authCubit,
-                          child: const ChangePasswordBottomSheet(),
-                        );
-                      },
-                    );
-                  },
+                  onTap: _openChangePassword,
                 ),
 
                 SettingsTile(
@@ -179,27 +230,32 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   title: "shared_accounts".tr(),
                   icon: Icons.people_outline,
                   onTap: _openSharedAccounts,
+                  showDivider: false,
                 ),
+              ],
+            ),
 
+            HeightSpace(20.h),
+
+            // ---------------- PREFERENCES ----------------
+            // اللغة والـ theme كانوا جوه قسم الأمان، فاتنقلوا لقسم تفضيلات.
+            // ضيف المفتاح 'preferences' في ar.json (التفضيلات) و en.json (Preferences)
+            SettingsSection(
+              title: "preferences".tr(),
+
+              children: [
                 SettingsTile(
                   title: "language".tr(),
                   icon: Icons.language_outlined,
-                  onTap: () {},
+                  // الصف كله بقى قابل للضغط، بدل زر صغير في الطرف
+                  onTap: _toggleLanguage,
                   showDivider: true,
 
-                  trailing: TextButton(
-                    onPressed: () async {
-                      final newLocale = context.locale.languageCode == 'en'
-                          ? const Locale('ar')
-                          : const Locale('en');
-                      context.goNamed(AppRoutes.splashScreen, extra: newLocale);
-                    },
-
-                    child: Text(
-                      context.locale.languageCode == "en"
-                          ? "English"
-                          : "العربية",
-                      style: TextStyle(color: context.colors.primary),
+                  trailing: Text(
+                    context.locale.languageCode == "en" ? "English" : "العربية",
+                    style: context.text.bodyMedium?.copyWith(
+                      color: scheme.primary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -211,19 +267,13 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                       ? Icons.dark_mode_outlined
                       : Icons.light_mode_outlined,
 
+                  onTap: _toggleTheme,
                   showDivider: false,
 
-                  trailing: IconButton(
-                    icon: Icon(
-                      isDark
-                          ? Icons.dark_mode_outlined
-                          : Icons.light_mode_outlined,
-                      color: context.colors.primary,
-                    ),
-
-                    onPressed: () {
-                      context.read<ThemeCubit>().toggleTheme();
-                    },
+                  // Switch بدل IconButton: حالة الـ theme واضحة من غير ما تخمّن
+                  trailing: Switch(
+                    value: isDark,
+                    onChanged: (_) => _toggleTheme(),
                   ),
                 ),
               ],
@@ -231,14 +281,16 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
             HeightSpace(20.h),
 
+            // ---------------- ABOUT ----------------
             VersionCard(
               image: AppAssets.logo,
               title: "masiter".tr(),
-              version: "version".tr(),
+              version: 'version'.tr(),
             ),
 
-            HeightSpace(20.h),
+            HeightSpace(24.h),
 
+            // ---------------- LOGOUT ----------------
             BlocConsumer<SettingsCubit, SettingsState>(
               listener: (context, state) {
                 if (state is SettingsError) {
@@ -262,7 +314,11 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
               builder: (context, state) {
                 if (state is SettingsLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  // ارتفاع ثابت بدل ما الصفحة تقفز لما الزر يتبدل بالـ spinner
+                  return SizedBox(
+                    height: 56.h,
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
                 }
 
                 return LogoutButton(
@@ -270,59 +326,13 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
                   isLoading: state is SettingsLoading,
 
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (dialogContext) {
-                        return AlertDialog(
-                          title: Text("logout".tr()),
-
-                          content: Text("logout_confirmation".tr()),
-
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(dialogContext).pop();
-                              },
-
-                              child: Text(
-                                "cancel".tr(),
-                                style: TextStyle(
-                                  color: context.colors.primary,
-                                  fontSize: 18.sp,
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(height: 16.h),
-
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(80.w, 40.h),
-                                backgroundColor: context.colors.error,
-                              ),
-
-                              onPressed: () {
-                                Navigator.of(dialogContext).pop();
-
-                                context.read<SettingsCubit>().logOut();
-                              },
-
-                              child: const Text(
-                                "logout",
-                                style: TextStyle(color: Colors.white),
-                              ).tr(),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
+                  onPressed: _confirmLogout,
                 );
               },
             ),
 
-            HeightSpace(30.h),
+            // مسافة سفلية تحترم الـ gesture bar وأي bottom nav
+            SizedBox(height: 30.h + MediaQuery.paddingOf(context).bottom),
           ],
         ),
       ),

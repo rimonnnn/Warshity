@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:warshity/core/extensions/context_extension.dart';
 
 class SettingsPageHeader extends StatelessWidget {
@@ -17,38 +16,50 @@ class SettingsPageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = context.colors;
 
-    return Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, right: 4, bottom: 4),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 58,
-            height: 58,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: context.colors.primary.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(16),
+              color: colors.primary.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(13),
             ),
-            child: Icon(icon, color: context.colors.primary, size: 29),
+            child: Icon(icon, color: colors.primary, size: 23),
           ),
-          const SizedBox(width: 16),
+
+          const SizedBox(width: 14),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.4,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(subtitle, style: theme.textTheme.bodyMedium),
+
+                const SizedBox(height: 5),
+
+                Text(
+                  subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.4,
+                  ),
+                ),
               ],
             ),
           ),
@@ -73,42 +84,63 @@ class SettingsContentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = context.colors;
 
     return Container(
-      padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.65),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: context.colors.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.all(22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: Icon(icon, color: colors.primary, size: 20),
                 ),
-                child: Icon(icon, color: context.colors.primary, size: 24),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.15,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          child,
-        ],
+              ],
+            ),
+
+            const SizedBox(height: 18),
+
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.45),
+            ),
+
+            const SizedBox(height: 18),
+
+            child,
+          ],
+        ),
       ),
     );
   }

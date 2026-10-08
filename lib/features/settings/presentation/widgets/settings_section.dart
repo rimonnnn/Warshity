@@ -11,6 +11,7 @@ class SettingsSection extends StatelessWidget {
     this.backgroundColor,
     this.borderRadius,
     this.padding,
+    this.trailing,
   });
 
   final String title;
@@ -20,34 +21,45 @@ class SettingsSection extends StatelessWidget {
   final double? borderRadius;
   final EdgeInsetsGeometry? padding;
 
+  /// عنصر اختياري في نهاية الـ header (مثلًا زر تعديل)
+  final Widget? trailing;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor ?? context.colors.surfaceContainerLow,
+    final scheme = context.colors;
+
+    // Material بدل Container بـ decoration: لو الخلفية على Container،
+    // الـ ripple بتاع الـ tiles اللي جواه بيتغطى بلونه ومبيبانش
+    return Material(
+      color: backgroundColor ?? scheme.surfaceContainer,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.lg),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        // حد بدل الظل: الظل الأسود 5% مكانش بيبان على الـ navy
+        side: BorderSide(color: scheme.outlineVariant),
       ),
+      // يقص الـ ripple على حواف القسم المستديرة
+      clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
           Padding(
             padding:
                 padding ??
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                title,
-                style: context.text.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                EdgeInsetsDirectional.fromSTEB(16.w, 16.h, 16.w, 8.h),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.titleMedium?.copyWith(
+                      color: scheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+                if (trailing != null) trailing!,
+              ],
             ),
           ),
 

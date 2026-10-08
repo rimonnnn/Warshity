@@ -60,7 +60,9 @@ class _WebTopBarState extends State<WebTopBar> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+        border: Border(
+          bottom: BorderSide(color: context.colors.outlineVariant),
+        ),
       ),
       child: Row(
         children: [
@@ -76,34 +78,40 @@ class _WebTopBarState extends State<WebTopBar> {
 
           const SizedBox(width: 16),
 
-          Container(
-            height: 42,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: context.colors.surfaceContainerHighest.withValues(
-                alpha: .10,
+          Flexible(
+            flex: 3,
+            child: Container(
+              height: 42,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: context.colors.surfaceContainer,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: context.colors.outlineVariant),
               ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.calendar_today_outlined,
-                  size: 18,
-                  color: context.colors.primary,
-                ),
-
-                const SizedBox(width: 8),
-
-                Text(
-                  currentDate,
-                  style: context.text.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: 18,
                     color: context.colors.primary,
                   ),
-                ),
-              ],
+
+                  const SizedBox(width: 8),
+
+                  Flexible(
+                    child: Text(
+                      currentDate,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.text.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: context.colors.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 

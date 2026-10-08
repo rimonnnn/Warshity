@@ -3,11 +3,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
-
 import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_state.dart';
 
@@ -33,22 +31,28 @@ class LogoutButton extends StatelessWidget {
             type: AnimatedSnackBarType.success,
           );
 
-          context.goNamed(
-            AppRoutes.loginScreen,
-          );
+          context.goNamed(AppRoutes.loginScreen);
         }
       },
       builder: (context, state) {
-        final loading =
-            state is SettingsLoading;
+        final scheme = context.colors;
+        final loading = state is SettingsLoading;
+
+        // نفس الشكل الهادئ (tonal) بتاع زر الموبايل:
+        // errorContainer بنص error، بدل أحمر مليان بنص أبيض
+        final bg = scheme.errorContainer;
+        final fg = scheme.error;
 
         return SizedBox(
           width: double.infinity,
           height: 48,
           child: FilledButton.icon(
             style: FilledButton.styleFrom(
-              backgroundColor: context.colors.error,
-              foregroundColor: Colors.white,
+              backgroundColor: bg,
+              foregroundColor: fg,
+              // وقت الـ loading الزر يفضل بلونه بدل ما يتحول لرمادي
+              disabledBackgroundColor: bg,
+              disabledForegroundColor: fg,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -59,19 +63,19 @@ class LogoutButton extends StatelessWidget {
                     _showLogoutDialog(context);
                   },
             icon: loading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 18,
                     height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: fg),
                   )
-                : const Icon(
-                    Icons.logout_outlined,
-                  ),
+                : const Icon(Icons.logout_outlined),
             label: Text(
               'logout'.tr(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.text.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         );
@@ -79,49 +83,35 @@ class LogoutButton extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(
-    BuildContext context,
-  ) {
+  void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (dialogContext) {
+        final scheme = dialogContext.colors;
+
         return AlertDialog(
-          title: Text(
-            'logout'.tr(),
-          ),
-          content: Text(
-            'logout_confirmation'.tr(),
-          ),
+          title: Text('logout'.tr()),
+          content: Text('logout_confirmation'.tr()),
           actions: [
+            // TextButton بياخد لون primary من الـ theme، فمفيش داعي للـ style
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: Text(
-                'cancel'.tr(),
-                style: TextStyle(
-                  color: context.colors.primary,
-                ),
-              ),
+              child: Text('cancel'.tr()),
             ),
+            // زر التأكيد أحمر مليان: الخطوة الأخيرة لازم تبان إنها خطيرة
             FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor:
-                    context.colors.error,
+                backgroundColor: scheme.error,
+                foregroundColor: scheme.onError,
               ),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
 
-                context
-                    .read<SettingsCubit>()
-                    .logOut();
+                context.read<SettingsCubit>().logOut();
               },
-              child: Text(
-                'logout'.tr(),
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+              child: Text('logout'.tr()),
             ),
           ],
         );

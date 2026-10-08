@@ -6,10 +6,10 @@ import 'package:warshity/features/invoices/presentation/cubit/invoice_history_cu
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_state.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_details_placeholder.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_filters_bar.dart';
+import 'package:warshity/features/invoices/presentation/widgets/invoice_history_header.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_review_panel.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_search_bar.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_summary_row.dart';
-import 'package:warshity/features/invoices/presentation/widgets/invoice_history_header.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_web_table.dart';
 
 class InvoiceWeb extends StatefulWidget {
@@ -50,35 +50,39 @@ class _InvoiceWebState extends State<InvoiceWeb> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        width: double.infinity,
-        color: context.colors.surface,
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const InvoiceHistoryHeader(),
-            const SizedBox(height: 20),
-            const InvoiceSummaryRow(),
-            const SizedBox(height: 16),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final wide = constraints.maxWidth >= _wideBreakpoint;
+    return Material(
+      color: context.colors.surface,
 
-                if (!wide) return _buildList(wide: false);
+      child: SingleChildScrollView(
+        child: Container(
+          width: double.infinity,
+          color: context.colors.surface,
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const InvoiceHistoryHeader(),
+              const SizedBox(height: 20),
+              const InvoiceSummaryRow(),
+              const SizedBox(height: 16),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final wide = constraints.maxWidth >= _wideBreakpoint;
 
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: _buildList(wide: true)),
-                    const SizedBox(width: 24),
-                    SizedBox(width: _panelWidth, child: _buildPanel()),
-                  ],
-                );
-              },
-            ),
-          ],
+                  if (!wide) return _buildList(wide: false);
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _buildList(wide: true)),
+                      const SizedBox(width: 24),
+                      SizedBox(width: _panelWidth, child: _buildPanel()),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

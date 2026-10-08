@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 
 class LogoutButton extends StatelessWidget {
   const LogoutButton({
@@ -26,6 +27,13 @@ class LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
+    // زر تدميري هادي (tonal): errorContainer بنص error،
+    // بدل أحمر مليان بيصرخ في آخر الشاشة. الـ parameters لسه بتغلب لو اتبعتت.
+    final bg = backgroundColor ?? scheme.errorContainer;
+    final fg = foregroundColor ?? scheme.error;
+
     return SizedBox(
       width: width ?? double.infinity,
       height: 52.h,
@@ -36,24 +44,27 @@ class LogoutButton extends StatelessWidget {
             ? SizedBox(
                 width: 20.w,
                 height: 20.w,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
+                child: CircularProgressIndicator(strokeWidth: 2, color: fg),
               )
-            : Icon(
-                icon ?? Icons.logout_rounded,
-              ),
+            : Icon(icon ?? Icons.logout_rounded),
 
         label: isLoading
             ? const SizedBox.shrink()
             : Text(
                 title ?? "logout".tr(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.text.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
 
         style: FilledButton.styleFrom(
-          backgroundColor: backgroundColor ?? Colors.red,
-          foregroundColor: foregroundColor ?? Colors.white,
+          backgroundColor: bg,
+          foregroundColor: fg,
+          // وقت الـ loading الزر يفضل بلونه بدل ما يتحول لرمادي
+          disabledBackgroundColor: bg,
+          disabledForegroundColor: fg,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14.r),
           ),

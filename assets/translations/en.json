@@ -191,7 +191,7 @@
   "theme" : "Theme",
   "city" : "Cairo - Egypt",
   "times" : "2 minutes ago",
-  "version" : "Version 2.4.0",
+  "version" : "Version",
   "add_client": "Add Client",
   "client_name": "Client Name",
   "client_name_hint": "Enter the client's name",
@@ -563,8 +563,29 @@
     "operation_date": "Date",
     "operation_amount": "Amount",
     "no_recent_operations": "No recent operations",
-    "new_invoice": "New Invoice"
+    "new_invoice": "New Invoice",
+    
+  "manage_preferences": "Manage your preferences",
+
+  "manage_store_and_security": "Manage your store information and account security",
+
+  "account_sharing_description": "Manage who can access your store account and shared data.",
+  "shared_accounts_description": "View and manage the accounts you currently share.",
+
+  "language_and_appearance": "Language & Appearance",
+  "language_and_appearance_description": "Customize your language and visual preferences",
+  "preferences": "Preferences",
+
+  "light": "Light",
+  "dark": "Dark",
+
+  "show_password": "Show password",
+  "hide_password": "Hide password",
+  "workspace": "Workspace",
+"main_menu": "MAIN MENU"
 }
+
+
 
 
 

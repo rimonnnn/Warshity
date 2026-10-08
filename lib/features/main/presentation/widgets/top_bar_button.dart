@@ -17,38 +17,47 @@ class TopBarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+    final radius = BorderRadius.circular(10);
+    final foreground = filled ? scheme.onPrimary : scheme.primary;
+
     return Material(
-      color: filled
-          ? context.colors.primary
-          : context.colors.surfaceContainerHighest.withValues(alpha: .10),
-      borderRadius: BorderRadius.circular(10),
+      // الزر الثانوي: شفاف بحد، بدل surfaceContainerHighest بشفافية 10% اللي مكانتش بتبان
+      color: filled ? scheme.primary : Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: radius,
+        side: filled
+            ? BorderSide.none
+            : BorderSide(color: scheme.primary.withValues(alpha: 0.5)),
+      ),
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 18,
-                color: filled
-                    ? context.colors.onPrimary
-                    : context.colors.primary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: filled
-                      ? context.colors.onPrimary
-                      : context.colors.primary,
+        borderRadius: radius,
+        hoverColor: foreground.withValues(alpha: 0.08),
+        splashColor: foreground.withValues(alpha: 0.12),
+        child: ConstrainedBox(
+          // 42 زي حقل البحث وشيب التاريخ في الـ top bar
+          constraints: const BoxConstraints(minHeight: 42),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 18, color: foreground),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.bodyMedium?.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: foreground,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

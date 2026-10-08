@@ -16,13 +16,10 @@ class CustomerStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = hasDebt ? Colors.red : Colors.green;
+    final color = hasDebt ? context.colors.error : context.colors.primary;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 10.w,
-        vertical: 6.h,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: color.withOpacity(.08),
         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -32,9 +29,7 @@ class CustomerStatusBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            hasDebt
-                ? Icons.warning_amber_rounded
-                : Icons.check_circle_outline,
+            hasDebt ? Icons.warning_amber_rounded : Icons.check_circle_outline,
             size: 16.sp,
             color: color,
           ),

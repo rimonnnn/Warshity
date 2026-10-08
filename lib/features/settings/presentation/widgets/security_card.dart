@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/constants/app_radius.dart';
-import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:flutter/material.dart';
+import 'package:warshity/features/settings/presentation/widgets/settings_section.dart';
 
+/// نفس شكل [SettingsSection] بالظبط، بس العنوان الافتراضي "security".
+/// بقى wrapper رفيع بدل نسخة مكررة من الـ styling، فأي تعديل في الشكل
+/// بيتعمل في مكان واحد.
 class SecurityCard extends StatelessWidget {
   const SecurityCard({
     super.key,
@@ -21,38 +22,11 @@ class SecurityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor ?? context.colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(
-          borderRadius ?? AppRadius.lg,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16.sp),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                title ?? "security".tr(),
-                style: context.text.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
-          ...children,
-        ],
-      ),
+    return SettingsSection(
+      title: title ?? "security".tr(),
+      backgroundColor: backgroundColor,
+      borderRadius: borderRadius,
+      children: children,
     );
   }
 }

@@ -193,7 +193,7 @@
   "theme" : "المظهر",
   "city" : "القاهرة - مصر",
   "times" : "منذ دقيقتين",
-  "version" : "النسخة 2.4.0",
+  "version" : "النسخة",
 
    "add_client": "إضافة عميل",
   "client_name": "اسم العميل",
@@ -572,7 +572,28 @@
     "operation_date": "التاريخ",
     "operation_amount": "القيمة",
     "no_recent_operations": "لا توجد عمليات حديثة",
-    "new_invoice": "فاتورة جديدة"
+    "new_invoice": "فاتورة جديدة",
+
+    
+  "manage_preferences": "إدارة تفضيلاتك",
+
+  "manage_store_and_security": "إدارة بيانات المتجر وأمان الحساب",
+
+  "account_sharing_description": "إدارة الأشخاص الذين يمكنهم الوصول إلى حساب المتجر والبيانات المشتركة.",
+  "shared_accounts_description": "عرض وإدارة الحسابات التي تشاركها حاليًا.",
+
+  "language_and_appearance": "اللغة والمظهر",
+  "language_and_appearance_description": "تخصيص اللغة وتفضيلات المظهر",
+  "preferences": "التفضيلات",
+
+  "light": "فاتح",
+  "dark": "داكن",
+
+  "show_password": "إظهار كلمة المرور",
+  "hide_password": "إخفاء كلمة المرور",
+  "workspace": "مساحة العمل",
+"main_menu": "القائمة الرئيسية"
+
 }
 
 

@@ -35,33 +35,36 @@ class InvoiceFiltersBar extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<InvoiceHistoryCubit>();
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final (filter, key) in _timeFilters)
-                _chip(
-                  context,
-                  label: key.tr(),
-                  selected: statusFilter == null && state.filter == filter,
-                  onTap: () {
-                    onStatusChanged(null);
-                    cubit.changeFilter(filter);
-                  },
-                ),
-              for (final (status, key) in _statusFilters)
-                _chip(
-                  context,
-                  label: key.tr(),
-                  selected: statusFilter == status,
-                  onTap: () {
-                    onStatusChanged(status);
-                    cubit.changeFilter(InvoiceFilter.all);
-                  },
-                ),
-            ],
+        return Material(
+          color: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final (filter, key) in _timeFilters)
+                  _chip(
+                    context,
+                    label: key.tr(),
+                    selected: statusFilter == null && state.filter == filter,
+                    onTap: () {
+                      onStatusChanged(null);
+                      cubit.changeFilter(filter);
+                    },
+                  ),
+                for (final (status, key) in _statusFilters)
+                  _chip(
+                    context,
+                    label: key.tr(),
+                    selected: statusFilter == status,
+                    onTap: () {
+                      onStatusChanged(status);
+                      cubit.changeFilter(InvoiceFilter.all);
+                    },
+                  ),
+              ],
+            ),
           ),
         );
       },

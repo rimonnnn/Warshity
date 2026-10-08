@@ -27,9 +27,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: context.colors.outlineVariant,
-        ),
+        border: Border.all(color: context.colors.outlineVariant),
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -59,20 +57,20 @@ class _CustomerDetailsPanel extends StatelessWidget {
                       Text(
                         'customer_details'.tr(),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontSize: 10,
-                              color: context.colors.onSurfaceVariant,
-                            ),
+                          fontSize: 10,
+                          color: context.colors.onSurfaceVariant,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         selected.name ?? '-',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w800,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
                       ),
                     ],
                   ),
@@ -104,9 +102,9 @@ class _CustomerDetailsPanel extends StatelessWidget {
                   child: Text(
                     'recent_invoices'.tr(),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
                 if (selected.id != null)
@@ -129,8 +127,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 5),
-            if (selected.id != null)
-              InvoiceList(customerId: selected.id!),
+            if (selected.id != null) InvoiceList(customerId: selected.id!),
             const SizedBox(height: 14),
             Row(
               children: [
@@ -155,10 +152,7 @@ class _CustomerDetailsPanel extends StatelessWidget {
             CustomerMapCard(
               height: 145,
               borderRadius: 14,
-              image: Image.asset(
-                AppAssets.map,
-                fit: BoxFit.cover,
-              ),
+              image: Image.asset(AppAssets.map, fit: BoxFit.cover),
             ),
             const SizedBox(height: 10),
             const _DeliveryOrdersPlaceholder(),

@@ -19,6 +19,7 @@ import 'package:warshity/features/home/presentation/widgets/lowstackitem_widget.
 import 'package:warshity/features/home/presentation/widgets/lowstockcard_widget.dart';
 import 'package:warshity/features/home/presentation/widgets/recent_operation_list.dart';
 import 'package:warshity/features/home/presentation/widgets/section_header.dart';
+import 'package:warshity/features/home/presentation/widgets/weekly_sales_chart_web.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 
 class MobileHome extends StatelessWidget {
@@ -156,6 +157,8 @@ class MobileHome extends StatelessWidget {
                           )
                           .toList(),
                     ),
+                    HeightSpace(24.h),
+                    WeeklySalesChartWeb(values: state.weeklySales),
 
                     HeightSpace(32.h),
 

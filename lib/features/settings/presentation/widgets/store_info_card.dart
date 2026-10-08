@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/constants/app_radius.dart';
+import 'package:flutter/material.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/features/settings/presentation/widgets/settings_section.dart';
 
+/// نفس شكل [SettingsSection] بعنوان افتراضي "store_information"
+/// وزر تعديل اختياري في نهاية الـ header.
+/// wrapper رفيع بدل نسخة مكررة من الـ styling.
 class StoreInfoCard extends StatelessWidget {
   const StoreInfoCard({
     super.key,
@@ -26,53 +28,20 @@ class StoreInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor ?? context.colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(
-          borderRadius ?? AppRadius.lg,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: padding ??
-                EdgeInsets.symmetric(
-                  horizontal: 16.w,
-                  vertical: 16.h,
-                ),
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: onEdit,
-                  icon: Icon(
-                    Icons.edit_outlined,
-                    color: context.colors.primary,
-                  ),
-                ),
-
-                const Spacer(),
-
-                Text(
-                  title ?? "store_information".tr(),
-                  style: context.text.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+    return SettingsSection(
+      title: title ?? "store_information".tr(),
+      backgroundColor: backgroundColor,
+      borderRadius: borderRadius,
+      padding: padding,
+      // الزر بيظهر بس لو في onEdit، بدل زر رمادي معطّل
+      trailing: onEdit == null
+          ? null
+          : IconButton(
+              onPressed: onEdit,
+              visualDensity: VisualDensity.compact,
+              icon: Icon(Icons.edit_outlined, color: context.colors.primary),
             ),
-          ),
-
-          ...children,
-        ],
-      ),
+      children: children,
     );
   }
 }
