@@ -48,7 +48,6 @@ class _LoadingWidgetState extends State<LoadingWidget>
 
   @override
   Widget build(BuildContext context) {
-    final msg = widget.messageKey.tr();
     final scheme = context.colors;
 
     return Scaffold(
