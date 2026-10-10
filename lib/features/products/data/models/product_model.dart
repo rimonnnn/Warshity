@@ -19,10 +19,7 @@ class ProductModel {
     required this.imageUrl,
   });
 
-  factory ProductModel.fromFirestore(
-    String id,
-    Map<String, dynamic> data,
-  ) {
+  factory ProductModel.fromFirestore(String id, Map<String, dynamic> data) {
     return ProductModel(
       id: id,
       name: data['name']?.toString() ?? '',
@@ -31,7 +28,7 @@ class ProductModel {
       price: (data['price'] as num?)?.toDouble() ?? 0.0,
       quantity: (data['quantity'] as num?)?.toInt() ?? 0,
       unit: data['unit']?.toString() ?? '',
-      imageUrl: data['imageurl']?.toString() ?? '',
+      imageUrl: (data['imageurl'] ?? data['imageUrl'])?.toString() ?? '',
     );
   }
 

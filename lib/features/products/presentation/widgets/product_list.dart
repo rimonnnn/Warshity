@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 import 'package:warshity/features/products/presentation/widgets/product_card.dart';
@@ -163,27 +162,23 @@ class ProductList extends StatelessWidget {
               price: product.price,
 
               quantity: product.quantity,
-               onIncrease: () {
-    context.read<ProductsCubit>().increaseQuantity(
-      product.id,
-    );
-  },
+              onIncrease: () {
+                context.read<ProductsCubit>().increaseQuantity(product.id);
+              },
 
-  onDecrease: () {
-    context.read<ProductsCubit>().decreaseQuantity(
-      product.id,
-    );
-  },
+              onDecrease: () {
+                context.read<ProductsCubit>().decreaseQuantity(product.id);
+              },
 
-  onQuantityChanged: (quantity) {
-    return context.read<ProductsCubit>().updateQuantity(
-      productId: product.id,
-      quantity: quantity,
-    );
-  },
+              onQuantityChanged: (quantity) {
+                return context.read<ProductsCubit>().updateQuantity(
+                  productId: product.id,
+                  quantity: quantity,
+                );
+              },
 
               image: product.imageUrl.isNotEmpty
-                  ? Image.asset(
+                  ? Image.network(
                       product.imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {

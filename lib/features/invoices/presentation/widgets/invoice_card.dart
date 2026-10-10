@@ -42,6 +42,7 @@ class InvoiceCard extends StatelessWidget {
     final scheme = context.colors;
 
     return Card(
+      color: context.colors.surfaceContainer,
       margin: EdgeInsets.symmetric(horizontal: AppPadding.md, vertical: 6.h),
       elevation: 0,
       shape: RoundedRectangleBorder(

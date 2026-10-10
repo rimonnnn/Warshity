@@ -162,6 +162,7 @@
 "add_invoice": "اضافة فاتورة",
 
 
+
   "customer": "العميل",
   "customer_mohamed_samir": "محمد سمير",
   "customer_ahmed_ali": "أحمد علي",
@@ -602,7 +603,8 @@
   "show_password": "إظهار كلمة المرور",
   "hide_password": "إخفاء كلمة المرور",
   "workspace": "مساحة العمل",
-"main_menu": "القائمة الرئيسية"
+"main_menu": "القائمة الرئيسية",
+"sales_invoice" : "فاتورة المبيعات"
 
 }
 

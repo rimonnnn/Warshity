@@ -26,53 +26,81 @@ class CheckInvoiceInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    // كل صف (عنوان + قيمة) في Row واحد بدل عمودين منفصلين،
+    // فالعنوان والقيمة دايمًا على نفس السطر حتى لو القيمة صغّرت (التاريخ)
+    return Column(
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('invoice_numer'.tr(), style: context.text.bodyMedium),
-            const SizedBox(height: 8),
-            Text('date'.tr(), style: context.text.bodyMedium),
-            const SizedBox(height: 8),
-            Text('customer'.tr(), style: context.text.bodyMedium),
-          ],
+        _InfoRow(
+          label: 'invoice_numer'.tr(),
+          value: invoiceModel.invoiceId ?? '',
+        ),
+
+        const SizedBox(height: 8),
+
+        _InfoRow(
+          label: 'date'.tr(),
+          value: _formatDate(invoiceModel.createdAt),
+          fitToWidth: true,
+        ),
+
+        const SizedBox(height: 8),
+
+        _InfoRow(label: 'customer'.tr(), value: invoiceModel.customerName),
+      ],
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    this.fitToWidth = false,
+  });
+
+  final String label;
+  final String value;
+
+  /// بيصغّر القيمة بدل ما تتقطع (للتاريخ)
+  final bool fitToWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = context.colors;
+
+    final valueText = Text(
+      value,
+      maxLines: 1,
+      overflow: fitToWidth ? TextOverflow.visible : TextOverflow.ellipsis,
+      style: context.text.bodyMedium?.copyWith(
+        color: scheme.onSurface,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: context.text.bodyMedium?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
         ),
 
         const SizedBox(width: 20),
 
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                invoiceModel.invoiceId ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.text.bodyMedium,
-              ),
-
-              const SizedBox(height: 8),
-
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerRight,
-                child: Text(
-                  _formatDate(invoiceModel.createdAt),
-                  style: context.text.bodyMedium,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                invoiceModel.customerName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.text.bodyMedium,
-              ),
-            ],
+          child: Align(
+            // AlignmentDirectional بدل Alignment.centerRight: القيمة على نهاية الصف في العربي والإنجليزي
+            alignment: AlignmentDirectional.centerEnd,
+            child: fitToWidth
+                ? FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: valueText,
+                  )
+                : valueText,
           ),
         ),
       ],

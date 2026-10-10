@@ -15,8 +15,7 @@ class AddProductCubit extends Cubit<AddProductState> {
   // DEFAULT IMAGE
   // ============================================================
 
-  static const String defaultProductImage = 'assets/images/product_icon.png';
-
+  static const String defaultProductImage = "";
   // ============================================================
   // ADD PRODUCT
   // ============================================================
