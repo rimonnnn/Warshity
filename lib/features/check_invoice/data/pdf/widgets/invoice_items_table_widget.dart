@@ -20,19 +20,39 @@ class InvoiceItemsTableWidget {
         ? 10.0
         : 8.0;
 
-    final cellPadding = is58 ? 2.0 : 3.0;
+    final headerFontSize = isA4 ? 9.5 : fontSize;
+
+    final cellPadding = is58
+        ? 2.0
+        : isA4
+        ? 5.0
+        : 3.0;
+
+    final borderColor = PdfColors.grey300;
 
     return pw.Table(
       border: isA4
-          ? pw.TableBorder.all(width: 0.5)
-          : pw.TableBorder(horizontalInside: pw.BorderSide(width: 0.4)),
+          ? pw.TableBorder(
+              top: const pw.BorderSide(color: PdfColors.grey400, width: 0.6),
+              bottom: const pw.BorderSide(color: PdfColors.grey400, width: 0.6),
+              left: const pw.BorderSide(color: PdfColors.grey400, width: 0.6),
+              right: const pw.BorderSide(color: PdfColors.grey400, width: 0.6),
+              horizontalInside: pw.BorderSide(color: borderColor, width: 0.5),
+              verticalInside: pw.BorderSide(color: borderColor, width: 0.4),
+            )
+          : pw.TableBorder(
+              horizontalInside: pw.BorderSide(
+                color: PdfColors.grey400,
+                width: is58 ? 0.35 : 0.45,
+              ),
+            ),
 
       columnWidths: is58
           ? {
-              0: const pw.FlexColumnWidth(3.5),
-              1: const pw.FlexColumnWidth(1),
+              0: const pw.FlexColumnWidth(3.3),
+              1: const pw.FlexColumnWidth(0.9),
               2: const pw.FlexColumnWidth(1.8),
-              3: const pw.FlexColumnWidth(1.8),
+              3: const pw.FlexColumnWidth(2.0),
             }
           : {
               0: const pw.FlexColumnWidth(3),
@@ -42,76 +62,101 @@ class InvoiceItemsTableWidget {
             },
 
       children: [
-        // Header
+        // Table header
         pw.TableRow(
           decoration: isA4
-              ? const pw.BoxDecoration(color: PdfColors.grey300)
+              ? const pw.BoxDecoration(color: PdfColors.grey200)
               : null,
+          verticalAlignment: pw.TableCellVerticalAlignment.middle,
           children: [
             _cell(
               labels['item'] ?? 'Item',
-              fontSize: fontSize,
+              fontSize: headerFontSize,
               padding: cellPadding,
               bold: true,
+              color: PdfColors.grey800,
+              textAlign: pw.TextAlign.left,
             ),
             _cell(
               labels['qty'] ?? 'Qty',
-              fontSize: fontSize,
+              fontSize: headerFontSize,
               padding: cellPadding,
               bold: true,
+              color: PdfColors.grey800,
               textAlign: pw.TextAlign.center,
+              maxLines: 1,
             ),
             _cell(
               labels['price'] ?? 'Price',
-              fontSize: fontSize,
+              fontSize: headerFontSize,
               padding: cellPadding,
               bold: true,
-              textAlign: pw.TextAlign.center,
+              color: PdfColors.grey800,
+              textAlign: pw.TextAlign.right,
+              maxLines: 1,
             ),
             _cell(
               labels['total'] ?? 'Total',
-              fontSize: fontSize,
+              fontSize: headerFontSize,
               padding: cellPadding,
               bold: true,
-              textAlign: pw.TextAlign.center,
+              color: PdfColors.grey800,
+              textAlign: pw.TextAlign.right,
+              maxLines: 1,
             ),
           ],
         ),
 
-        // Items
-        ...data.items.map(
-          (item) => pw.TableRow(
+        // Product rows
+        ...data.items.asMap().entries.map((entry) {
+          final index = entry.key;
+          final item = entry.value;
+
+          return pw.TableRow(
+            decoration: isA4 && index.isOdd
+                ? const pw.BoxDecoration(color: PdfColors.grey100)
+                : null,
+            verticalAlignment: pw.TableCellVerticalAlignment.middle,
             children: [
+              // Product name
               _cell(
                 item.productName,
                 fontSize: fontSize,
                 padding: cellPadding,
                 maxLines: is58 ? 2 : 3,
+                textAlign: pw.TextAlign.left,
               ),
 
+              // Quantity
               _cell(
                 item.quantity.toString(),
                 fontSize: fontSize,
                 padding: cellPadding,
                 textAlign: pw.TextAlign.center,
+                maxLines: 1,
               ),
 
+              // Unit price
               _cell(
                 item.price.toStringAsFixed(2),
                 fontSize: fontSize,
                 padding: cellPadding,
-                textAlign: pw.TextAlign.center,
+                textAlign: pw.TextAlign.right,
+                maxLines: 1,
               ),
 
+              // Line total
               _cell(
                 (item.price * item.quantity).toStringAsFixed(2),
                 fontSize: fontSize,
                 padding: cellPadding,
-                textAlign: pw.TextAlign.center,
+                textAlign: pw.TextAlign.right,
+                bold: isA4,
+                maxLines: 1,
               ),
             ],
-          ),
-        ),
+          );
+        }),
       ],
     );
   }
@@ -121,11 +166,12 @@ class InvoiceItemsTableWidget {
     required double fontSize,
     required double padding,
     bool bold = false,
-    pw.TextAlign? textAlign,
+    PdfColor color = PdfColors.black,
+    pw.TextAlign textAlign = pw.TextAlign.left,
     int maxLines = 2,
   }) {
     return pw.Padding(
-      padding: pw.EdgeInsets.all(padding),
+      padding: pw.EdgeInsets.symmetric(horizontal: padding, vertical: padding),
       child: pw.Text(
         text,
         textAlign: textAlign,
@@ -133,6 +179,7 @@ class InvoiceItemsTableWidget {
         style: pw.TextStyle(
           fontSize: fontSize,
           fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+          color: color,
         ),
       ),
     );

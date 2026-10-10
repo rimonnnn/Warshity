@@ -14,34 +14,101 @@ class PaidAndRemaining extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final colors = context.colors;
+    final textTheme = context.text;
+    final successColor = context.appColors.success;
+
+    final isPaid = remainingAmount <= 0;
+    final remainingColor = isPaid ? successColor : colors.error;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        // Paid amount
+        Row(
           children: [
-            Text("the_paid".tr(), style: context.text.bodyMedium),
-            const SizedBox(height: 16),
-            Text("remaining".tr(), style: context.text.bodyLarge),
+            Icon(
+              Icons.check_circle_outline_rounded,
+              size: 18,
+              color: successColor,
+            ),
+            const SizedBox(width: 8),
+
+            Expanded(
+              child: Text(
+                'the_paid'.tr(),
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            Flexible(
+              child: Text(
+                paidAmount.toStringAsFixed(2),
+                textAlign: TextAlign.end,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: successColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ],
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              paidAmount.toStringAsFixed(2),
-              style: context.text.bodyMedium!.copyWith(
-                color: context.colors.primary,
+
+        const SizedBox(height: 14),
+
+        // Remaining amount
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          decoration: BoxDecoration(
+            color: remainingColor.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: remainingColor.withValues(alpha: 0.18)),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isPaid
+                    ? Icons.check_circle_rounded
+                    : Icons.pending_actions_rounded,
+                size: 20,
+                color: remainingColor,
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              remainingAmount.toStringAsFixed(2),
-              style: context.text.bodyLarge!.copyWith(
-                color: context.colors.error,
+
+              const SizedBox(width: 10),
+
+              Expanded(
+                child: Text(
+                  'remaining'.tr(),
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colors.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-            ),
-          ],
+
+              const SizedBox(width: 12),
+
+              Flexible(
+                child: Text(
+                  remainingAmount.toStringAsFixed(2),
+                  textAlign: TextAlign.end,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: remainingColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

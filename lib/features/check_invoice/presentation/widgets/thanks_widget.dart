@@ -9,20 +9,24 @@ class ThanksWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return Padding(
-      padding: padding ?? EdgeInsets.symmetric(vertical: 12),
+      padding: padding ?? const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Divider(color: context.colors.outline.withOpacity(0.3)),
-          SizedBox(height: 8),
-          Icon(Icons.favorite_rounded, size: 18, color: context.colors.primary),
-          SizedBox(height: 4),
+          // outlineVariant بدل outline.withOpacity(0.3): withOpacity deprecated
+          // واللون ده متظبط لكل scheme
+          Divider(color: scheme.outlineVariant),
+          const SizedBox(height: 8),
+          Icon(Icons.favorite_rounded, size: 18, color: scheme.primary),
+          const SizedBox(height: 4),
           Text(
             "thank_you_for_your_business".tr(),
             style: context.text.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: context.colors.onSurface,
+              color: scheme.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
