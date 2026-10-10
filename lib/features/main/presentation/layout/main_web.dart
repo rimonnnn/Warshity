@@ -9,10 +9,7 @@ import 'package:warshity/features/main/presentation/widgets/side_bar.dart';
 import 'package:warshity/features/main/presentation/widgets/web_top_bar_widget.dart';
 
 class MainWeb extends StatefulWidget {
-  const MainWeb({
-    super.key,
-    required this.navItems,
-  });
+  const MainWeb({super.key, required this.navItems});
 
   final List<MainNavItem> navItems;
 
@@ -37,9 +34,7 @@ class _MainWebState extends State<MainWeb> {
   Widget build(BuildContext context) {
     final screens = widget.navItems.map((item) {
       if (item.screen is WebHome) {
-        return WebHome(
-          onNavigate: _changeTab,
-        );
+        return WebHome(onNavigate: _changeTab);
       }
 
       return item.screen;
@@ -74,13 +69,12 @@ class _MainWebState extends State<MainWeb> {
                         ),
                       ),
 
-                      if (_currentIndex == 0)
-                        const Positioned(
-                          top: 16,
-                          left: 24,
-                          right: 24,
-                          child: GlobalSearchResults(),
-                        ),
+                      const Positioned(
+                        top: 16,
+                        left: 24,
+                        right: 24,
+                        child: GlobalSearchResults(),
+                      ),
                     ],
                   ),
                 ),

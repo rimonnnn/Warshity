@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
@@ -92,16 +91,6 @@ class GlobalSearchResults extends StatelessWidget {
                         _openResult(context, result);
                       },
                     ),
-
-                  if (state.invoices.isNotEmpty)
-                    SearchResultsSection(
-                      title: 'invoices'.tr(),
-                      icon: Icons.receipt_long_outlined,
-                      results: state.invoices,
-                      onTap: (result) {
-                        _openResult(context, result);
-                      },
-                    ),
                 ],
               ),
             ),
@@ -130,10 +119,6 @@ class GlobalSearchResults extends StatelessWidget {
             },
           ),
         );
-        break;
-
-      case GlobalSearchResultType.invoice:
-        context.push(AppRoutes.checkInvoiceScreen, extra: result.invoiceId);
         break;
     }
   }

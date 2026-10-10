@@ -1,23 +1,18 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/global_search/data/model/global_search_result.dart';
 import 'package:warshity/features/global_search/presentation/cubit/global_search_state.dart';
-import 'package:warshity/features/invoices/data/models/invoice_model.dart';
-import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/data/repo/products_repository.dart';
 
 class GlobalSearchCubit extends Cubit<GlobalSearchState> {
   final ClientsRepository clientsRepository;
   final ProductsRepository productsRepository;
-  final InvoiceRepository invoiceRepository;
 
   GlobalSearchCubit({
     required this.clientsRepository,
     required this.productsRepository,
-    required this.invoiceRepository,
   }) : super(const GlobalSearchInitial());
 
   Future<void> search(String query) async {
@@ -34,12 +29,10 @@ class GlobalSearchCubit extends Cubit<GlobalSearchState> {
       final results = await Future.wait([
         clientsRepository.watchClients().first,
         productsRepository.watchProducts().first,
-        invoiceRepository.watchInvoices().first,
       ]);
 
       final clients = results[0] as List<CustomerModel>;
       final products = results[1] as List<ProductModel>;
-      final invoices = results[2] as List<InvoiceModel>;
 
       final clientResults = _searchClients(
         clients,
@@ -51,16 +44,10 @@ class GlobalSearchCubit extends Cubit<GlobalSearchState> {
         value,
       );
 
-      final invoiceResults = _searchInvoices(
-        invoices,
-        value,
-      );
-
       emit(
         GlobalSearchSuccess(
           clients: clientResults,
           products: productResults,
-          invoices: invoiceResults,
         ),
       );
     } catch (e) {
@@ -123,41 +110,7 @@ class GlobalSearchCubit extends Cubit<GlobalSearchState> {
         .toList();
   }
 
-  List<GlobalSearchResult> _searchInvoices(
-    List<InvoiceModel> invoices,
-    String query,
-  ) {
-    return invoices
-        .where((invoice) {
-          final invoiceId = invoice.invoiceId?.toLowerCase() ?? '';
-          final customerId = invoice.customerId.toLowerCase();
-          final customerName = invoice.customerName.toLowerCase();
-          final createdAt = invoice.createdAt.toLowerCase();
-
-          final productNames = invoice.items
-              .map((item) => item.productName.toLowerCase())
-              .join(' ');
-
-          return invoiceId.contains(query) ||
-              customerId.contains(query) ||
-              customerName.contains(query) ||
-              createdAt.contains(query) ||
-              productNames.contains(query);
-        })
-        .map(
-          (invoice) => GlobalSearchResult(
-            type: GlobalSearchResultType.invoice,
-            id: invoice.invoiceId ?? invoice.customerId,
-            title: invoice.customerName,
-            subtitle: invoice.invoiceId,
-          ),
-        )
-        .where((result) => result.id.isNotEmpty)
-        .toList();
-  }
-
   void clear() {
     emit(const GlobalSearchInitial());
   }
 }
-

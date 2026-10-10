@@ -13,7 +13,6 @@ import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/clients/presentation/pages/clients_page.dart';
 import 'package:warshity/features/global_search/presentation/cubit/global_search_cubit.dart';
 import 'package:warshity/features/home/presentation/pages/home_page.dart';
-import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
 import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
 import 'package:warshity/features/main/presentation/layout/main_mobile.dart';
 import 'package:warshity/features/main/presentation/layout/main_web.dart';
@@ -173,7 +172,6 @@ class _MainScreenState extends State<MainScreen> {
                     create: (_) => GlobalSearchCubit(
                       clientsRepository: getIt<ClientsRepository>(),
                       productsRepository: getIt<ProductsRepository>(),
-                      invoiceRepository: getIt<InvoiceRepository>(),
                     ),
                   ),
                 ],

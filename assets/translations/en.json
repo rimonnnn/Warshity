@@ -147,7 +147,7 @@
   "export_pdf": "Export PDF",
   "duplicate": "Duplicate",
   "delete": "Delete",
-  "search_invoice": "Search by invoice number or customer name...",
+  "search_invoice": "Search customers or products...",
   "today_invoices": "Today's Invoices",
   "add_invoice": "Add Invoice",
 

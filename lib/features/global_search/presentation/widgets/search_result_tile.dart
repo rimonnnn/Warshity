@@ -21,8 +21,7 @@ class SearchResultTile extends StatelessWidget {
       case GlobalSearchResultType.product:
         return Icons.inventory_2_outlined;
 
-      case GlobalSearchResultType.invoice:
-        return Icons.receipt_long_outlined;
+     
     }
   }
 
