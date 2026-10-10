@@ -41,23 +41,23 @@ class ProductOverview extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (compact || constraints.maxWidth < 850) {
-          return Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              for (final card in cards)
-                SizedBox(width: (constraints.maxWidth - 12) / 2, child: card),
-            ],
-          );
-        }
+        final width = constraints.maxWidth;
+        final columns = compact
+            ? (width >= 560 ? 2 : 1)
+            : width >= 900
+            ? 3
+            : width >= 560
+            ? 2
+            : 1;
+        final spacing = 12.0;
+        final cardWidth = (width - spacing * (columns - 1)) / columns;
 
-        return Row(
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
           children: [
-            for (var i = 0; i < cards.length; i++) ...[
-              Expanded(child: cards[i]),
-              if (i != cards.length - 1) const SizedBox(width: 12),
-            ],
+            for (final card in cards)
+              SizedBox(width: cardWidth, child: card),
           ],
         );
       },

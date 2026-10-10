@@ -10,29 +10,47 @@ class InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: context.text.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
+    final colors = context.colors;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final labelText = Text(
+          label,
+          softWrap: true,
+          style: context.text.bodyMedium?.copyWith(
+            color: colors.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
           ),
-        ),
-        const SizedBox(width: 20),
-        Flexible(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style: context.text.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+        );
+        final valueText = Text(
+          value,
+          softWrap: true,
+          textAlign: TextAlign.end,
+          style: context.text.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w700,
           ),
-        ),
-      ],
+        );
+
+        if (constraints.maxWidth < 330) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              labelText,
+              const SizedBox(height: 4),
+              valueText,
+            ],
+          );
+        }
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(flex: 4, child: labelText),
+            const SizedBox(width: 12),
+            Expanded(flex: 6, child: valueText),
+          ],
+        );
+      },
     );
   }
 }

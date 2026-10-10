@@ -1,9 +1,13 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/features/settings/presentation/widgets/change_password_bottom_sheet.dart';
+import 'package:warshity/features/settings/presentation/widgets/edit_store_info_dialog.dart';
 
 import 'web_settings_shared_widgets.dart';
 
@@ -43,6 +47,24 @@ class StoreAndSecuritySection extends StatelessWidget {
     );
   }
 
+  void _editStoreInfo(BuildContext context) {
+    final authState = context.read<AuthCubit>().state;
+    if (authState is! UserLoaded) {
+      showAnimatedSnackDialog(
+        context,
+        message: 'loaded'.tr(),
+        type: AnimatedSnackBarType.error,
+      );
+      return;
+    }
+
+    EditStoreInfoDialog.show(
+      context: context,
+      initialShopName: authState.user.shopName,
+      initialActivity: authState.user.activity,
+    );
+  }
+
   Widget _buildStoreInformationCard(
     BuildContext context,
     ThemeData theme,
@@ -51,6 +73,11 @@ class StoreAndSecuritySection extends StatelessWidget {
     return SettingsContentCard(
       title: 'store_information'.tr(),
       icon: Icons.store_outlined,
+      trailing: IconButton(
+        tooltip: 'Edit'.tr(),
+        onPressed: () => _editStoreInfo(context),
+        icon: Icon(Icons.edit_outlined, color: context.colors.primary),
+      ),
       child: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, authState) {
           String shopName = 'masiter'.tr();
