@@ -72,25 +72,65 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.lg),
+        side: BorderSide(color: scheme.outlineVariant),
       ),
-      backgroundColor: context.colors.surface,
+      // surfaceContainer بدل surface، عشان الـ dialog يبان فوق الخلفية
+      backgroundColor: scheme.surfaceContainer,
       child: Padding(
         padding: EdgeInsets.all(24.sp),
         child: Form(
           key: _formKey,
+          // الأخطاء بتظهر أول ما المستخدم يسيب الحقل، مش بس بعد الضغط على حفظ
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'add_new_product'.tr(),
-                  style: context.text.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                // header: أيقونة + عنوان + زر إغلاق، زي dialog إضافة العميل
+                Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: scheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.add_shopping_cart_rounded,
+                        size: 22,
+                        color: scheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'add_new_product'.tr(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.text.titleLarge?.copyWith(
+                          color: scheme.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      tooltip: 'cancel'.tr(),
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
                 HeightSpace(20),
                 CustomTextField(
@@ -131,12 +171,21 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 Row(
                   children: [
                     Expanded(
-                      child: TextButton(
+                      // outlined بدل TextButton: زر إلغاء واضح إنه زر
+                      child: OutlinedButton(
                         onPressed: () => Navigator.of(context).pop(),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: Size(0, 52.h),
+                          foregroundColor: scheme.onSurface,
+                          side: BorderSide(color: scheme.outlineVariant),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                          ),
+                        ),
                         child: Text(
                           'cancel'.tr(),
                           style: context.text.bodyLarge?.copyWith(
-                            color: context.colors.onSurfaceVariant,
+                            color: scheme.onSurface,
                           ),
                         ),
                       ),
@@ -144,8 +193,12 @@ class _AddProductDialogState extends State<AddProductDialog> {
                     SizedBox(width: 12.w),
                     Expanded(
                       child: PrimaryButtonWidget(
-                        fontSize: 20,
+                        height: 52.h,
+                        // 20 كانت كبيرة جنب زر الإلغاء
+                        fontSize: 16.sp,
                         buttonText: 'save'.tr(),
+                        buttonColor: scheme.primary,
+                        textColor: scheme.onPrimary,
                         borderRadius: AppRadius.sm,
                         onPress: _onSave,
                       ),

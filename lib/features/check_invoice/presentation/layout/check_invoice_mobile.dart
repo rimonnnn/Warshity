@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warshity/core/constants/app_padding.dart';
+import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/extensions/invoice_pdf_labels.dart';
@@ -111,10 +111,13 @@ class _CheckInvoiceMobileState extends State<CheckInvoiceMobile> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () {
             if (_invoiceSaved) {
               context.pop();
@@ -124,35 +127,96 @@ class _CheckInvoiceMobileState extends State<CheckInvoiceMobile> {
             }
           },
         ),
-        title: Text('check_invoice'.tr(), style: context.text.headlineMedium),
+        // headlineMedium كبير على AppBar، titleMedium بالـ bold أنسب
+        title: Text(
+          'check_invoice'.tr(),
+          style: context.text.titleMedium?.copyWith(
+            color: scheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: context.colors.surface,
-                  borderRadius: BorderRadius.circular(AppPadding.sm),
-                ),
-                child: SingleChildScrollView(
-                  child: RepaintBoundary(
-                    key: _invoiceKey,
-                    child: CheckInvoiceContent(invoice: widget.invoice),
+      // SafeArea من تحت بس: الأزرار ماتلزقش في شريط الـ gestures
+      body: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Column(
+            children: [
+              // بانر تأكيد بعد الحفظ: الـ snackbar بيختفي بعد ثواني،
+              // والبانر بيفضل يوضح إن الفاتورة اتحفظت (بيعتمد على _invoiceSaved الموجودة)
+              AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                alignment: Alignment.topCenter,
+                child: _invoiceSaved
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.appColors.success.withValues(
+                              alpha: 0.16,
+                            ),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle_outline,
+                                size: 20,
+                                color: context.appColors.success,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'invoice_created_successfully'.tr(),
+                                  style: context.text.bodyMedium?.copyWith(
+                                    color: context.appColors.success,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : const SizedBox(width: double.infinity),
+              ),
+
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    // surfaceContainer بحد، عشان "ورقة" الفاتورة تبان فوق الخلفية
+                    // (كانت surface، نفس لون الصفحة، وبنصف radius صغير من AppPadding)
+                    color: scheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    border: Border.all(color: scheme.outlineVariant),
+                  ),
+                  child: SingleChildScrollView(
+                    child: RepaintBoundary(
+                      key: _invoiceKey,
+                      child: CheckInvoiceContent(invoice: widget.invoice),
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            PrintAndShareInvoice(
-              onShare: _openShareSheet,
-              onPrint: _printInvoice,
-            ),
+              HeightSpace(12),
 
-            HeightSpace(22),
-          ],
+              PrintAndShareInvoice(
+                onShare: _openShareSheet,
+                onPrint: _printInvoice,
+              ),
+
+              HeightSpace(16),
+            ],
+          ),
         ),
       ),
     );

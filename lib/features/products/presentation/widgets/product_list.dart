@@ -166,27 +166,23 @@ class ProductList extends StatelessWidget {
               
 
               quantity: product.quantity,
-               onIncrease: () {
-    context.read<ProductsCubit>().increaseQuantity(
-      product.id,
-    );
-  },
+              onIncrease: () {
+                context.read<ProductsCubit>().increaseQuantity(product.id);
+              },
 
-  onDecrease: () {
-    context.read<ProductsCubit>().decreaseQuantity(
-      product.id,
-    );
-  },
+              onDecrease: () {
+                context.read<ProductsCubit>().decreaseQuantity(product.id);
+              },
 
-  onQuantityChanged: (quantity) {
-    return context.read<ProductsCubit>().updateQuantity(
-      productId: product.id,
-      quantity: quantity,
-    );
-  },
+              onQuantityChanged: (quantity) {
+                return context.read<ProductsCubit>().updateQuantity(
+                  productId: product.id,
+                  quantity: quantity,
+                );
+              },
 
               image: product.imageUrl.isNotEmpty
-                  ? Image.asset(
+                  ? Image.network(
                       product.imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {

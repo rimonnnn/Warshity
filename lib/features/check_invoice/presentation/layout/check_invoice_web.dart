@@ -4,20 +4,17 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
-
 import 'package:warshity/core/constants/app_padding.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/extensions/invoice_pdf_labels.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-
 import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
 import 'package:warshity/features/check_invoice/data/invoice_pdf_data.dart';
 import 'package:warshity/features/check_invoice/data/invoice_pdf_service.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/amount_and_price_widget.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/check_invoice_information.dart';
-import 'package:warshity/features/check_invoice/presentation/widgets/finally_price.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/paid_and_remaining.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/thanks_widget.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/top_check_invoice_widget.dart';
@@ -25,10 +22,7 @@ import 'package:warshity/features/check_invoice/presentation/widgets/total_price
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 
 class CheckInvoiceWeb extends StatefulWidget {
-  const CheckInvoiceWeb({
-    super.key,
-    required this.invoice,
-  });
+  const CheckInvoiceWeb({super.key, required this.invoice});
 
   final InvoiceModel invoice;
 
@@ -75,9 +69,7 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
     try {
       final pdfBytes = await _generatePdf(context);
 
-      final success = await Printing.layoutPdf(
-        onLayout: (_) async => pdfBytes,
-      );
+      final success = await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
 
       if (success) {
         await _saveInvoice();
@@ -88,11 +80,7 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-          ),
-        );
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -111,11 +99,7 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-          ),
-        );
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -124,26 +108,18 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "check_invoice".tr(),
-          style: context.text.headlineMedium,
-        ),
+        title: Text("check_invoice".tr(), style: context.text.headlineMedium),
       ),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 88,
-            padding: const EdgeInsets.symmetric(
-              vertical: 24,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 24),
             decoration: BoxDecoration(
               color: context.colors.onPrimary,
               border: Border(
-                right: BorderSide(
-                  color: Colors.grey[300]!,
-                  width: 1,
-                ),
+                right: BorderSide(color: Colors.grey[300]!, width: 1),
               ),
             ),
             child: Column(
@@ -168,9 +144,7 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
           Expanded(
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 650,
-                ),
+                constraints: const BoxConstraints(maxWidth: 650),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -184,9 +158,7 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        AppPadding.sm,
-                      ),
+                      borderRadius: BorderRadius.circular(AppPadding.sm),
                     ),
                     child: SingleChildScrollView(
                       child: Column(
@@ -205,15 +177,11 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
 
                           const HeightSpace(16),
 
-                          CheckInvoiceInformation(
-                            invoiceModel: widget.invoice,
-                          ),
+                          CheckInvoiceInformation(invoiceModel: widget.invoice),
 
                           const HeightSpace(24),
 
-                          AmountAndPriceWidget(
-                            items: widget.invoice.items,
-                          ),
+                          AmountAndPriceWidget(items: widget.invoice.items),
 
                           const HeightSpace(40),
 
@@ -232,16 +200,14 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
 
                           const HeightSpace(16),
 
-                          FinallyPrice(
-                            total: widget.invoice.total,
-                          ),
-
+                          // FinallyPrice(
+                          //   total: widget.invoice.total,
+                          // ),
                           const HeightSpace(8),
 
                           PaidAndRemaining(
                             paidAmount: widget.invoice.paidAmount,
-                            remainingAmount:
-                                widget.invoice.remainingAmount,
+                            remainingAmount: widget.invoice.remainingAmount,
                           ),
 
                           const HeightSpace(12),
@@ -280,24 +246,14 @@ class _VerticalActionButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 8,
-          horizontal: 8,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         child: Column(
           children: [
-            Icon(
-              icon,
-              size: 24,
-              color: context.colors.primary,
-            ),
+            Icon(icon, size: 24, color: context.colors.primary),
 
             const HeightSpace(4),
 
-            Text(
-              label,
-              style: context.text.bodySmall,
-            ),
+            Text(label, style: context.text.bodySmall),
           ],
         ),
       ),

@@ -4,9 +4,11 @@ import 'package:warshity/features/check_invoice/data/invoice_pdf_data.dart';
 import 'package:warshity/features/check_invoice/data/pdf/invoice_format.dart';
 
 /// Handles everything related to page sizing for the invoice PDF:
-/// page format, margins, and the height estimation needed for
-/// thermal printer formats (which require a fixed page height
-/// up front, since the `pdf` package has no auto-sizing MultiPage).
+/// page format, margins, and height estimation for thermal printers.
+///
+/// Thermal printers require a calculated page height in advance.
+/// The estimated height is calculated in millimeters and converted
+/// to PDF points before being assigned to the page format.
 class InvoicePdfLayout {
   const InvoicePdfLayout._();
 
@@ -40,49 +42,53 @@ class InvoicePdfLayout {
     }
   }
 
+  // =========================================================
+  // Thermal Height Estimation
+  // All estimated heights are in millimeters.
+  // The final height is converted to PDF points.
+  // =========================================================
+
   static double _calculateThermalHeight({
     required InvoicePdfData data,
     required InvoiceFormat format,
   }) {
     final is58 = format == InvoiceFormat.thermal58;
 
-    /*
-     * All values here are in mm.
-     *
-     * These are estimates based on the widgets used
-     * in the invoice.
-     */
-
     // Header:
-    // logo + title + description + divider + invoice title
-    // + invoice number + date
+    // Logo, application name, divider, invoice title,
+    // invoice number, and creation date.
     const double headerHeight = 65.0;
 
-    // Customer container
+    // Customer information.
     const double customerHeight = 18.0;
 
-    // Table header
+    // Table header.
     final double tableHeaderHeight = is58 ? 7.0 : 8.0;
 
-    // One line item height
+    // Estimated height for one line of a product name.
     final double oneLineItemHeight = is58 ? 7.5 : 9.0;
 
-    // Totals section
+    // Totals section.
     const double totalsHeight = 48.0;
 
-    // Footer
+    // Invoice footer, including the thank-you message.
     const double footerHeight = 12.0;
 
-    // Spaces between sections
+    // Developer credit:
+    // Developer names and contact numbers.
+    final double developerCreditHeight = is58 ? 9.0 : 10.0;
+
+    // Estimated spacing between invoice sections.
     const double spacingHeight = 40.0;
 
-    // Calculate items height
+    // Calculate the height required by all product rows.
     final double itemsHeight = data.items.fold<double>(0, (total, item) {
       final lines = _estimateProductNameLines(item.productName, format);
 
       return total + (oneLineItemHeight * lines);
     });
 
+    // Calculate the estimated total content height.
     final double contentHeight =
         headerHeight +
         customerHeight +
@@ -90,16 +96,19 @@ class InvoicePdfLayout {
         itemsHeight +
         totalsHeight +
         footerHeight +
+        developerCreditHeight +
         spacingHeight;
 
-    /*
-     * Add a small safety buffer so the content doesn't
-     * reach the very bottom of the thermal page.
-     */
+    // Additional safety margin to reduce the risk of overflow.
     const double safetyBuffer = 10.0;
 
+    // Convert millimeters to PDF points.
     return (contentHeight + safetyBuffer) * PdfPageFormat.mm;
   }
+
+  // =========================================================
+  // Product Name Height Estimation
+  // =========================================================
 
   static int _estimateProductNameLines(
     String productName,
@@ -107,23 +116,24 @@ class InvoicePdfLayout {
   ) {
     final is58 = format == InvoiceFormat.thermal58;
 
-    /*
-     * Approximate characters that can fit on one line.
-     *
-     * This isn't an exact PDF measurement, but it gives
-     * us a much better page height than a fixed 500mm.
-     */
+    // Approximate characters per line.
     final int charactersPerLine = is58 ? 18 : 28;
 
-    if (productName.isEmpty) {
+    // Must match InvoiceItemsTableWidget.
+    final int maxLines = is58 ? 2 : 3;
+
+    if (productName.trim().isEmpty) {
       return 1;
     }
 
-    final lines = (productName.length / charactersPerLine).ceil();
+    final int estimatedLines = (productName.length / charactersPerLine).ceil();
 
-    // We use maxLines: 2 below.
-    return lines.clamp(1, 2);
+    return estimatedLines.clamp(1, maxLines).toInt();
   }
+
+  // =========================================================
+  // Margins
+  // =========================================================
 
   static pw.EdgeInsets getMargins(InvoiceFormat format) {
     switch (format) {
@@ -145,6 +155,8 @@ class InvoicePdfLayout {
   static pw.Widget spacing(InvoiceFormat format, {bool large = false}) {
     final isA4 = format == InvoiceFormat.a4;
 
-    return pw.SizedBox(height: large ? (isA4 ? 25 : 12) : (isA4 ? 15 : 7));
+    return pw.SizedBox(
+      height: large ? (isA4 ? 25.0 : 12.0) : (isA4 ? 15.0 : 7.0),
+    );
   }
 }

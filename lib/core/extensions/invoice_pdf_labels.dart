@@ -15,5 +15,8 @@ extension InvoicePdfLabels on BuildContext {
     'paid': 'paid'.tr(),
     'remaining': 'remaining'.tr(),
     'thank_you': 'thank_you'.tr(),
+    'sales_invoice': 'sales_invoice'.tr(),
+    'developed_by': 'developed_by'.tr(),
+    'developer_names': 'developer_names'.tr(),
   };
 }

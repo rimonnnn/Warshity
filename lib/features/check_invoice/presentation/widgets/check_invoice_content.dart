@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:warshity/core/constants/app_padding.dart';
+import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/amount_and_price_widget.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/check_invoice_information.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/developer_credit_widget.dart';
-import 'package:warshity/features/check_invoice/presentation/widgets/finally_price.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/paid_and_remaining.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/thanks_widget.dart';
 import 'package:warshity/features/check_invoice/presentation/widgets/top_check_invoice_widget.dart';
@@ -26,10 +25,15 @@ class CheckInvoiceContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colors;
+
     return Container(
       decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(AppPadding.sm),
+        // surfaceContainer: نفس لون إطار الصفحة اللي حواليه (كانت surface)
+        // ومهم هنا لأن الـ RepaintBoundary بيلتقط الخلفية دي في صورة التصدير
+        color: scheme.surfaceContainer,
+        // AppRadius.md بدل AppPadding.sm: ثابت padding كان مستخدم كـ radius
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Column(
@@ -38,7 +42,8 @@ class CheckInvoiceContent extends StatelessWidget {
 
           HeightSpace(16),
 
-          Divider(thickness: 1, height: 20, color: Colors.grey[400]),
+          // outlineVariant بدل Colors.grey[400]
+          Divider(thickness: 1, height: 20, color: scheme.outlineVariant),
 
           HeightSpace(16),
 
@@ -48,18 +53,18 @@ class CheckInvoiceContent extends StatelessWidget {
 
           AmountAndPriceWidget(items: invoice.items),
 
-          HeightSpace(40),
+          // 24 بدل 40: الفراغ الكبير بعد الأصناف كان بيبعد الإجماليات عنها
+          HeightSpace(24),
 
-          Divider(thickness: 1, height: 20, color: Colors.grey[400]),
+          Divider(thickness: 1, height: 20, color: scheme.outlineVariant),
 
           HeightSpace(16),
 
           TotalPrice(subtotal: invoice.subtotal, discount: invoice.discount),
 
-          HeightSpace(16),
+          // HeightSpace(16),
 
-          FinallyPrice(total: invoice.total),
-
+          // FinallyPrice(total: invoice.total),
           HeightSpace(8),
 
           PaidAndRemaining(
