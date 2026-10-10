@@ -21,7 +21,7 @@ import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
 import 'package:warshity/features/main/presentation/screens/main_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
-import 'package:warshity/features/products/presentation/widgets/web_product_details.dart';
+import 'package:warshity/features/productdetails/presentation/widgets/web_product_details.dart';
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
 
 class RouterGeneratorConfig {

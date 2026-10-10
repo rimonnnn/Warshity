@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
+import 'package:warshity/features/productdetails/presentation/widgets/product_quantity_card.dart';
 
 import 'product_price_formatter.dart';
-import 'product_quantity_card.dart';
 
 class ProductHero extends StatelessWidget {
   const ProductHero({super.key, required this.product, required this.compact});
