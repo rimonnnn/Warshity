@@ -1,5 +1,3 @@
-import 'package:warshity/features/invoices/data/models/invoice_model.dart';
-
 enum GlobalSearchResultType { client, product,  }
 
 class GlobalSearchResult {

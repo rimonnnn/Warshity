@@ -10,17 +10,22 @@ import 'package:warshity/features/products/presentation/cubit/products_cubit.dar
 import 'quantity_action_button.dart';
 
 class ProductQuantityCard extends StatelessWidget {
-  const ProductQuantityCard({super.key, required this.product});
+  const ProductQuantityCard({
+    super.key,
+    required this.product,
+    this.expanded = false,
+  });
 
   final ProductModel product;
+  final bool expanded;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
 
     return Container(
-      width: 220,
-      padding: const EdgeInsets.all(18),
+      width: expanded ? double.infinity : 220,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(18),
@@ -39,22 +44,30 @@ class ProductQuantityCard extends StatelessWidget {
           const SizedBox(height: 6),
           Row(
             children: [
-              Text(
-                '${product.quantity}',
-                style: context.text.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+              Flexible(
+                child: Text(
+                  '${product.quantity}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.displaySmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                product.unit,
-                style: context.text.bodyMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
+              Flexible(
+                child: Text(
+                  product.unit,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Row(
             children: [
               QuantityActionButton(
@@ -78,18 +91,18 @@ class ProductQuantityCard extends StatelessWidget {
               QuantityActionButton(
                 icon: Icons.add_rounded,
                 primary: true,
-                onPressed: () =>
-                    context.read<ProductsCubit>().increaseQuantity(product.id),
+                onPressed: () => context
+                    .read<ProductsCubit>()
+                    .increaseQuantity(product.id),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () {
                 final cubit = context.read<ProductsCubit>();
-
                 QuantityBottomSheet.show(
                   context: context,
                   quantity: product.quantity,

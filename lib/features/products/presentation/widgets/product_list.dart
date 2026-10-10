@@ -2,6 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:warshity/core/routing/app_routes.dart';
+
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 import 'package:warshity/features/products/presentation/widgets/product_card.dart';
@@ -160,6 +163,7 @@ class ProductList extends StatelessWidget {
               productCode: product.barcode,
 
               price: product.price,
+              
 
               quantity: product.quantity,
               onIncrease: () {
@@ -188,7 +192,13 @@ class ProductList extends StatelessWidget {
                   : null,
 
               onTap: () {
-                onTap?.call(index);
+                context.push(
+                  AppRoutes.productdetailsScreen,
+                  extra: {
+                    'productId': product.id.toString(),
+                    'productsCubit': context.read<ProductsCubit>(),
+                  },
+                );
               },
 
               width: width,

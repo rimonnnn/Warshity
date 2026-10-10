@@ -9,6 +9,8 @@ import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/quantity_bottom_sheet.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/home/data/recent_operation_model.dart';
 import 'package:warshity/features/home/presentation/cubit/home_cubit.dart';
@@ -128,6 +130,143 @@ class WebHome extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ContainerWidget(height: 120, borderRadius: 12),
+
+                    const HeightSpace(12),
+
+                    BlocBuilder<AuthCubit, AuthState>(
+                      builder: (context, authState) {
+                        if (authState is! UserLoaded) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final shopName = authState.user.shopName.trim().isEmpty
+                            ? 'masiter'.tr()
+                            : authState.user.shopName;
+                        final activity = authState.user.activity.trim().isEmpty
+                            ? 'trades'.tr()
+                            : authState.user.activity;
+                        final colors = context.colors;
+
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceContainerLow,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: colors.outlineVariant),
+                          ),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final isCompact = constraints.maxWidth < 560;
+                              final storeIdentity = Row(
+                                children: [
+                                  Container(
+                                    width: 42,
+                                    height: 42,
+                                    decoration: BoxDecoration(
+                                      color: colors.primaryContainer,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      Icons.storefront_outlined,
+                                      color: colors.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          shopName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: context.text.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+
+                              final activityBadge = Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 9,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.primaryContainer,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.business_outlined,
+                                      color: colors.primary,
+                                      size: 19,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'activity'.tr(),
+                                            style: context.text.labelSmall?.copyWith(
+                                              color: colors.onSurfaceVariant,
+                                            ),
+                                          ),
+                                          Text(
+                                            activity,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: context.text.bodyMedium?.copyWith(
+                                              color: colors.primary,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (isCompact) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    storeIdentity,
+                                    const SizedBox(height: 12),
+                                    Align(
+                                      alignment: AlignmentDirectional.centerStart,
+                                      child: activityBadge,
+                                    ),
+                                  ],
+                                );
+                              }
+
+                              return Row(
+                                children: [
+                                  Expanded(child: storeIdentity),
+                                  const SizedBox(width: 16),
+                                  ConstrainedBox(
+                                    constraints: const BoxConstraints(maxWidth: 280),
+                                    child: activityBadge,
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
 
                     const HeightSpace(24),
 

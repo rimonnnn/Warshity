@@ -20,6 +20,7 @@ import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_state.dart';
 import 'package:warshity/features/settings/presentation/widgets/change_password_bottom_sheet.dart';
+import 'package:warshity/features/settings/presentation/widgets/edit_store_info_dialog.dart';
 import 'package:warshity/features/settings/presentation/widgets/info_item.dart';
 import 'package:warshity/features/settings/presentation/widgets/logout_button.dart';
 import 'package:warshity/features/settings/presentation/widgets/settings_section.dart';
@@ -79,6 +80,24 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
     );
   }
 
+  void _editStoreInfo() {
+    final authState = context.read<AuthCubit>().state;
+    if (authState is! UserLoaded) {
+      showAnimatedSnackDialog(
+        context,
+        message: 'loaded'.tr(),
+        type: AnimatedSnackBarType.error,
+      );
+      return;
+    }
+
+    EditStoreInfoDialog.show(
+      context: context,
+      initialShopName: authState.user.shopName,
+      initialActivity: authState.user.activity,
+    );
+  }
+
   void _openChangePassword() {
     final authCubit = context.read<AuthCubit>();
 
@@ -96,7 +115,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
     );
   }
 
-  // نفس منطق تبديل اللغة اللي كان جوه الـ TextButton، بس بقى متاح للصف كله
   void _toggleLanguage() {
     final newLocale = context.locale.languageCode == 'en'
         ? const Locale('ar')
@@ -129,7 +147,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(80.w, 40.h),
                 backgroundColor: scheme.error,
-                // onError بدل Colors.white: التباين الصح فوق الأحمر في الـ dark والـ light
+
                 foregroundColor: scheme.onError,
               ),
               onPressed: () {
@@ -159,10 +177,13 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ---------------- STORE INFO ----------------
             SettingsSection(
               title: "store_information".tr(),
-
+              trailing: IconButton(
+                tooltip: 'Edit'.tr(),
+                onPressed: _editStoreInfo,
+                icon: Icon(Icons.edit_outlined, color: context.colors.primary),
+              ),
               children: [
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, authState) {
@@ -192,7 +213,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                     return InfoItem(
                       title: "activity".tr(),
                       value: activity,
-                      // كانت location_on: النشاط مش موقع
+
                       icon: Icons.work_outline,
                       showDivider: false,
                     );
@@ -203,7 +224,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
             HeightSpace(20.h),
 
-            // ---------------- ACCOUNT & SHARING ----------------
             SettingsSection(
               title: "security".tr(),
 
@@ -237,9 +257,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
             HeightSpace(20.h),
 
-            // ---------------- PREFERENCES ----------------
-            // اللغة والـ theme كانوا جوه قسم الأمان، فاتنقلوا لقسم تفضيلات.
-            // ضيف المفتاح 'preferences' في ar.json (التفضيلات) و en.json (Preferences)
             SettingsSection(
               title: "preferences".tr(),
 
@@ -247,7 +264,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                 SettingsTile(
                   title: "language".tr(),
                   icon: Icons.language_outlined,
-                  // الصف كله بقى قابل للضغط، بدل زر صغير في الطرف
+
                   onTap: _toggleLanguage,
                   showDivider: true,
 
@@ -270,7 +287,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   onTap: _toggleTheme,
                   showDivider: false,
 
-                  // Switch بدل IconButton: حالة الـ theme واضحة من غير ما تخمّن
                   trailing: Switch(
                     value: isDark,
                     onChanged: (_) => _toggleTheme(),
@@ -281,7 +297,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
             HeightSpace(20.h),
 
-            // ---------------- ABOUT ----------------
             VersionCard(
               image: AppAssets.logo,
               title: "masiter".tr(),
@@ -290,7 +305,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
             HeightSpace(24.h),
 
-            // ---------------- LOGOUT ----------------
             BlocConsumer<SettingsCubit, SettingsState>(
               listener: (context, state) {
                 if (state is SettingsError) {
@@ -314,7 +328,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
               builder: (context, state) {
                 if (state is SettingsLoading) {
-                  // ارتفاع ثابت بدل ما الصفحة تقفز لما الزر يتبدل بالـ spinner
                   return SizedBox(
                     height: 56.h,
                     child: const Center(child: CircularProgressIndicator()),
@@ -331,7 +344,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               },
             ),
 
-            // مسافة سفلية تحترم الـ gesture bar وأي bottom nav
             SizedBox(height: 30.h + MediaQuery.paddingOf(context).bottom),
           ],
         ),
