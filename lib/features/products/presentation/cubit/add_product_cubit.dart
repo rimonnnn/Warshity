@@ -15,7 +15,8 @@ class AddProductCubit extends Cubit<AddProductState> {
   // DEFAULT IMAGE
   // ============================================================
 
-  static const String defaultProductImage = "";
+  static const String defaultProductImage =
+      "https://tse4.mm.bing.net/th/id/OIP.RjJZYqODzI926IIPUSS0RgHaHa?r=0&pid=ImgDet&w=184&h=184&c=7&o=7&rm=3";
   // ============================================================
   // ADD PRODUCT
   // ============================================================
