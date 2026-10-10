@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/features/productdetails/presentation/widgets/product_hero.dart';
+import 'package:warshity/features/productdetails/presentation/widgets/product_info_section.dart';
+import 'package:warshity/features/productdetails/presentation/widgets/product_not_found.dart';
+import 'package:warshity/features/productdetails/presentation/widgets/product_overview.dart';
+import 'package:warshity/features/productdetails/presentation/widgets/product_page_header.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/products_state.dart';
-import 'package:warshity/features/products/presentation/widgets/product_hero.dart';
-import 'package:warshity/features/products/presentation/widgets/product_info_section.dart';
-import 'package:warshity/features/products/presentation/widgets/product_not_found.dart';
-import 'package:warshity/features/products/presentation/widgets/product_overview.dart';
-import 'package:warshity/features/products/presentation/widgets/product_page_header.dart';
 
 class WebProductDetails extends StatelessWidget {
   const WebProductDetails({super.key, required this.productId});
