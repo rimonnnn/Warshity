@@ -34,20 +34,15 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-
+    getIt<AccountSharingCubit>().startWatchingSharedAccounts();
     _changeLocale();
   }
 
   Future<void> _changeLocale() async {
-    if (widget.locale == null) {
-      return;
-    }
+    if (widget.locale == null) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) {
-        return;
-      }
-
+      if (!mounted) return;
       if (context.locale != widget.locale) {
         await context.setLocale(widget.locale!);
       }
@@ -127,7 +122,7 @@ class _MainScreenState extends State<MainScreen> {
       child: Builder(
         builder: (context) {
           return BlocListener<AccountSharingCubit, AccountSharingState>(
-            listener: (context, state) async {
+            listener: (context, state) {
               if (state is AccountInvitationAcceptedRemotely) {
                 showAnimatedSnackDialog(
                   context,
@@ -135,11 +130,10 @@ class _MainScreenState extends State<MainScreen> {
                   type: AnimatedSnackBarType.success,
                 );
 
-                await Future<void>.delayed(const Duration(seconds: 2));
-
+                // No artificial delay: navigate as soon as Firestore confirms.
                 if (!context.mounted) return;
-
                 context.goNamed(AppRoutes.splashScreen);
+                return;
               }
 
               if (state is AccountInvitationRejectedRemotely) {
@@ -148,20 +142,25 @@ class _MainScreenState extends State<MainScreen> {
                   message: 'invitation_rejected'.tr(),
                   type: AnimatedSnackBarType.error,
                 );
+                return;
+              }
+
+              if (state is AccountInvitationReceivedRemotely) {
+                showAnimatedSnackDialog(
+                  context,
+                  message: 'account_sharing_invitation_received'.tr(),
+                  type: AnimatedSnackBarType.info,
+                );
+                return;
               }
 
               if (state is AccountSharedAccountDeletedRemotely) {
                 showAnimatedSnackDialog(
                   context,
                   message: 'shared_account_deleted'.tr(),
-                  type: AnimatedSnackBarType.error,
+                  type: AnimatedSnackBarType.success,
                 );
-
-                await Future<void>.delayed(const Duration(seconds: 2));
-
-                if (!context.mounted) return;
-
-                context.goNamed(AppRoutes.splashScreen);
+                // Deleting a shared account must not navigate to Splash.
               }
             },
             child: AppResponsive(

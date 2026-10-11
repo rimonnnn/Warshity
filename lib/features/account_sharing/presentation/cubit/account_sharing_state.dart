@@ -2,7 +2,12 @@ abstract class AccountSharingState {}
 
 class AccountSharingInitial extends AccountSharingState {}
 
-class AccountSharingLoading extends AccountSharingState {}
+class AccountSharingLoading extends AccountSharingState {
+  final String? action;
+  final String? itemId;
+
+  AccountSharingLoading({this.action, this.itemId});
+}
 
 class AccountInvitationSent extends AccountSharingState {}
 
@@ -13,6 +18,8 @@ class AccountInvitationRejected extends AccountSharingState {}
 class AccountInvitationAcceptedRemotely extends AccountSharingState {}
 
 class AccountInvitationRejectedRemotely extends AccountSharingState {}
+
+class AccountInvitationReceivedRemotely extends AccountSharingState {}
 
 class AccountSharedAccountDeleted extends AccountSharingState {}
 
@@ -27,7 +34,5 @@ class AccountSharingError extends AccountSharingState {
 class AccountSharingStatusChanged extends AccountSharingState {
   final String? sharedAccountId;
 
-  AccountSharingStatusChanged({
-    required this.sharedAccountId,
-  });
+  AccountSharingStatusChanged({required this.sharedAccountId});
 }

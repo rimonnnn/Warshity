@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
 
@@ -24,7 +26,6 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
   final List<StreamSubscription<dynamic>> _subscriptions = [];
 
   bool _isLoading = true;
-
   List<Map<String, dynamic>> _items = [];
 
   @override
@@ -46,14 +47,11 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
     final email = user?.email?.trim().toLowerCase();
 
     if (user == null || email == null || email.isEmpty) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
       return;
     }
 
     final firestore = FirebaseFirestore.instance;
-
     _subscriptions.addAll([
       firestore
           .collection('account_shares')
@@ -81,7 +79,6 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
 
     if (user == null || email == null || email.isEmpty) {
       if (!mounted) return;
-
       setState(() {
         _items = [];
         _isLoading = false;
@@ -91,11 +88,8 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
 
     try {
       final cubit = context.read<AccountSharingCubit>();
-
       final invitations = await fetchInvitations(uid: user.uid, email: email);
-
       final connections = await cubit.getActiveSharedAccounts();
-
       final items = buildVisibleItems(
         invitations: invitations,
         connections: connections,
@@ -103,42 +97,30 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
       );
 
       if (!mounted) return;
-
       setState(() {
         _items = items;
         _isLoading = false;
       });
     } catch (e) {
       if (!mounted) return;
-
       setState(() => _isLoading = false);
-
       _showSnackBar('${'failed_to_load_shared_accounts'.tr()}: $e');
     }
   }
 
   Future<void> _deleteSharedAccount(String connectionId) async {
     final confirmed = await showDeleteSharedAccountDialog(context);
+    if (confirmed != true || !mounted) return;
 
-    if (!confirmed || !mounted) {
-      return;
-    }
-
-    try {
-      await context.read<AccountSharingCubit>().deleteSharedAccount(
-        connectionId,
-      );
-    } catch (e) {
-      if (!mounted) return;
-
-      _showSnackBar('${'failed_to_delete_shared_account'.tr()}: $e');
-    }
+    await context.read<AccountSharingCubit>().deleteSharedAccount(connectionId);
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(
+    showAnimatedSnackDialog(
       context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+      message: message,
+      type: AnimatedSnackBarType.error,
+    );
   }
 
   @override
@@ -155,8 +137,17 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
       ),
       body: BlocListener<AccountSharingCubit, AccountSharingState>(
         listener: (context, state) {
-          if (state is AccountSharedAccountDeleted ||
-              state is AccountSharingStatusChanged) {
+          if (state is AccountSharedAccountDeleted) {
+            showAnimatedSnackDialog(
+              context,
+              message: 'shared_account_deleted'.tr(),
+              type: AnimatedSnackBarType.success,
+            );
+            _reloadData();
+            return;
+          }
+
+          if (state is AccountSharingStatusChanged) {
             _reloadData();
             return;
           }
@@ -165,11 +156,36 @@ class _SharedAccountsScreenState extends State<SharedAccountsScreen> {
             _showSnackBar(state.message);
           }
         },
-        child: SharedAccountsBody(
-          isLoading: _isLoading,
-          items: _items,
-          onRefresh: _reloadData,
-          onDelete: _deleteSharedAccount,
+        child: BlocBuilder<AccountSharingCubit, AccountSharingState>(
+          builder: (context, state) {
+            final isDeleting =
+                state is AccountSharingLoading && state.action == 'delete';
+
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(
+                  child: AbsorbPointer(
+                    absorbing: isDeleting,
+                    child: SharedAccountsBody(
+                      isLoading: _isLoading,
+                      items: _items,
+                      onRefresh: _reloadData,
+                      onDelete: _deleteSharedAccount,
+                    ),
+                  ),
+                ),
+
+                if (isDeleting)
+                  const Positioned.fill(
+                    child: ColoredBox(
+                      color: Color(0x33000000),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
       ),
     );
