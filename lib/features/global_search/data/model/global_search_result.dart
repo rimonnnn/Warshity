@@ -1,6 +1,4 @@
-import 'package:warshity/features/invoices/data/models/invoice_model.dart';
-
-enum GlobalSearchResultType { client, product,  }
+enum GlobalSearchResultType { client, product }
 
 class GlobalSearchResult {
   final GlobalSearchResultType type;
@@ -8,13 +6,10 @@ class GlobalSearchResult {
   final String title;
   final String? subtitle;
 
- 
-
   const GlobalSearchResult({
     required this.type,
     required this.id,
     required this.title,
     this.subtitle,
-   
   });
 }
