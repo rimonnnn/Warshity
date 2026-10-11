@@ -11,12 +11,15 @@ class AddProductCubit extends Cubit<AddProductState> {
 
   AddProductCubit(this.repository) : super(AddProductInitial());
 
+  Future<String> generateProductBarcode() async {
+    return await repository.generateProductBarcode();
+  }
+
   // ============================================================
   // DEFAULT IMAGE
   // ============================================================
 
-  static const String defaultProductImage =
-      "https://tse4.mm.bing.net/th/id/OIP.RjJZYqODzI926IIPUSS0RgHaHa?r=0&pid=ImgDet&w=184&h=184&c=7&o=7&rm=3";
+  static const String defaultProductImage = "";
   // ============================================================
   // ADD PRODUCT
   // ============================================================

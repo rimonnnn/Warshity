@@ -5,9 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
+import 'package:warshity/features/products/data/models/product_model.dart';
 
 class ProductsRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -100,9 +99,9 @@ class ProductsRemoteDataSource {
         // one query, so removing it from one query must not remove it globally.
         final documentsByQuery =
             List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
-          streams.length,
-          (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
-        );
+              streams.length,
+              (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
+            );
         final initialSnapshotsReceived = List<bool>.filled(
           streams.length,
           false,
@@ -136,9 +135,7 @@ class ProductsRemoteDataSource {
             final queryDocuments = documentsByQuery[streamIndex];
             queryDocuments
               ..clear()
-              ..addEntries(
-                snapshot.docs.map((doc) => MapEntry(doc.id, doc)),
-              );
+              ..addEntries(snapshot.docs.map((doc) => MapEntry(doc.id, doc)));
             initialSnapshotsReceived[streamIndex] = true;
 
             emit();
@@ -180,26 +177,143 @@ class ProductsRemoteDataSource {
     return supabase.storage.from('products').getPublicUrl(filePath);
   }
 
+  // ============================================================
+  // GENERATE UNIQUE PRODUCT BARCODE
+  // ============================================================
+
+  Future<String> generateProductBarcode() async {
+    final uid = _currentUserId;
+
+    final counterRef = firestore
+        .collection('appCounters')
+        .doc('productBarcode');
+
+    final registry = firestore.collection('productBarcodeRegistry');
+
+    // Retry with the next number if an existing code is encountered.
+    for (var attempt = 0; attempt < 100; attempt++) {
+      final code = await firestore.runTransaction<String?>((transaction) async {
+        // Read the central counter.
+        final counterSnapshot = await transaction.get(counterRef);
+
+        final currentValue =
+            (counterSnapshot.data()?['value'] as num?)?.toInt() ?? 0;
+
+        final nextValue = currentValue + 1;
+
+        final candidate = 'MST-${nextValue.toString().padLeft(6, '0')}';
+
+        // Reserve each generated code in a separate document.
+        final reservationRef = registry.doc(candidate);
+        final reservationSnapshot = await transaction.get(reservationRef);
+
+        // All transaction reads happen before writes.
+        transaction.set(counterRef, {
+          'value': nextValue,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // If already reserved, skip this number.
+        if (reservationSnapshot.exists) {
+          return null;
+        }
+
+        transaction.set(reservationRef, {
+          'code': candidate,
+          'userId': uid,
+          'status': 'reserved',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        return candidate;
+      });
+
+      if (code == null) {
+        continue;
+      }
+
+      // Avoid conflicting with an existing product's barcode.
+      final existingProducts = await firestore
+          .collection('products')
+          .where('barcode', isEqualTo: code)
+          .limit(1)
+          .get();
+
+      if (existingProducts.docs.isEmpty) {
+        return code;
+      }
+
+      // A conflicting legacy code was found.
+      // Its reservation stays in place, so it will not be reused.
+    }
+
+    throw Exception('Unable to generate a unique product code.');
+  }
+
   Future<void> addProduct(ProductModel product) async {
     final uid = _currentUserId;
+    final barcode = product.barcode.trim();
+
+    if (barcode.isEmpty) {
+      throw Exception('Product code is required.');
+    }
 
     final connectionIds = await _getActiveConnectionIds();
 
+    // Reference to the reserved barcode.
+    final reservationRef = firestore
+        .collection('productBarcodeRegistry')
+        .doc(barcode);
+
+    // Generate a Firestore document ID for the new product.
+    final productRef = firestore.collection('products').doc();
+
     final data = product.toFirestore();
 
+    data['barcode'] = barcode;
     data['userId'] = uid;
-
     data['userIds'] = [uid];
-
     data['sharedConnectionIds'] = connectionIds;
-
-    final ref = firestore.collection('products').doc();
-
-    data['sharedDataId'] = ref.id;
+    data['sharedDataId'] = productRef.id;
 
     data.remove('sharedAccountId');
 
-    await ref.set(data);
+    // Save the product and consume its barcode reservation atomically.
+    await firestore.runTransaction<void>((transaction) async {
+      final reservationSnapshot = await transaction.get(reservationRef);
+
+      if (!reservationSnapshot.exists) {
+        throw Exception(
+          'The product code is not reserved. Please generate a new code.',
+        );
+      }
+
+      final reservationData = reservationSnapshot.data() ?? {};
+
+      final reservationUserId = reservationData['userId']?.toString();
+
+      final reservationStatus = reservationData['status']?.toString();
+
+      if (reservationUserId != uid) {
+        throw Exception(
+          'This product code does not belong to the current user.',
+        );
+      }
+
+      if (reservationStatus != 'reserved') {
+        throw Exception('This product code has already been used.');
+      }
+
+      // Create the product document.
+      transaction.set(productRef, data);
+
+      // Mark the reservation as consumed.
+      transaction.update(reservationRef, {
+        'status': 'used',
+        'productId': productRef.id,
+        'usedAt': FieldValue.serverTimestamp(),
+      });
+    });
   }
 
   Future<void> deleteProduct(String productId) async {

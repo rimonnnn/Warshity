@@ -16,10 +16,11 @@ class ProductsRepository {
     Uint8List imageBytes,
     String imageName,
   ) async {
-    return await remoteDataSource.uploadProductImage(
-      imageBytes,
-      imageName,
-    );
+    return await remoteDataSource.uploadProductImage(imageBytes, imageName);
+  }
+
+  Future<String> generateProductBarcode() async {
+    return await remoteDataSource.generateProductBarcode();
   }
 
   Future<void> addProduct(ProductModel product) async {

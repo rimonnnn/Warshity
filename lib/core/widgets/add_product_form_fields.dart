@@ -105,11 +105,12 @@ class AddProductFormFields extends StatelessWidget {
               width: double.infinity,
               label: 'Product Code'.tr(),
               height: productCodeFieldHeight,
-              hint: 'SKU-0000',
+              hint: 'Generating product code...',
               controller: barcodeController,
               iconSize: iconSize,
               keyboardType: TextInputType.text,
               prefixIconData: Icons.qr_code_2,
+              readOnly: true,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Required'.tr();

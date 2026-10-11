@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/widgets/quantity_bottom_sheet.dart';
@@ -49,170 +48,183 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(
-        borderRadius ?? AppRadius.md,
+    return Material(
+      color: backgroundColor ?? context.colors.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.md),
+        side: BorderSide(color: context.colors.outlineVariant),
       ),
-      child: Container(
-        padding:
-            padding ??
-            EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 14.h,
-            ),
-        decoration: BoxDecoration(
-          color:
-              backgroundColor ??
-              context.colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(
-            borderRadius ?? AppRadius.md,
-          ),
-          border: Border.all(
-            color: context.colors.outlineVariant,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: width ?? 64.w,
-              height: height ?? 64.w,
-              decoration: BoxDecoration(
-                color:
-                    imageBackgroundColor ??
-                    context.colors.surface,
-                borderRadius: BorderRadius.circular(
-                  AppRadius.sm,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding:
+              padding ?? EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+          child: Row(
+            children: [
+              Container(
+                width: 56.w,
+                height: 56.w,
+                decoration: BoxDecoration(
+                  color: imageBackgroundColor ?? context.colors.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: SizedBox.expand(
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: image,
-                ),
-              ),
-            ),
-
-            SizedBox(width: 14.w),
-
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 120.w,
-                  child: Text(
-                    productName,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.start,
-                    style: context.text.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  productCode,
-                  style: context.text.bodySmall?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-
-            const Spacer(),
-
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      '${price % 1 == 0 ? price.toInt() : price}',
-                      style: context.text.titleMedium?.copyWith(
-                        color: context.colors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      'EGP'.tr(),
-                      style: context.text.titleMedium?.copyWith(
-                        color: context.colors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 6.h),
-
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      onTap: quantity > 0
-                          ? onDecrease
-                          : null,
-                      child: Text(
-                        '-',
-                        style: context.text.bodyLarge?.copyWith(
-                          color: quantity > 0
-                              ? context.colors.onSurfaceVariant
-                              : context.colors.outline,
-                          fontWeight: FontWeight.bold,
+                clipBehavior: Clip.antiAlias,
+                child: image != null
+                    ? SizedBox.expand(
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          clipBehavior: Clip.hardEdge,
+                          child: image,
+                        ),
+                      )
+                    : Center(
+                        child: Icon(
+                          icon,
+                          size: 26.sp,
+                          color: context.colors.onSurfaceVariant.withValues(
+                            alpha: 0.6,
+                          ),
                         ),
                       ),
-                    ),
+              ),
 
-                    SizedBox(width: 10.w),
+              SizedBox(width: 12.w),
 
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      quantity.toString(),
+                      productName,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
+                      style: context.text.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      productCode,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: context.text.bodySmall?.copyWith(
                         color: context.colors.onSurfaceVariant,
                       ),
                     ),
-
-                    SizedBox(width: 10.w),
-
-                    GestureDetector(
-                      onTap: onIncrease,
-                      child: Text(
-                        '+',
-                        style: context.text.bodyLarge?.copyWith(
-                          color: context.colors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(width: 8.w),
-
-                    GestureDetector(
-                      onTap: () {
-                        QuantityBottomSheet.show(
-                          context: context,
-                          quantity: quantity,
-                          onQuantityChanged: (newQuantity) async {
-                            await onQuantityChanged?.call(
-                              newQuantity,
-                            );
-                          },
-                        );
-                      },
-                      child: Icon(
-                        Icons.edit_outlined,
-                        size: 16.sp,
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
                   ],
                 ),
-              ],
-            ),
-          ],
+              ),
+
+              SizedBox(width: 12.w),
+
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      text: '${price % 1 == 0 ? price.toInt() : price}',
+                      style: context.text.titleMedium?.copyWith(
+                        color: context.colors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: ' ${'EGP'.tr()}',
+                          style: context.text.labelSmall?.copyWith(
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 8.h),
+
+                  Material(
+                    color: context.colors.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                      side: BorderSide(color: context.colors.outlineVariant),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _QuantityButton(
+                          icon: Icons.remove_rounded,
+                          onTap: quantity > 0 ? onDecrease : null,
+                          activeColor: context.colors.onSurfaceVariant,
+                        ),
+
+                        InkWell(
+                          onTap: () {
+                            QuantityBottomSheet.show(
+                              context: context,
+                              quantity: quantity,
+                              onQuantityChanged: (newQuantity) async {
+                                await onQuantityChanged?.call(newQuantity);
+                              },
+                            );
+                          },
+                          child: Container(
+                            constraints: BoxConstraints(minWidth: 28.w),
+                            height: 32.w,
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(horizontal: 4.w),
+                            child: Text(
+                              quantity.toString(),
+                              style: context.text.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        _QuantityButton(
+                          icon: Icons.add_rounded,
+                          onTap: onIncrease,
+                          activeColor: context.colors.primary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuantityButton extends StatelessWidget {
+  const _QuantityButton({
+    required this.icon,
+    required this.onTap,
+    required this.activeColor,
+  });
+
+  final IconData icon;
+  final VoidCallback? onTap;
+  final Color activeColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        width: 32.w,
+        height: 32.w,
+        child: Icon(
+          icon,
+          size: 18.sp,
+          color: onTap != null ? activeColor : context.colors.outline,
         ),
       ),
     );

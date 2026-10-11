@@ -53,8 +53,50 @@ class _AddProductDialogState extends State<AddProductDialog> {
   String selectedUnit = 'Piece'.tr();
 
   bool isSaving = false;
+  bool isGeneratingBarcode = false;
 
   final units = ['Piece'.tr(), 'Meter'.tr(), 'Kg'.tr()];
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _generateBarcode();
+      }
+    });
+  }
+
+  Future<void> _generateBarcode() async {
+    if (!mounted || isGeneratingBarcode) return;
+
+    setState(() {
+      isGeneratingBarcode = true;
+    });
+
+    try {
+      final cubit = context.read<AddProductCubit>();
+      final barcode = await cubit.generateProductBarcode();
+
+      if (!mounted) return;
+
+      setState(() {
+        barcodeController.text = barcode;
+        isGeneratingBarcode = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isGeneratingBarcode = false;
+      });
+
+      debugPrint('Product barcode generation error: $e');
+
+      _message('Failed to generate product code. Please try again.'.tr());
+    }
+  }
 
   @override
   void dispose() {
@@ -88,6 +130,19 @@ class _AddProductDialogState extends State<AddProductDialog> {
   }
 
   Future<void> _save() async {
+    if (isGeneratingBarcode) {
+      _message('Please wait while the product code is generated'.tr());
+      return;
+    }
+
+    if (barcodeController.text.trim().isEmpty) {
+      await _generateBarcode();
+
+      if (barcodeController.text.trim().isEmpty) {
+        return;
+      }
+    }
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -115,7 +170,9 @@ class _AddProductDialogState extends State<AddProductDialog> {
         imageUrl: '',
       );
 
-      await context.read<AddProductCubit>().addProduct(
+      final cubit = context.read<AddProductCubit>();
+
+      await cubit.addProduct(
         product: product,
         imageBytes: selectedImageBytes,
         imageName: selectedImage?.name,
@@ -123,7 +180,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
       if (!mounted) return;
 
-      final state = context.read<AddProductCubit>().state;
+      final state = cubit.state;
 
       if (state is AddProductSuccess) {
         _message('Product added successfully'.tr());
@@ -272,7 +329,9 @@ class _AddProductDialogState extends State<AddProductDialog> {
                           onCancel: isSaving
                               ? null
                               : () => Navigator.pop(context),
-                          onSave: _save,
+                          onSave: (isSaving || isGeneratingBarcode)
+                              ? null
+                              : _save,
                         ),
 
                         const SizedBox(height: 4),
