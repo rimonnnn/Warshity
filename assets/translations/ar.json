@@ -122,7 +122,7 @@
 
     "recent_operations": "العمليات الأخيرة",
     "currency": "ج.م",
-    "unit": "قطعة",
+    "unit": "الوحدة",
     "no_search_results": "لا توجد نتائج بحث",
     "welcome_actor" : "أهلاً!",
 "welcome_message": "إليك نظرة سريعة على نشاطك التجاري والمخزون اليوم.",
@@ -136,6 +136,7 @@
   "warning" : "تنبيه المخزون المنخفض",
   "wood" : "خشب لوح زان 2م",
   "woodamount" : "المتبقي: 3 قطع",
+  "account_sharing_invitation_received": "وصلتك دعوة لمشاركة الحساب",
   "joinery" : "غراء نجارة سوبر",
   "joineryamount" : "المتبقي: 5 قطع",
   "order" : "طلب توريد",
