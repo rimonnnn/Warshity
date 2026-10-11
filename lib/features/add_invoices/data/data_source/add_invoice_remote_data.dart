@@ -67,6 +67,7 @@ class InvoicesRemoteDataSource {
 
     return legacyUserIds.contains(uid);
   }
+
   Future<bool> _hasAccessToProduct(Map<String, dynamic> data) async {
     final uid = _currentUserId;
 
@@ -339,12 +340,28 @@ class InvoicesRemoteDataSource {
       }
 
       return Stream.multi((controller) {
-        final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+        final documentsByQuery =
+            List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
+              streams.length,
+              (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
+            );
+        final initialSnapshotsReceived = List<bool>.filled(
+          streams.length,
+          false,
+        );
 
         final subscriptions =
             <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
 
         void emit() {
+          if (initialSnapshotsReceived.any((received) => !received)) {
+            return;
+          }
+
+          final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+          for (final queryDocuments in documentsByQuery) {
+            documents.addAll(queryDocuments);
+          }
           final invoices = documents.values
               .where((doc) => doc.exists && doc.data() != null)
               .map((doc) => InvoiceModel.fromJson(doc.data()!))
@@ -355,15 +372,14 @@ class InvoicesRemoteDataSource {
           controller.add(invoices);
         }
 
-        for (final stream in streams) {
+        for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
+          final stream = streams[streamIndex];
           final subscription = stream.listen((snapshot) {
-            for (final change in snapshot.docChanges) {
-              if (change.type == DocumentChangeType.removed) {
-                documents.remove(change.doc.id);
-              } else {
-                documents[change.doc.id] = change.doc;
-              }
-            }
+            final queryDocuments = documentsByQuery[streamIndex];
+            queryDocuments
+              ..clear()
+              ..addEntries(snapshot.docs.map((doc) => MapEntry(doc.id, doc)));
+            initialSnapshotsReceived[streamIndex] = true;
 
             emit();
           }, onError: controller.addError);
@@ -423,12 +439,28 @@ class InvoicesRemoteDataSource {
       }
 
       return Stream.multi((controller) {
-        final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+        final documentsByQuery =
+            List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
+              streams.length,
+              (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
+            );
+        final initialSnapshotsReceived = List<bool>.filled(
+          streams.length,
+          false,
+        );
 
         final subscriptions =
             <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
 
         void emit() {
+          if (initialSnapshotsReceived.any((received) => !received)) {
+            return;
+          }
+
+          final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+          for (final queryDocuments in documentsByQuery) {
+            documents.addAll(queryDocuments);
+          }
           final invoices = documents.values
               .where((doc) => doc.exists && doc.data() != null)
               .map((doc) => InvoiceModel.fromJson(doc.data()!))
@@ -439,15 +471,14 @@ class InvoicesRemoteDataSource {
           controller.add(invoices.take(5).toList());
         }
 
-        for (final stream in streams) {
+        for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
+          final stream = streams[streamIndex];
           final subscription = stream.listen((snapshot) {
-            for (final change in snapshot.docChanges) {
-              if (change.type == DocumentChangeType.removed) {
-                documents.remove(change.doc.id);
-              } else {
-                documents[change.doc.id] = change.doc;
-              }
-            }
+            final queryDocuments = documentsByQuery[streamIndex];
+            queryDocuments
+              ..clear()
+              ..addEntries(snapshot.docs.map((doc) => MapEntry(doc.id, doc)));
+            initialSnapshotsReceived[streamIndex] = true;
 
             emit();
           }, onError: controller.addError);
@@ -570,12 +601,28 @@ class InvoicesRemoteDataSource {
       }
 
       return Stream.multi((controller) {
-        final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+        final documentsByQuery =
+            List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
+              streams.length,
+              (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
+            );
+        final initialSnapshotsReceived = List<bool>.filled(
+          streams.length,
+          false,
+        );
 
         final subscriptions =
             <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
 
         void emit() {
+          if (initialSnapshotsReceived.any((received) => !received)) {
+            return;
+          }
+
+          final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+          for (final queryDocuments in documentsByQuery) {
+            documents.addAll(queryDocuments);
+          }
           final invoices = documents.values
               .where((doc) => doc.exists && doc.data() != null)
               .map((doc) => InvoiceModel.fromJson(doc.data()!))
@@ -586,15 +633,14 @@ class InvoicesRemoteDataSource {
           controller.add(invoices);
         }
 
-        for (final stream in streams) {
+        for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
+          final stream = streams[streamIndex];
           final subscription = stream.listen((snapshot) {
-            for (final change in snapshot.docChanges) {
-              if (change.type == DocumentChangeType.removed) {
-                documents.remove(change.doc.id);
-              } else {
-                documents[change.doc.id] = change.doc;
-              }
-            }
+            final queryDocuments = documentsByQuery[streamIndex];
+            queryDocuments
+              ..clear()
+              ..addEntries(snapshot.docs.map((doc) => MapEntry(doc.id, doc)));
+            initialSnapshotsReceived[streamIndex] = true;
 
             emit();
           }, onError: controller.addError);

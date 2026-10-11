@@ -33,7 +33,9 @@ class RouterGeneratorConfig {
 
     redirect: (context, state) {
       final isLoggedIn = getIt<AuthRepo>().currentUser != null;
-
+      if (kIsWeb && state.matchedLocation == AppRoutes.onboarding) {
+        return isLoggedIn ? AppRoutes.mainScreen : AppRoutes.loginScreen;
+      }
       final isGoingToAuthScreen =
           state.matchedLocation == AppRoutes.loginScreen ||
           state.matchedLocation == AppRoutes.registerScreen ||

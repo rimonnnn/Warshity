@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
-
 import 'package:warshity/features/account_sharing/data/models/share_invitation_model.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
@@ -21,29 +20,25 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
     final theme = Theme.of(context);
 
     return BlocListener<AccountSharingCubit, AccountSharingState>(
-      listener: (context, state) async {
+      listener: (context, state) {
         if (state is AccountSharingError) {
           showAnimatedSnackDialog(
             context,
             message: state.message,
             type: AnimatedSnackBarType.error,
           );
+          return;
         }
 
         if (state is AccountInvitationAccepted) {
-          if (!context.mounted) return;
-
-          Navigator.of(context).pop();
-
-          if (!context.mounted) return;
-
-          context.goNamed(AppRoutes.splashScreen);
+          final router = GoRouter.of(context);
+          router.pop();
+          router.goNamed(AppRoutes.splashScreen);
+          return;
         }
 
         if (state is AccountInvitationRejected) {
-          if (!context.mounted) return;
-
-          Navigator.of(context).pop();
+          if (context.mounted) context.pop();
         }
       },
       child: Material(
@@ -84,9 +79,7 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
                           size: 28,
                         ),
                       ),
-
                       const SizedBox(width: 16),
-
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,9 +91,7 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
                                 color: colors.primary,
                               ),
                             ),
-
                             const SizedBox(height: 7),
-
                             Text(
                               'account_invitations_description'.tr(),
                               style: theme.textTheme.bodyMedium?.copyWith(
@@ -110,13 +101,9 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
                           ],
                         ),
                       ),
-
                       const SizedBox(width: 10),
-
                       IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
+                        onPressed: () => context.pop(),
                         tooltip: MaterialLocalizations.of(
                           context,
                         ).closeButtonTooltip,
@@ -124,9 +111,7 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 26),
-
                   Expanded(
                     child: StreamBuilder<List<ShareInvitationModel>>(
                       stream: context
@@ -155,9 +140,7 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
                                     size: 48,
                                     color: colors.error,
                                   ),
-
                                   const SizedBox(height: 12),
-
                                   Text(
                                     'something_went_wrong'.tr(),
                                     textAlign: TextAlign.center,
@@ -193,17 +176,13 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
                                       color: colors.primary,
                                     ),
                                   ),
-
                                   const SizedBox(height: 16),
-
                                   Text(
                                     'no_pending_invitations'.tr(),
                                     style: theme.textTheme.titleMedium
                                         ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
-
                                   const SizedBox(height: 6),
-
                                   Text(
                                     'no_invitations_description'.tr(),
                                     textAlign: TextAlign.center,
@@ -221,9 +200,8 @@ class ReceivedInvitationsBottomSheet extends StatelessWidget {
                         return ListView.separated(
                           padding: EdgeInsets.zero,
                           itemCount: invitations.length,
-                          separatorBuilder: (_, __) {
-                            return const SizedBox(height: 12);
-                          },
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             return _InvitationCard(
                               invitation: invitations[index],
@@ -280,9 +258,7 @@ class _InvitationCard extends StatelessWidget {
                   size: 24,
                 ),
               ),
-
               const SizedBox(width: 12),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,9 +269,7 @@ class _InvitationCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
                       invitation.fromEmail,
                       maxLines: 1,
@@ -310,9 +284,7 @@ class _InvitationCard extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 16),
-
           Text(
             'account_share_invitation_description'.tr(),
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -320,62 +292,108 @@ class _InvitationCard extends StatelessWidget {
               color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.70),
             ),
           ),
-
           const SizedBox(height: 18),
+          BlocBuilder<AccountSharingCubit, AccountSharingState>(
+            builder: (context, state) {
+              final loadingState = state is AccountSharingLoading
+                  ? state
+                  : null;
+              final isResponding =
+                  loadingState != null &&
+                  (loadingState.action == 'accept' ||
+                      loadingState.action == 'reject');
 
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    context.read<AccountSharingCubit>().respondToInvitation(
-                      invitationId: invitation.id,
-                      accept: false,
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 48),
-                    side: BorderSide(
-                      color: colors.error.withValues(alpha: 0.65),
-                    ),
-                    foregroundColor: colors.error,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: Text(
-                    'reject'.tr(),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
+              final isAccepting =
+                  loadingState?.action == 'accept' &&
+                  loadingState?.itemId == invitation.id;
 
-              const SizedBox(width: 12),
+              final isRejecting =
+                  loadingState?.action == 'reject' &&
+                  loadingState?.itemId == invitation.id;
 
-              Expanded(
-                child: FilledButton(
-                  onPressed: () {
-                    context.read<AccountSharingCubit>().respondToInvitation(
-                      invitationId: invitation.id,
-                      accept: true,
-                    );
-                  },
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 48),
-                    backgroundColor: colors.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+              return Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: isResponding
+                          ? null
+                          : () {
+                              context
+                                  .read<AccountSharingCubit>()
+                                  .respondToInvitation(
+                                    invitationId: invitation.id,
+                                    accept: false,
+                                  );
+                            },
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 48),
+                        side: BorderSide(
+                          color: colors.error.withValues(alpha: 0.65),
+                        ),
+                        foregroundColor: colors.error,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: isRejecting
+                          ? SizedBox(
+                              width: 19,
+                              height: 19,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: colors.error,
+                              ),
+                            )
+                          : Text(
+                              'reject'.tr(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
                   ),
-                  child: Text(
-                    'accept'.tr(),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: isResponding
+                          ? null
+                          : () {
+                              context
+                                  .read<AccountSharingCubit>()
+                                  .respondToInvitation(
+                                    invitationId: invitation.id,
+                                    accept: true,
+                                  );
+                            },
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 48),
+                        backgroundColor: colors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: isAccepting
+                          ? const SizedBox(
+                              width: 19,
+                              height: 19,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              'accept'.tr(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
                   ),
-                ),
-              ),
-            ],
+                ],
+              );
+            },
           ),
         ],
       ),

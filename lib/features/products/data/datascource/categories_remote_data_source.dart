@@ -67,12 +67,32 @@ class CategoriesRemoteDataSource {
       }
 
       return Stream.multi((controller) {
-        final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+        // Each query owns its own result set. A document may match more than
+        // one query, so removing it from one query must not remove it globally.
+        final documentsByQuery =
+            List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
+          streams.length,
+          (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
+        );
+        final initialSnapshotsReceived = List<bool>.filled(
+          streams.length,
+          false,
+        );
 
         final subscriptions =
             <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
 
         void emit() {
+          // .first consumers (for example search) must receive the union only
+          // after every query has supplied its initial snapshot.
+          if (initialSnapshotsReceived.any((received) => !received)) {
+            return;
+          }
+
+          final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+          for (final queryDocuments in documentsByQuery) {
+            documents.addAll(queryDocuments);
+          }
           final categories = documents.values
               .where((doc) => doc.exists && doc.data() != null)
               .map((doc) => CategoryModel.fromFirestore(doc.id, doc.data()!))
@@ -83,15 +103,16 @@ class CategoriesRemoteDataSource {
           controller.add(categories);
         }
 
-        for (final stream in streams) {
+        for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
+          final stream = streams[streamIndex];
           final subscription = stream.listen((snapshot) {
-            for (final change in snapshot.docChanges) {
-              if (change.type == DocumentChangeType.removed) {
-                documents.remove(change.doc.id);
-              } else {
-                documents[change.doc.id] = change.doc;
-              }
-            }
+            final queryDocuments = documentsByQuery[streamIndex];
+            queryDocuments
+              ..clear()
+              ..addEntries(
+                snapshot.docs.map((doc) => MapEntry(doc.id, doc)),
+              );
+            initialSnapshotsReceived[streamIndex] = true;
 
             emit();
           }, onError: controller.addError);
