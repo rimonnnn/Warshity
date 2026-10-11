@@ -21,7 +21,8 @@ import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
 import 'package:warshity/features/main/presentation/screens/main_screen.dart';
 import 'package:warshity/features/onboarding/presentation/screens/onboarding_screen.dart';
-import 'package:warshity/features/productdetails/presentation/widgets/web_product_details.dart';
+import 'package:warshity/features/productdetails/presentation/screens/product_details_screen.dart';
+import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
 
 class RouterGeneratorConfig {
@@ -71,21 +72,26 @@ class RouterGeneratorConfig {
           return MainScreen(locale: locale);
         },
       ),
-     GoRoute(
-       path: AppRoutes.invoiceScreen,
-       name: AppRoutes.invoiceScreen,
-       builder: (context, state) {
-         return const InvoicePages();
-       },
-     ),
-     GoRoute(
-       path: AppRoutes.productdetailsScreen,
-       name: AppRoutes.productdetailsScreen,
-       builder: (context, state) {
-          final productId = state.extra as String;
-         return WebProductDetails(productId: productId);
-       }
-     ),
+      GoRoute(
+        path: AppRoutes.invoiceScreen,
+        name: AppRoutes.invoiceScreen,
+        builder: (context, state) {
+          return const InvoicePages();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.productdetailsScreen,
+        name: AppRoutes.productdetailsScreen,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final productId = extra['productId'] as String;
+          final productsCubit = extra['productsCubit'] as ProductsCubit;
+          return BlocProvider.value(
+            value: productsCubit,
+            child: ProductDetailsScreen(productId: productId),
+          );
+        },
+      ),
       GoRoute(
         path: AppRoutes.addInvoicesScreen,
         name: AppRoutes.addInvoicesScreen,

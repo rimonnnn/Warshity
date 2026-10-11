@@ -33,23 +33,51 @@ class MobileHome extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: context.colors.surface,
 
+        toolbarHeight: 66,
         title: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, authState) {
-            String shopName = 'masiter'.tr();
-
             if (authState is UserLoaded) {
-              shopName = authState.user.shopName;
+              final shopName = authState.user.shopName.trim().isEmpty
+                  ? 'masiter'.tr()
+                  : authState.user.shopName;
+              final activity = authState.user.activity.trim().isEmpty
+                  ? 'trades'.tr()
+                  : authState.user.activity;
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    shopName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.titleLarge?.copyWith(
+                      color: context.colors.onSurface,
+                    ),
+                  ),
+                  Text(
+                    activity,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.bodySmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              );
             }
 
             return Text(
-              shopName,
+              'masiter'.tr(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: context.text.titleLarge?.copyWith(
                 color: context.colors.onSurface,
               ),
             );
           },
         ),
-
         centerTitle: false,
       ),
 

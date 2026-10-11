@@ -1,5 +1,7 @@
 enum GlobalSearchResultType { client, product }
 
+
+
 class GlobalSearchResult {
   final GlobalSearchResultType type;
   final String id;

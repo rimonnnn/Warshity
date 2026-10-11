@@ -73,12 +73,14 @@ class SettingsContentCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
+  final Widget? trailing;
 
   const SettingsContentCard({
     super.key,
     required this.title,
     required this.icon,
     required this.child,
+    this.trailing,
   });
 
   @override
@@ -125,6 +127,7 @@ class SettingsContentCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (trailing != null) trailing!,
               ],
             ),
 

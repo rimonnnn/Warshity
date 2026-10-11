@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
-import 'package:warshity/features/productdetails/presentation/widgets/web_product_details.dart';
 import 'package:warshity/features/products/presentation/widgets/web_product_actions.dart';
 import 'package:warshity/features/products/presentation/widgets/web_product_categories.dart';
 import 'package:warshity/features/products/presentation/widgets/web_product_statistics.dart';
@@ -112,15 +113,12 @@ class _WebProductState extends State<WebProduct> {
                               });
                             },
                             onProductTap: (product) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => BlocProvider.value(
-                                    value: context.read<ProductsCubit>(),
-                                    child: WebProductDetails(
-                                      productId: product.id,
-                                    ),
-                                  ),
-                                ),
+                              context.push(
+                                AppRoutes.productdetailsScreen,
+                                extra: {
+                                  'productId': product.id.toString(),
+                                  'productsCubit': context.read<ProductsCubit>(),
+                                },
                               );
                             },
                           ),

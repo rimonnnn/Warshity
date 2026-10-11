@@ -13,36 +13,41 @@ class ProductPageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              'product_details'.tr(),
-              style: context.text.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'product_details'.tr(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: context.text.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              product.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.text.bodyMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+              const SizedBox(height: 3),
+              Text(
+                product.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: context.text.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        const Spacer(),
+        const SizedBox(width: 12),
         SizedBox(
-          width: 104,
-          height: 44,
+          height: 42,
           child: OutlinedButton.icon(
             onPressed: () {
-              if (Navigator.of(context).canPop()) {
-                context.pop();
-              }
+              if (context.canPop()) context.pop();
             },
             icon: const Icon(Icons.arrow_back_rounded, size: 18),
             label: Text(
@@ -51,9 +56,8 @@ class ProductPageHeader extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             style: OutlinedButton.styleFrom(
-              minimumSize: Size.zero,
-              fixedSize: const Size(104, 44),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              minimumSize: const Size(96, 42),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

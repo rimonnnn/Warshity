@@ -11,7 +11,6 @@ import 'package:warshity/features/global_search/presentation/cubit/global_search
 import 'package:warshity/features/global_search/presentation/widgets/search_results_container.dart';
 import 'package:warshity/features/global_search/presentation/widgets/search_results_section.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
-import 'package:warshity/features/productdetails/presentation/widgets/web_product_details.dart';
 
 class GlobalSearchResults extends StatelessWidget {
   const GlobalSearchResults({super.key});
@@ -109,15 +108,12 @@ class GlobalSearchResults extends StatelessWidget {
         break;
 
       case GlobalSearchResultType.product:
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) {
-              return BlocProvider(
-                create: (_) => getIt<ProductsCubit>()..watchProducts(),
-                child: WebProductDetails(productId: result.id),
-              );
-            },
-          ),
+        context.push(
+          AppRoutes.productdetailsScreen,
+          extra: {
+            'productId': result.id.toString(),
+            'productsCubit': getIt<ProductsCubit>()..watchProducts(),
+          },
         );
         break;
     }
