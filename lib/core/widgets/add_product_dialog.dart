@@ -255,16 +255,36 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 padding: EdgeInsets.all(horizontalPadding),
                 child: Form(
                   key: _formKey,
+                  // الأخطاء بتظهر أول ما اليوزر يسيب الحقل
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: scheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.add_shopping_cart_rounded,
+                                size: 22,
+                                color: scheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 'Add New Product'.tr(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.headlineSmall
                                     ?.copyWith(
                                       color: scheme.onSurface,
@@ -277,6 +297,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                               tooltip: MaterialLocalizations.of(
                                 context,
                               ).closeButtonTooltip,
+                              visualDensity: VisualDensity.compact,
                               onPressed: isSaving
                                   ? null
                                   : () => Navigator.pop(context),

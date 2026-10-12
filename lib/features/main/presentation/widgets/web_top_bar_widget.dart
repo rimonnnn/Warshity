@@ -4,7 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/theme/cubit/theme_cubit.dart';
@@ -160,8 +159,12 @@ class _WebTopBarState extends State<WebTopBar> {
                     context: context,
                     builder: (_) => MultiBlocProvider(
                       providers: [
-                        BlocProvider(create: (_) => getIt<CategoriesCubit>()),
-                        BlocProvider(create: (_) => getIt<AddProductCubit>()),
+                        BlocProvider.value(
+                          value: context.read<AddProductCubit>(),
+                        ),
+                        BlocProvider.value(
+                          value: context.read<CategoriesCubit>(),
+                        ),
                       ],
                       child: const AddProductDialog(),
                     ),

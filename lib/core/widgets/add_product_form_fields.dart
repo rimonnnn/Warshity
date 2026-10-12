@@ -57,6 +57,8 @@ class AddProductFormFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double iconSize = isWeb ? 28 : 24.sp;
+    final double gap = isWeb ? 16 : 14.h; // مسافة موحدة بين الحقول
+    final double rowGap = isWeb ? 14 : 10.w;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +70,7 @@ class AddProductFormFields extends StatelessWidget {
           enabled: !isSaving,
         ),
 
-        SizedBox(height: isWeb ? 18 : 10.h),
+        SizedBox(height: gap),
 
         CustomTextField(
           width: double.infinity,
@@ -87,7 +89,7 @@ class AddProductFormFields extends StatelessWidget {
           },
         ),
 
-        SizedBox(height: isWeb ? 2 : 16.h),
+        SizedBox(height: gap),
 
         CategoryDropdown(
           selectedCategory: selectedCategory,
@@ -95,7 +97,7 @@ class AddProductFormFields extends StatelessWidget {
           onChanged: onCategoryChanged,
         ),
 
-        SizedBox(height: isWeb ? 14 : 12),
+        SizedBox(height: gap),
 
         LayoutBuilder(
           builder: (context, innerConstraints) {
@@ -105,7 +107,7 @@ class AddProductFormFields extends StatelessWidget {
               width: double.infinity,
               label: 'Product Code'.tr(),
               height: productCodeFieldHeight,
-              hint: 'Generating product code...',
+              hint: 'Generating product code...'.tr(),
               controller: barcodeController,
               iconSize: iconSize,
               keyboardType: TextInputType.text,
@@ -135,7 +137,7 @@ class AddProductFormFields extends StatelessWidget {
 
             if (narrow) {
               return Column(
-                children: [codeField, const SizedBox(height: 12), priceField],
+                children: [codeField, SizedBox(height: gap), priceField],
               );
             }
 
@@ -143,14 +145,14 @@ class AddProductFormFields extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(child: codeField),
-                SizedBox(width: isWeb ? 14 : 10),
+                SizedBox(width: rowGap),
                 Expanded(child: priceField),
               ],
             );
           },
         ),
 
-        SizedBox(height: isWeb ? 3 : 12.sp),
+        SizedBox(height: gap),
 
         CustomTextField(
           width: double.infinity,
@@ -164,7 +166,7 @@ class AddProductFormFields extends StatelessWidget {
           validator: AppValidators.amount,
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: gap),
 
         UnitSelector(
           units: units,

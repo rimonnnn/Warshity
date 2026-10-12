@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:warshity/features/products/data/models/category_model.dart';
@@ -24,18 +25,24 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
     _subscription = repository.watchCategories().listen(
       (categories) {
-        emit(
-          CategoriesLoaded(categories),
-        );
+        emit(CategoriesLoaded(categories));
       },
       onError: (error) {
-        emit(
-          CategoriesError(
-            error.toString(),
-          ),
-        );
+        emit(CategoriesError(error.toString()));
       },
     );
+  }
+
+  // ============================================================
+  // Helpers
+  // ============================================================
+
+  List<CategoryModel> _currentCategories() {
+    final s = state;
+    if (s is CategoriesLoaded) return s.categories;
+    if (s is AddCategoryLoading) return s.categories;
+    if (s is AddCategoryError) return s.categories;
+    return const [];
   }
 
   // ============================================================
@@ -44,54 +51,34 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
   Future<void> addCategory(String name) async {
     final trimmedName = name.trim();
+    if (trimmedName.isEmpty) return;
 
-    // ---------------- Validation ----------------
+    final currentCategories = _currentCategories();
 
-    if (trimmedName.isEmpty) {
+    final exists = currentCategories.any(
+      (c) => c.name.toLowerCase() == trimmedName.toLowerCase(),
+    );
+    if (exists) {
+      emit(AddCategoryError(currentCategories, 'Category already exists'));
       return;
     }
 
-    // ---------------- Current Categories ----------------
-
-    List<CategoryModel> currentCategories = [];
-
-    if (state is CategoriesLoaded) {
-      currentCategories =
-          (state as CategoriesLoaded).categories;
-    } else if (state is AddCategoryLoading) {
-      currentCategories =
-          (state as AddCategoryLoading).categories;
-    } else if (state is AddCategoryError) {
-      currentCategories =
-          (state as AddCategoryError).categories;
-    }
-
-    // ---------------- Loading ----------------
-
-    emit(
-      AddCategoryLoading(
-        currentCategories,
-      ),
-    );
+    emit(AddCategoryLoading(currentCategories));
 
     try {
-      // ---------------- Firebase ----------------
-
       await repository.addCategory(trimmedName);
 
-      // مهم:
-      // لا نعمل emit للنجاح هنا.
-      //
-      // Firestore snapshots هتتحدث تلقائيًا
-      // و watchCategories() هتعمل:
-      //
-      // CategoriesLoaded(updatedCategories)
-
+      // الـ snapshot غالبًا سبق وعمل CategoriesLoaded بالقايمة الجديدة.
+      // لو لسه، نخرج من حالة الـ loading عشان ما نفضلش عالقين.
+      if (state is AddCategoryLoading) {
+        emit(CategoriesLoaded(currentCategories));
+      }
     } catch (e) {
+      debugPrint('Add category error: $e');
       emit(
         AddCategoryError(
           currentCategories,
-          e.toString(),
+          'Failed to add category. Please try again.',
         ),
       );
     }

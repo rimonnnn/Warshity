@@ -18,6 +18,8 @@ import 'package:warshity/features/main/presentation/layout/main_mobile.dart';
 import 'package:warshity/features/main/presentation/layout/main_web.dart';
 import 'package:warshity/features/main/presentation/widgets/main_nav_item.dart';
 import 'package:warshity/features/products/data/repo/products_repository.dart';
+import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
+import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:warshity/features/products/presentation/pages/product_pages.dart';
 import 'package:warshity/features/settings/presentation/pages/settings_page.dart';
 
@@ -163,18 +165,22 @@ class _MainScreenState extends State<MainScreen> {
                 // Deleting a shared account must not navigate to Splash.
               }
             },
-            child: AppResponsive(
-              mobile: MainMobile(navItems: _mobileNavItems),
-              desktop: MultiBlocProvider(
-                providers: [
-                  BlocProvider(
-                    create: (_) => GlobalSearchCubit(
-                      clientsRepository: getIt<ClientsRepository>(),
-                      productsRepository: getIt<ProductsRepository>(),
-                    ),
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (_) => getIt<CategoriesCubit>()..watchCategories(),
+                ),
+                BlocProvider(create: (_) => getIt<AddProductCubit>()),
+              ],
+              child: AppResponsive(
+                mobile: MainMobile(navItems: _mobileNavItems),
+                desktop: BlocProvider(
+                  create: (_) => GlobalSearchCubit(
+                    clientsRepository: getIt<ClientsRepository>(),
+                    productsRepository: getIt<ProductsRepository>(),
                   ),
-                ],
-                child: MainWeb(navItems: _webNavItems),
+                  child: MainWeb(navItems: _webNavItems),
+                ),
               ),
             ),
           );
