@@ -99,7 +99,9 @@ class WebHome extends StatelessWidget {
                     context: context,
                     builder: (_) => MultiBlocProvider(
                       providers: [
-                        BlocProvider(create: (_) => getIt<CategoriesCubit>()),
+                        BlocProvider.value(
+                          value: context.read<CategoriesCubit>(),
+                        ),
                         BlocProvider(create: (_) => getIt<AddProductCubit>()),
                       ],
                       child: const AddProductDialog(),
@@ -177,15 +179,17 @@ class WebHome extends StatelessWidget {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           shopName,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: context.text.titleMedium?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                          style: context.text.titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -213,23 +217,27 @@ class WebHome extends StatelessWidget {
                                     const SizedBox(width: 8),
                                     Flexible(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
                                             'activity'.tr(),
-                                            style: context.text.labelSmall?.copyWith(
-                                              color: colors.onSurfaceVariant,
-                                            ),
+                                            style: context.text.labelSmall
+                                                ?.copyWith(
+                                                  color:
+                                                      colors.onSurfaceVariant,
+                                                ),
                                           ),
                                           Text(
                                             activity,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
-                                            style: context.text.bodyMedium?.copyWith(
-                                              color: colors.primary,
-                                              fontWeight: FontWeight.w700,
-                                            ),
+                                            style: context.text.bodyMedium
+                                                ?.copyWith(
+                                                  color: colors.primary,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -240,12 +248,14 @@ class WebHome extends StatelessWidget {
 
                               if (isCompact) {
                                 return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
                                     storeIdentity,
                                     const SizedBox(height: 12),
                                     Align(
-                                      alignment: AlignmentDirectional.centerStart,
+                                      alignment:
+                                          AlignmentDirectional.centerStart,
                                       child: activityBadge,
                                     ),
                                   ],
@@ -257,7 +267,9 @@ class WebHome extends StatelessWidget {
                                   Expanded(child: storeIdentity),
                                   const SizedBox(width: 16),
                                   ConstrainedBox(
-                                    constraints: const BoxConstraints(maxWidth: 280),
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 280,
+                                    ),
                                     child: activityBadge,
                                   ),
                                 ],
