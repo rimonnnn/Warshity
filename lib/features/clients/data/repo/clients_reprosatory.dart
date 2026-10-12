@@ -25,6 +25,10 @@ class ClientsRepository {
     await remoteDataSource.decreaseDebt(clientId: clientId, amount: amount);
   }
 
+  Future<int> reconcileInvoiceOutstandingAmountsWithClientBalances() {
+    return remoteDataSource.reconcileInvoiceOutstandingAmountsWithClientBalances();
+  }
+
   Future<void> increaseDebt({
     required String clientId,
     required num amount,

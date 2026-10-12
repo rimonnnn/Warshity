@@ -8,6 +8,10 @@ class _MainCustomersArea extends StatelessWidget {
     required this.onSelectCustomer,
     required this.onDeleteCustomer,
     required this.onPayDebt,
+    required this.invoiceCountsByClient,
+    required this.totalPurchasesByClient,
+    required this.invoiceCountsLoaded,
+    required this.invoiceCountsError,
   });
 
   final List<CustomerModel> customers;
@@ -16,6 +20,10 @@ class _MainCustomersArea extends StatelessWidget {
   final ValueChanged<int> onSelectCustomer;
   final ValueChanged<CustomerModel> onDeleteCustomer;
   final ValueChanged<CustomerModel> onPayDebt;
+  final Map<String, int> invoiceCountsByClient;
+  final Map<String, double> totalPurchasesByClient;
+  final bool invoiceCountsLoaded;
+  final bool invoiceCountsError;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +39,22 @@ class _MainCustomersArea extends StatelessWidget {
                 selectedCustomerIndex: selectedCustomerIndex,
                 onSelectCustomer: onSelectCustomer,
                 onDeleteCustomer: onDeleteCustomer,
+                invoiceCountsByClient: invoiceCountsByClient,
+                invoiceCountsLoaded: invoiceCountsLoaded,
+                invoiceCountsError: invoiceCountsError,
               ),
               const SizedBox(height: 16),
               _CustomerDetailsPanel(
                 customer: selectedCustomer,
                 onPayDebt: onPayDebt,
+                invoiceCount: selectedCustomer?.id == null
+                    ? null
+                    : invoiceCountsByClient[selectedCustomer!.id!],
+                totalPurchases: selectedCustomer?.id == null
+                    ? null
+                    : totalPurchasesByClient[selectedCustomer!.id!],
+                invoiceStatsLoaded: invoiceCountsLoaded,
+                invoiceStatsError: invoiceCountsError,
               ),
             ],
           );
@@ -51,6 +70,9 @@ class _MainCustomersArea extends StatelessWidget {
                 selectedCustomerIndex: selectedCustomerIndex,
                 onSelectCustomer: onSelectCustomer,
                 onDeleteCustomer: onDeleteCustomer,
+                invoiceCountsByClient: invoiceCountsByClient,
+                invoiceCountsLoaded: invoiceCountsLoaded,
+                invoiceCountsError: invoiceCountsError,
               ),
             ),
             const SizedBox(width: 16),
@@ -59,6 +81,14 @@ class _MainCustomersArea extends StatelessWidget {
               child: _CustomerDetailsPanel(
                 customer: selectedCustomer,
                 onPayDebt: onPayDebt,
+                invoiceCount: selectedCustomer?.id == null
+                    ? null
+                    : invoiceCountsByClient[selectedCustomer!.id!],
+                totalPurchases: selectedCustomer?.id == null
+                    ? null
+                    : totalPurchasesByClient[selectedCustomer!.id!],
+                invoiceStatsLoaded: invoiceCountsLoaded,
+                invoiceStatsError: invoiceCountsError,
               ),
             ),
           ],
@@ -74,12 +104,18 @@ class _CustomersTable extends StatelessWidget {
     required this.selectedCustomerIndex,
     required this.onSelectCustomer,
     required this.onDeleteCustomer,
+    required this.invoiceCountsByClient,
+    required this.invoiceCountsLoaded,
+    required this.invoiceCountsError,
   });
 
   final List<CustomerModel> customers;
   final int selectedCustomerIndex;
   final ValueChanged<int> onSelectCustomer;
   final ValueChanged<CustomerModel> onDeleteCustomer;
+  final Map<String, int> invoiceCountsByClient;
+  final bool invoiceCountsLoaded;
+  final bool invoiceCountsError;
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +143,11 @@ class _CustomersTable extends StatelessWidget {
                   selected: index == selectedCustomerIndex,
                   onTap: () => onSelectCustomer(index),
                   onDelete: () => onDeleteCustomer(customers[index]),
+                  invoiceCount: customers[index].id == null
+                      ? null
+                      : invoiceCountsByClient[customers[index].id!],
+                  invoiceCountLoaded: invoiceCountsLoaded,
+                  invoiceCountError: invoiceCountsError,
                 );
               },
             ),

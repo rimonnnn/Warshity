@@ -7,6 +7,8 @@ class _StatCard extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.iconColor,
+    this.onAction,
+    this.actionTooltip,
   });
 
   final String title;
@@ -14,6 +16,8 @@ class _StatCard extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final Color iconColor;
+  final VoidCallback? onAction;
+  final String? actionTooltip;
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +86,17 @@ class _StatCard extends StatelessWidget {
               ],
             ),
           ),
+          if (onAction != null)
+            Tooltip(
+              message: actionTooltip ?? '',
+              child: IconButton(
+                onPressed: onAction,
+                visualDensity: VisualDensity.compact,
+                iconSize: 18,
+                icon: const Icon(Icons.sync_rounded),
+                color: context.colors.primary,
+              ),
+            ),
         ],
       ),
     );
