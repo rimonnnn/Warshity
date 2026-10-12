@@ -181,7 +181,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                 fillColor: scheme.surface,
                 prefixIcon: Icon(
                   Icons.category_outlined,
-                  
+
                   color: context.colors.onSurfaceVariant,
                   size: isWeb ? 18 : 20.sp,
                 ),
@@ -189,7 +189,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                
+
                 enabledBorder: border(scheme.outlineVariant),
                 disabledBorder: border(scheme.outlineVariant),
                 focusedBorder: border(scheme.primary, width: 1.5),
@@ -207,7 +207,6 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                   value: _addKey,
                   child: Row(
                     children: [
-                      Icon(Icons.add_rounded, color: scheme.primary),
                       Icon(
                         Icons.add,
                         color: context.colors.primary,
@@ -274,7 +273,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                     child: PrimaryButtonWidget(
                       width: double.infinity,
                       height: isWeb ? 45 : 45.h,
-                    
+
                       fontSize: isWeb ? 20 : 16.sp,
                       buttonText: 'Add'.tr(),
                       isLoading: _loading,

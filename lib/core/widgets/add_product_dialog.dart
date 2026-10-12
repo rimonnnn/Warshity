@@ -256,7 +256,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 child: Form(
                   key: _formKey,
                   // الأخطاء بتظهر أول ما اليوزر يسيب الحقل
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  autovalidateMode: AutovalidateMode.onUnfocus,
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     keyboardDismissBehavior:
