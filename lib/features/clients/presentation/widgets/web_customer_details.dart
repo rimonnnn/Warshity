@@ -4,10 +4,18 @@ class _CustomerDetailsPanel extends StatelessWidget {
   const _CustomerDetailsPanel({
     required this.customer,
     required this.onPayDebt,
+    required this.invoiceCount,
+    required this.totalPurchases,
+    required this.invoiceStatsLoaded,
+    required this.invoiceStatsError,
   });
 
   final CustomerModel? customer;
   final ValueChanged<CustomerModel> onPayDebt;
+  final int? invoiceCount;
+  final double? totalPurchases;
+  final bool invoiceStatsLoaded;
+  final bool invoiceStatsError;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +142,11 @@ class _CustomerDetailsPanel extends StatelessWidget {
                 Expanded(
                   child: _MiniStat(
                     title: 'total_purchases'.tr(),
-                    value: selected.totalPurchases.toString(),
+                    value: invoiceStatsError
+                        ? '—'
+                        : invoiceStatsLoaded
+                            ? (totalPurchases ?? 0).toStringAsFixed(2)
+                            : '...',
                     icon: Icons.trending_up_rounded,
                   ),
                 ),
@@ -142,7 +154,11 @@ class _CustomerDetailsPanel extends StatelessWidget {
                 Expanded(
                   child: _MiniStat(
                     title: 'order_count'.tr(),
-                    value: selected.orderCount.toString(),
+                    value: invoiceStatsError
+                        ? '—'
+                        : invoiceStatsLoaded
+                            ? (invoiceCount ?? 0).toString()
+                            : '...',
                     icon: Icons.shopping_bag_outlined,
                   ),
                 ),

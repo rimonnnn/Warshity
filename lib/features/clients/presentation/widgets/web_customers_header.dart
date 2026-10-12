@@ -108,9 +108,17 @@ class _PageHeader extends StatelessWidget {
 class _StatsSection extends StatelessWidget {
   const _StatsSection({
     required this.customers,
+    required this.unpaidInvoicesCount,
+    required this.invoicesLoading,
+    required this.invoicesError,
+    required this.onReconcileInvoices,
   });
 
   final List<CustomerModel> customers;
+  final int? unpaidInvoicesCount;
+  final bool invoicesLoading;
+  final bool invoicesError;
+  final VoidCallback onReconcileInvoices;
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +133,17 @@ class _StatsSection extends StatelessWidget {
       0,
       (sum, customer) => sum + (customer.balance ?? 0),
     );
+
+    final String unpaidCountValue = invoicesError
+        ? '—'
+        : invoicesLoading
+            ? '...'
+            : (unpaidInvoicesCount ?? 0).toString();
+    final String unpaidCountSubtitle = invoicesError
+        ? 'invoices_load_error'.tr()
+        : invoicesLoading
+            ? 'invoices_loading'.tr()
+            : 'invoices_with_outstanding_balance'.tr();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -144,8 +163,7 @@ class _StatsSection extends StatelessWidget {
           children: [
             _StatCard(
               title: 'total_customer_debt'.tr(),
-              value:
-                  '${totalDebt.toStringAsFixed(0)} ${'EGP'.tr()}',
+              value: '${totalDebt.toStringAsFixed(0)} ${'EGP'.tr()}',
               subtitle: 'total_debt'.tr(),
               icon: Icons.account_balance_wallet_outlined,
               iconColor: context.colors.error,
@@ -165,11 +183,13 @@ class _StatsSection extends StatelessWidget {
               iconColor: Colors.teal,
             ),
             _StatCard(
-              title: 'delivery_orders'.tr(),
-              value: '0',
-              subtitle: 'waiting_customers'.tr(),
-              icon: Icons.local_shipping_outlined,
+              title: 'unpaid_invoices'.tr(),
+              value: unpaidCountValue,
+              subtitle: unpaidCountSubtitle,
+              icon: Icons.receipt_long_outlined,
               iconColor: Colors.cyan,
+              onAction: onReconcileInvoices,
+              actionTooltip: 'sync_legacy_invoice_data'.tr(),
             ),
           ],
         );

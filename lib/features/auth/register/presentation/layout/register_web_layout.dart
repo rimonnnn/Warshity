@@ -45,6 +45,8 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
   bool ischecked = false;
   String? selectedActivity;
 
+  late final Stream<List<String>> categoriesStream;
+
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController shopNameController = TextEditingController();
@@ -62,6 +64,7 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
     emailController = TextEditingController();
     passwordController = TextEditingController();
     confirmPasswordController = TextEditingController();
+    categoriesStream = context.read<AuthCubit>().categoriesStream;
   }
 
   @override
@@ -81,7 +84,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
       backgroundColor: context.colors.onSurface,
       body: Stack(
         children: [
-          // Background
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -97,7 +99,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
             ),
           ),
 
-          // Register content
           Positioned.fill(
             child: BlocConsumer<AuthCubit, AuthState>(
               listener: (context, state) {
@@ -154,7 +155,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                             children: [
                               const SizedBox(height: 32),
 
-                              // Logo
                               Image.asset(
                                 AppAssets.logo,
                                 width: 80,
@@ -183,7 +183,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                               const HeightSpace(24),
 
-                              // Shop name + Account name
                               Row(
                                 children: [
                                   CustomTextField(
@@ -214,7 +213,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                               const HeightSpace(16),
 
-                              // Email + Activity
                               Row(
                                 children: [
                                   CustomTextField(
@@ -225,38 +223,53 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                                     validator: AppValidators.email,
                                     borderRadius: AppRadius.sm,
 
-                                    // Changed from phone to email.
                                     keyboardType: TextInputType.emailAddress,
 
                                     prefixIconData: Icons.email,
                                     iconSize: 20,
                                   ),
                                   const SizedBox(width: 16),
-                                  CustomDropdown(
-                                    label: "activetype".tr(),
-                                    hint: "select_activity".tr(),
-                                    validator: (value) =>
-                                        AppValidators.dropdown(
-                                          value,
-                                          "select_activity".tr(),
-                                        ),
-                                    items: activities,
-                                    width: 270,
-                                    selectedItem: selectedActivity,
-                                    onSelected: (value) {
-                                      setState(() {
-                                        selectedActivity = value;
-                                      });
+                                  StreamBuilder<List<String>>(
+                                    stream: categoriesStream,
+                                    builder: (context, snapshot) {
+                                      final firestoreCategories =
+                                          snapshot.data ?? <String>[];
+                                      final allActivities = <String>{
+                                        ...activities,
+                                        ...firestoreCategories,
+                                      }.toList();
+
+                                      return CustomDropdown(
+                                        label: "activetype".tr(),
+                                        hint: "select_activity".tr(),
+                                        validator: (value) =>
+                                            AppValidators.dropdown(
+                                              value,
+                                              "select_activity".tr(),
+                                            ),
+                                        items: allActivities,
+                                        width: 270,
+                                        selectedItem: selectedActivity,
+                                        onSelected: (value) {
+                                          setState(() {
+                                            selectedActivity = value;
+                                          });
+                                        },
+                                        onAddCategory: (categoryName) async {
+                                          await context
+                                              .read<AuthCubit>()
+                                              .addCategory(categoryName);
+                                        },
+                                        height: 48,
+                                        borderRadius: AppRadius.sm,
+                                      );
                                     },
-                                    height: 48,
-                                    borderRadius: AppRadius.sm,
                                   ),
                                 ],
                               ),
 
                               const HeightSpace(16),
 
-                              // Password + Confirm password
                               Row(
                                 children: [
                                   CustomTextField(
@@ -315,7 +328,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                               const HeightSpace(16),
 
-                              // Terms
                               CheckboxWidget(
                                 width: 350,
                                 value: ischecked,
@@ -328,7 +340,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                               const HeightSpace(32),
 
-                              // Register button
                               PrimaryButtonWidget(
                                 buttonText: "create_account1".tr(),
                                 onPress: () {
@@ -379,7 +390,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                               const HeightSpace(24),
 
-                              // Continue divider
                               Dividerwidget(
                                 child: Text(
                                   "continue".tr(),
@@ -389,7 +399,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                               const HeightSpace(24),
 
-                              // Social buttons
                               Row(
                                 children: [
                                   OutlinedButtonWidget(
@@ -424,7 +433,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                               const HeightSpace(24),
 
-                              // Login footer
                               FooterWidget(
                                 text1: "have_account",
                                 text2: "login",
@@ -435,7 +443,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
 
                               const HeightSpace(16),
 
-                              // Bottom divider
                               Dividerwidget(
                                 child: Image.asset(
                                   AppAssets.logo,
@@ -456,7 +463,6 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
             ),
           ),
 
-          // Web settings
           const PositionedDirectional(
             top: 24,
             end: 32,

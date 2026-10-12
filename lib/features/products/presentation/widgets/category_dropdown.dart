@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,7 +29,7 @@ class CategoryDropdown extends StatefulWidget {
 
 class _CategoryDropdownState extends State<CategoryDropdown> {
   final TextEditingController _categoryController = TextEditingController();
-
+  final bool isWeb = kIsWeb;
   bool _addingCategory = false;
   bool _loading = false;
 
@@ -149,6 +150,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                 prefixIcon: Icon(
                   Icons.category_outlined,
                   color: context.colors.onSurfaceVariant,
+                  size: isWeb ? 18 : 20.sp,
                 ),
 
                 border: OutlineInputBorder(
@@ -168,7 +170,11 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                   value: '__add_category__',
                   child: Row(
                     children: [
-                      Icon(Icons.add, color: context.colors.primary),
+                      Icon(
+                        Icons.add,
+                        color: context.colors.primary,
+                        size: isWeb ? 18 : 20.sp,
+                      ),
 
                       SizedBox(width: 8.w),
 
@@ -193,6 +199,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                 width: double.infinity,
                 hint: 'Category name'.tr(),
                 prefixIconData: Icons.category_outlined,
+                iconSize: isWeb ? 18 : 20.sp,
                 readOnly: _loading,
               ),
 
@@ -212,7 +219,8 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                   Expanded(
                     child: PrimaryButtonWidget(
                       width: double.infinity,
-                      height: 45.h,
+                      height: 40,
+                      fontSize: isWeb ? 20 : 16.sp,
                       buttonText: 'Add'.tr(),
                       isLoading: _loading,
                       onPress: _addCategory,
