@@ -30,7 +30,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
   static const String _addKey = '__add_category__';
 
   final TextEditingController _categoryController = TextEditingController();
-
+  final bool isWeb = kIsWeb;
   bool _addingCategory = false;
   bool _loading = false;
   bool _attempted = false; // عشان ما نعرضش خطأ قديم لما الحقل يتفتح تاني
@@ -181,9 +181,15 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                 fillColor: scheme.surface,
                 prefixIcon: Icon(
                   Icons.category_outlined,
-                  color: scheme.onSurfaceVariant,
+                  
+                  color: context.colors.onSurfaceVariant,
+                  size: isWeb ? 18 : 20.sp,
                 ),
-                border: border(scheme.outlineVariant),
+
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                
                 enabledBorder: border(scheme.outlineVariant),
                 disabledBorder: border(scheme.outlineVariant),
                 focusedBorder: border(scheme.primary, width: 1.5),
@@ -202,6 +208,11 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                   child: Row(
                     children: [
                       Icon(Icons.add_rounded, color: scheme.primary),
+                      Icon(
+                        Icons.add,
+                        color: context.colors.primary,
+                        size: isWeb ? 18 : 20.sp,
+                      ),
 
                       SizedBox(width: isWeb ? 8 : 8.w),
 
@@ -226,6 +237,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                 width: double.infinity,
                 hint: 'Category name'.tr(),
                 prefixIconData: Icons.category_outlined,
+                iconSize: isWeb ? 18 : 20.sp,
                 readOnly: _loading,
               ),
 
@@ -262,6 +274,8 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                     child: PrimaryButtonWidget(
                       width: double.infinity,
                       height: isWeb ? 45 : 45.h,
+                    
+                      fontSize: isWeb ? 20 : 16.sp,
                       buttonText: 'Add'.tr(),
                       isLoading: _loading,
                       onPress: _addCategory,

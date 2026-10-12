@@ -1,3 +1,4 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,9 +8,13 @@ import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/loading_widget.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
+import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
+import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
+import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/debt_cubit.dart';

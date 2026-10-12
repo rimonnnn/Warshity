@@ -101,32 +101,12 @@ class ClientsRemoteDataSource {
       }
 
       return Stream.multi((controller) {
-        // Each query owns its own result set. A document may match more than
-        // one query, so removing it from one query must not remove it globally.
-        final documentsByQuery =
-            List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
-              streams.length,
-              (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
-            );
-        final initialSnapshotsReceived = List<bool>.filled(
-          streams.length,
-          false,
-        );
+        final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
 
         final subscriptions =
             <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
 
         void emit() {
-          // .first consumers (for example search) must receive the union only
-          // after every query has supplied its initial snapshot.
-          if (initialSnapshotsReceived.any((received) => !received)) {
-            return;
-          }
-
-          final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
-          for (final queryDocuments in documentsByQuery) {
-            documents.addAll(queryDocuments);
-          }
           final clients = documents.values
               .where((doc) => doc.exists && doc.data() != null)
               .map((doc) => CustomerModel.fromFirestore(doc.id, doc.data()!))
@@ -135,14 +115,15 @@ class ClientsRemoteDataSource {
           controller.add(clients);
         }
 
-        for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
-          final stream = streams[streamIndex];
+        for (final stream in streams) {
           final subscription = stream.listen((snapshot) {
-            final queryDocuments = documentsByQuery[streamIndex];
-            queryDocuments
-              ..clear()
-              ..addEntries(snapshot.docs.map((doc) => MapEntry(doc.id, doc)));
-            initialSnapshotsReceived[streamIndex] = true;
+            for (final change in snapshot.docChanges) {
+              if (change.type == DocumentChangeType.removed) {
+                documents.remove(change.doc.id);
+              } else {
+                documents[change.doc.id] = change.doc;
+              }
+            }
 
             emit();
           }, onError: controller.addError);
@@ -214,33 +195,65 @@ class ClientsRemoteDataSource {
     required num amount,
   }) async {
     final uid = _currentUserId;
-
+    final activeConnectionIds = await _getActiveConnectionIds();
     final clientRef = firestore.collection('clients').doc(clientId);
 
-    await firestore.runTransaction((transaction) async {
-      final snapshot = await transaction.get(clientRef);
+    final invoicesCollection = firestore.collection('invoices');
+    final invoiceQueries = <Future<QuerySnapshot<Map<String, dynamic>>>>[
+      invoicesCollection
+          .where('userId', isEqualTo: uid)
+          .where('customerId', isEqualTo: clientId)
+          .get(),
 
-      if (!snapshot.exists) {
+      invoicesCollection
+          .where('userIds', arrayContains: uid)
+          .where('customerId', isEqualTo: clientId)
+          .get(),
+    ];
+    for (final connectionId in activeConnectionIds) {
+      if (connectionId.isEmpty) continue;
+      invoiceQueries.add(
+        invoicesCollection
+            .where('sharedConnectionIds', arrayContains: connectionId)
+            .where('customerId', isEqualTo: clientId)
+            .get(),
+      );
+    }
+
+    final invoiceRefsById = <String, DocumentReference<Map<String, dynamic>>>{};
+    for (final queryFuture in invoiceQueries) {
+      final snapshot = await queryFuture;
+      for (final doc in snapshot.docs) {
+        invoiceRefsById[doc.id] = doc.reference;
+      }
+    }
+    final invoiceRefs = invoiceRefsById.values.toList();
+
+    await firestore.runTransaction((transaction) async {
+      final clientSnapshot = await transaction.get(clientRef);
+
+      if (!clientSnapshot.exists) {
         throw Exception('client_not_found'.tr());
       }
 
-      final data = snapshot.data() ?? {};
-
-      final ownerUid = data['userId']?.toString();
+      final clientData = clientSnapshot.data() ?? {};
+      final ownerUid = clientData['userId']?.toString();
 
       if (ownerUid != uid) {
-        final connectionIds = await _getActiveConnectionIds();
+        final sharedConnectionIds = _normalizeIds(
+          clientData['sharedConnectionIds'],
+        );
+        final legacyUserIds = _normalizeIds(clientData['userIds']);
+        final hasSharedAccess =
+            sharedConnectionIds.any(activeConnectionIds.contains) ||
+            legacyUserIds.contains(uid);
 
-        final sharedConnectionIds = _normalizeIds(data['sharedConnectionIds']);
-
-        final hasAccess = sharedConnectionIds.any(connectionIds.contains);
-
-        if (!hasAccess) {
+        if (!hasSharedAccess) {
           throw Exception('client_not_found'.tr());
         }
       }
 
-      final currentBalance = (data['balance'] as num?) ?? 0;
+      final currentBalance = (clientData['balance'] as num?) ?? 0;
 
       if (amount <= 0) {
         throw Exception('invalid_debt_amount'.tr());
@@ -250,13 +263,212 @@ class ClientsRemoteDataSource {
         throw Exception('debt_payment_exceeds_balance'.tr());
       }
 
-      final newBalance = currentBalance - amount;
+      final invoiceSnapshots = <DocumentSnapshot<Map<String, dynamic>>>[];
+      for (final invoiceRef in invoiceRefs) {
+        final invoiceSnapshot = await transaction.get(invoiceRef);
+        if (invoiceSnapshot.exists && invoiceSnapshot.data() != null) {
+          invoiceSnapshots.add(invoiceSnapshot);
+        }
+      }
 
+      invoiceSnapshots.sort((a, b) {
+        final dateA = a.data()?['createdAt']?.toString() ?? '';
+        final dateB = b.data()?['createdAt']?.toString() ?? '';
+        return dateA.compareTo(dateB);
+      });
+
+      var amountLeftToAllocate = amount.toDouble();
+      final invoiceUpdates =
+          <
+            MapEntry<
+              DocumentReference<Map<String, dynamic>>,
+              Map<String, dynamic>
+            >
+          >[];
+
+      for (final invoiceSnapshot in invoiceSnapshots) {
+        if (amountLeftToAllocate <= 0) break;
+
+        final invoiceData = invoiceSnapshot.data()!;
+        final invoiceOwnerUid = invoiceData['userId']?.toString();
+        final sharedInvoiceIds = _normalizeIds(
+          invoiceData['sharedConnectionIds'],
+        );
+        final legacyInvoiceUserIds = _normalizeIds(invoiceData['userIds']);
+        final canUpdateInvoice =
+            invoiceOwnerUid == uid ||
+            sharedInvoiceIds.any(activeConnectionIds.contains) ||
+            legacyInvoiceUserIds.contains(uid);
+
+        if (!canUpdateInvoice) continue;
+
+        final remainingAmount =
+            (invoiceData['remainingAmount'] as num?)?.toDouble() ?? 0.0;
+        if (remainingAmount <= 0) continue;
+
+        final paidAmount =
+            (invoiceData['paidAmount'] as num?)?.toDouble() ?? 0.0;
+        final totalAmount = (invoiceData['total'] as num?)?.toDouble() ?? 0.0;
+        final appliedAmount = amountLeftToAllocate < remainingAmount
+            ? amountLeftToAllocate
+            : remainingAmount;
+        final nextRemainingAmount = (remainingAmount - appliedAmount)
+            .clamp(0.0, double.infinity)
+            .toDouble();
+        final nextPaidAmount = totalAmount > 0
+            ? (totalAmount - nextRemainingAmount)
+                  .clamp(0.0, totalAmount)
+                  .toDouble()
+            : paidAmount + appliedAmount;
+
+        invoiceUpdates.add(
+          MapEntry(invoiceSnapshot.reference, <String, dynamic>{
+            'paidAmount': nextPaidAmount,
+            'remainingAmount': nextRemainingAmount,
+          }),
+        );
+        amountLeftToAllocate -= appliedAmount;
+      }
+
+      final newBalance = currentBalance - amount;
       transaction.update(clientRef, {
         'balance': newBalance,
         'hasDebt': newBalance > 0,
       });
+
+      for (final update in invoiceUpdates) {
+        transaction.update(update.key, update.value);
+      }
     });
+  }
+
+  Future<int> reconcileInvoiceOutstandingAmountsWithClientBalances() async {
+    final uid = _currentUserId;
+    final activeConnectionIds = await _getActiveConnectionIds();
+    final clientsSnapshot = await firestore
+        .collection('clients')
+        .where('userId', isEqualTo: uid)
+        .get();
+
+    var updatedRecords = 0;
+    var batchWriteCount = 0;
+    var batch = firestore.batch();
+
+    Future<void> commitIfNeeded({bool force = false}) async {
+      if (batchWriteCount == 0 || (!force && batchWriteCount < 450)) {
+        return;
+      }
+      await batch.commit();
+      batch = firestore.batch();
+      batchWriteCount = 0;
+    }
+
+    for (final clientDocument in clientsSnapshot.docs) {
+      final clientData = clientDocument.data();
+      final clientBalance = ((clientData['balance'] as num?) ?? 0).toDouble();
+
+      final invoicesCollection = firestore.collection('invoices');
+      final invoiceQueryFutures = <Future<QuerySnapshot<Map<String, dynamic>>>>[
+        invoicesCollection
+            .where('userId', isEqualTo: uid)
+            .where('customerId', isEqualTo: clientDocument.id)
+            .get(),
+        invoicesCollection
+            .where('userIds', arrayContains: uid)
+            .where('customerId', isEqualTo: clientDocument.id)
+            .get(),
+      ];
+      for (final connectionId in activeConnectionIds) {
+        if (connectionId.isEmpty) continue;
+        invoiceQueryFutures.add(
+          invoicesCollection
+              .where('sharedConnectionIds', arrayContains: connectionId)
+              .where('customerId', isEqualTo: clientDocument.id)
+              .get(),
+        );
+      }
+      final invoiceSnapshots = await Future.wait(invoiceQueryFutures);
+      final invoicesById =
+          <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
+      for (final invoiceSnapshot in invoiceSnapshots) {
+        for (final invoice in invoiceSnapshot.docs) {
+          invoicesById[invoice.id] = invoice;
+        }
+      }
+      final invoices = invoicesById.values.toList()
+        ..sort((a, b) {
+          final dateA = a.data()['createdAt']?.toString() ?? '';
+          final dateB = b.data()['createdAt']?.toString() ?? '';
+          return dateA.compareTo(dateB);
+        });
+
+      final calculatedOrderCount = invoices.length;
+      final calculatedTotalPurchases = invoices.fold<double>(
+        0,
+        (sum, invoice) =>
+            sum + (((invoice.data()['total'] as num?) ?? 0).toDouble()),
+      );
+      final storedOrderCount = ((clientData['orderCount'] as num?) ?? 0)
+          .toInt();
+      final storedTotalPurchases = ((clientData['totalPurchases'] as num?) ?? 0)
+          .toDouble();
+
+      if (storedOrderCount != calculatedOrderCount ||
+          (storedTotalPurchases - calculatedTotalPurchases).abs() > 0.009) {
+        batch.update(clientDocument.reference, {
+          'orderCount': calculatedOrderCount,
+          'totalPurchases': calculatedTotalPurchases,
+        });
+        batchWriteCount++;
+        updatedRecords++;
+        await commitIfNeeded();
+      }
+
+      final outstandingTotal = invoices.fold<double>(
+        0,
+        (sum, invoice) =>
+            sum +
+            (((invoice.data()['remainingAmount'] as num?) ?? 0)
+                .toDouble()
+                .clamp(0.0, double.infinity)
+                .toDouble()),
+      );
+
+      var amountToApply = outstandingTotal - clientBalance;
+      if (amountToApply <= 0) continue;
+
+      for (final invoice in invoices) {
+        if (amountToApply <= 0) break;
+
+        final data = invoice.data();
+        final remaining = ((data['remainingAmount'] as num?) ?? 0).toDouble();
+        if (remaining <= 0) continue;
+
+        final appliedAmount = amountToApply < remaining
+            ? amountToApply
+            : remaining;
+        final paidAmount = ((data['paidAmount'] as num?) ?? 0).toDouble();
+        final totalAmount = ((data['total'] as num?) ?? 0).toDouble();
+        final nextRemaining = (remaining - appliedAmount)
+            .clamp(0.0, double.infinity)
+            .toDouble();
+        final nextPaidAmount = totalAmount > 0
+            ? (totalAmount - nextRemaining).clamp(0.0, totalAmount).toDouble()
+            : paidAmount + appliedAmount;
+
+        batch.update(invoice.reference, {
+          'paidAmount': nextPaidAmount,
+          'remainingAmount': nextRemaining,
+        });
+        batchWriteCount++;
+        updatedRecords++;
+        amountToApply -= appliedAmount;
+        await commitIfNeeded();
+      }
+    }
+
+    await commitIfNeeded(force: true);
+    return updatedRecords;
   }
 
   Future<void> increaseDebt({

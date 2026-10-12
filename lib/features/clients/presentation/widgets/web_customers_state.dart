@@ -2,8 +2,15 @@ part of '../layout/web_client.dart';
 
 class _WebCustomersState extends State<WebCustomers> {
   final TextEditingController searchController = TextEditingController();
+  late final Stream<List<InvoiceModel>> _invoicesStream;
 
   int selectedCustomerIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _invoicesStream = getIt<InvoicesRepository>().watchInvoices();
+  }
 
   @override
   void dispose() {
@@ -22,6 +29,53 @@ class _WebCustomersState extends State<WebCustomers> {
         );
       },
     );
+  }
+
+  Future<void> _reconcileLegacyInvoiceData() async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('invoice_data_sync_title'.tr()),
+        content: Text('invoice_data_sync_confirmation'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text('cancel'.tr()),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            icon: const Icon(Icons.sync_rounded),
+            label: Text('sync_now'.tr()),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final updatedRecords = await getIt<ClientsRepository>()
+          .reconcileInvoiceOutstandingAmountsWithClientBalances();
+      if (!mounted) return;
+
+      final String message = updatedRecords == 0
+          ? 'invoice_data_already_synced'.tr()
+          : 'invoice_data_sync_success'.tr(
+              args: [updatedRecords.toString()],
+            );
+      showAnimatedSnackDialog(
+        context,
+        message: message,
+        type: AnimatedSnackBarType.success,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      showAnimatedSnackDialog(
+        context,
+        message: 'invoice_data_sync_error'.tr(),
+        type: AnimatedSnackBarType.error,
+      );
+    }
   }
 
   void _openDeleteDialog(CustomerModel customer) {
@@ -95,16 +149,14 @@ class _WebCustomersState extends State<WebCustomers> {
     return Scaffold(
       backgroundColor: context.colors.surface,
       body: Directionality(
-        textDirection: context.locale.languageCode == 'ar'
-            ? .rtl
-            : .ltr,
+        textDirection: context.locale.languageCode == 'ar' ? .rtl : .ltr,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final double pagePadding = constraints.maxWidth >= 1500
                 ? 28
                 : constraints.maxWidth >= 1100
-                    ? 20
-                    : 14;
+                ? 20
+                : 14;
 
             return SingleChildScrollView(
               padding: EdgeInsets.all(pagePadding),
@@ -144,41 +196,92 @@ class _WebCustomersState extends State<WebCustomers> {
                           ? null
                           : customers[selectedCustomerIndex];
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _PageHeader(
-                            count: customers.length,
-                            onAdd: _openAddCustomer,
-                          ),
-                          const SizedBox(height: 16),
-                          _StatsSection(customers: customers),
-                          const SizedBox(height: 16),
-                          _Toolbar(
-                            controller: searchController,
-                            filters: [
-                              'all'.tr(),
-                              'debt'.tr(),
-                              'balanced'.tr(),
+                      return StreamBuilder<List<InvoiceModel>>(
+                        stream: _invoicesStream,
+                        builder: (context, invoiceSnapshot) {
+                          final invoices =
+                              invoiceSnapshot.data ?? const <InvoiceModel>[];
+                          final invoiceCountsByClient = <String, int>{};
+                          final totalPurchasesByClient = <String, double>{};
+
+                          for (final customer in customers) {
+                            final id = customer.id;
+                            if (id != null && id.isNotEmpty) {
+                              invoiceCountsByClient[id] = 0;
+                              totalPurchasesByClient[id] = 0;
+                            }
+                          }
+
+                          for (final invoice in invoices) {
+                            final id = invoice.customerId;
+                            if (invoiceCountsByClient.containsKey(id)) {
+                              invoiceCountsByClient[id] =
+                                  invoiceCountsByClient[id]! + 1;
+                              totalPurchasesByClient[id] =
+                                  (totalPurchasesByClient[id] ?? 0) +
+                                  invoice.total;
+                            }
+                          }
+
+                          final int? unpaidInvoicesCount =
+                              invoiceSnapshot.hasData
+                              ? invoices
+                                    .where(
+                                      (invoice) => invoice.remainingAmount > 0,
+                                    )
+                                    .length
+                              : null;
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _PageHeader(
+                                count: customers.length,
+                                onAdd: _openAddCustomer,
+                              ),
+                              const SizedBox(height: 16),
+                              _StatsSection(
+                                customers: customers,
+                                unpaidInvoicesCount: unpaidInvoicesCount,
+                                invoicesLoading:
+                                    !invoiceSnapshot.hasData &&
+                                    !invoiceSnapshot.hasError,
+                                invoicesError: invoiceSnapshot.hasError,
+                                onReconcileInvoices:
+                                    _reconcileLegacyInvoiceData,
+                              ),
+                              const SizedBox(height: 16),
+                              _Toolbar(
+                                controller: searchController,
+                                filters: [
+                                  'all'.tr(),
+                                  'debt'.tr(),
+                                  'balanced'.tr(),
+                                ],
+                                selectedIndex: _filterIndex(state.filter),
+                                onFilterSelected: _applyFilter,
+                                onSearch: (query) {
+                                  context.read<ClientsCubit>().searchClients(
+                                    query,
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              _MainCustomersArea(
+                                customers: customers,
+                                selectedCustomer: selectedCustomer,
+                                selectedCustomerIndex: selectedCustomerIndex,
+                                onSelectCustomer: _selectCustomer,
+                                onDeleteCustomer: _openDeleteDialog,
+                                onPayDebt: _openDebtDialog,
+                                invoiceCountsByClient: invoiceCountsByClient,
+                                totalPurchasesByClient: totalPurchasesByClient,
+                                invoiceCountsLoaded: invoiceSnapshot.hasData,
+                                invoiceCountsError: invoiceSnapshot.hasError,
+                              ),
                             ],
-                            selectedIndex: _filterIndex(state.filter),
-                            onFilterSelected: _applyFilter,
-                            onSearch: (query) {
-                              context
-                                  .read<ClientsCubit>()
-                                  .searchClients(query);
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          _MainCustomersArea(
-                            customers: customers,
-                            selectedCustomer: selectedCustomer,
-                            selectedCustomerIndex: selectedCustomerIndex,
-                            onSelectCustomer: _selectCustomer,
-                            onDeleteCustomer: _openDeleteDialog,
-                            onPayDebt: _openDebtDialog,
-                          ),
-                        ],
+                          );
+                        },
                       );
                     },
                   ),

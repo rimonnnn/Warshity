@@ -3,7 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/features/auth/cubit/auth_cubit.dart';
+import 'package:warshity/features/auth/register/presentation/widgets/custom_drobdown.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 
 class EditStoreInfoDialog extends StatefulWidget {
@@ -21,18 +24,26 @@ class EditStoreInfoDialog extends StatefulWidget {
     required String initialShopName,
     required String initialActivity,
   }) async {
+    final authCubit = context.read<AuthCubit>();
+
     final saved = await showDialog<bool>(
       context: context,
-      builder: (_) => EditStoreInfoDialog(
-        initialShopName: initialShopName,
-        initialActivity: initialActivity,
+      builder: (_) => BlocProvider.value(
+        value: authCubit,
+        child: EditStoreInfoDialog(
+          initialShopName: initialShopName,
+          initialActivity: initialActivity,
+        ),
       ),
     );
 
     if (saved == true && context.mounted) {
+      final isArabic = context.locale.languageCode == 'ar';
       showAnimatedSnackDialog(
         context,
-        message: 'updated'.tr(),
+        message: isArabic
+            ? 'تم تحديث بيانات المتجر بنجاح'
+            : 'Store information updated successfully',
         type: AnimatedSnackBarType.success,
       );
     }
@@ -48,6 +59,7 @@ class _EditStoreInfoDialogState extends State<EditStoreInfoDialog> {
   late String? _selectedActivity;
   bool _isSaving = false;
   String? _errorMessage;
+  late final Stream<List<String>> _categoriesStream;
 
   List<String> get _registeredActivities => [
     'activities.carpentry'.tr(),
@@ -61,6 +73,7 @@ class _EditStoreInfoDialogState extends State<EditStoreInfoDialog> {
   @override
   void initState() {
     super.initState();
+    _categoriesStream = context.read<AuthCubit>().categoriesStream;
     _shopNameController = TextEditingController(text: widget.initialShopName);
     _selectedActivity = widget.initialActivity.trim().isEmpty
         ? null
@@ -79,7 +92,9 @@ class _EditStoreInfoDialogState extends State<EditStoreInfoDialog> {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser == null) {
       setState(() {
-        _errorMessage = 'signed in'.tr();
+        _errorMessage = context.locale.languageCode == 'ar'
+            ? 'يجب تسجيل الدخول أولاً.'
+            : 'You must be signed in to edit store information.';
       });
       return;
     }
@@ -104,20 +119,17 @@ class _EditStoreInfoDialogState extends State<EditStoreInfoDialog> {
       if (!mounted) return;
       setState(() {
         _isSaving = false;
-        _errorMessage = 'Check your connection'.tr();
+        _errorMessage = context.locale.languageCode == 'ar'
+            ? 'تعذر حفظ بيانات المتجر. تحقق من الاتصال وحاول مرة أخرى.'
+            : 'Could not save store information. Check your connection and try again.';
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = context.locale.languageCode == 'ar';
     final colors = context.colors;
-    final activities = _registeredActivities;
-    final selected = _selectedActivity;
-
-    if (selected != null && !activities.contains(selected)) {
-      activities.insert(0, selected);
-    }
 
     return AlertDialog(
       scrollable: true,
@@ -127,7 +139,7 @@ class _EditStoreInfoDialogState extends State<EditStoreInfoDialog> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-            'Edit store information'.tr(),
+              isArabic ? 'تعديل بيانات المتجر' : 'Edit store information',
             ),
           ),
         ],
@@ -150,45 +162,65 @@ class _EditStoreInfoDialogState extends State<EditStoreInfoDialog> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'enter_store_name'.tr();
+                    return isArabic
+                        ? 'اكتب اسم المتجر.'
+                        : 'Enter the store name.';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: selected,
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: 'activity'.tr(),
-                  prefixIcon: const Icon(Icons.business_outlined),
-                  border: const OutlineInputBorder(),
-                ),
-                items: activities
-                    .map(
-                      (activity) => DropdownMenuItem<String>(
-                        value: activity,
-                        child: Text(
-                          activity,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: _isSaving
-                    ? null
-                    : (value) {
-                        setState(() {
-                          _selectedActivity = value;
-                          _errorMessage = null;
-                        });
-                      },
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'select_activity'.tr();
+              StreamBuilder<List<String>>(
+                stream: _categoriesStream,
+                builder: (context, snapshot) {
+                  final activities = <String>{
+                    ..._registeredActivities,
+                    ...(snapshot.data ?? const <String>[]),
+                  }.toList();
+
+                  if (_selectedActivity != null &&
+                      !activities.contains(_selectedActivity)) {
+                    activities.insert(0, _selectedActivity!);
                   }
-                  return null;
+
+                  return CustomDropdown(
+                    label: 'activity'.tr(),
+                    hint: 'select_activity'.tr(),
+                    items: activities,
+                    width: 420,
+                    height: 56,
+                    selectedItem: _selectedActivity,
+                    prefixIconData: Icons.business_outlined,
+                    borderRadius: 12,
+                    validator: (value) {
+                      final activity = value ?? _selectedActivity;
+                      if (activity == null || activity.trim().isEmpty) {
+                        return 'select_activity'.tr();
+                      }
+                      return null;
+                    },
+                    onSelected: _isSaving
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _selectedActivity = value;
+                              _errorMessage = null;
+                            });
+                          },
+                    onAddCategory: _isSaving
+                        ? null
+                        : (categoryName) async {
+                            await context.read<AuthCubit>().addCategory(
+                              categoryName,
+                            );
+
+                            if (!mounted) return;
+                            setState(() {
+                              _selectedActivity = categoryName;
+                              _errorMessage = null;
+                            });
+                          },
+                  );
                 },
               ),
               if (_errorMessage != null) ...[
@@ -208,7 +240,7 @@ class _EditStoreInfoDialogState extends State<EditStoreInfoDialog> {
       actions: [
         TextButton(
           onPressed: _isSaving ? null : () => Navigator.of(context).pop(false),
-          child: Text('cancel'.tr()),
+          child: Text(isArabic ? 'إلغاء' : 'Cancel'),
         ),
         FilledButton.icon(
           onPressed: _isSaving ? null : _save,
@@ -219,7 +251,7 @@ class _EditStoreInfoDialogState extends State<EditStoreInfoDialog> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(Icons.save_outlined, size: 18),
-          label: Text('save'.tr()),
+          label: Text(isArabic ? 'حفظ' : 'Save'),
         ),
       ],
     );

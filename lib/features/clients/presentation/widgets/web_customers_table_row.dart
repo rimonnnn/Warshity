@@ -7,6 +7,9 @@ class _CustomerTableRow extends StatelessWidget {
     required this.selected,
     required this.onTap,
     required this.onDelete,
+    required this.invoiceCount,
+    required this.invoiceCountLoaded,
+    required this.invoiceCountError,
   });
 
   final CustomerModel customer;
@@ -14,6 +17,9 @@ class _CustomerTableRow extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final VoidCallback onDelete;
+  final int? invoiceCount;
+  final bool invoiceCountLoaded;
+  final bool invoiceCountError;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +122,11 @@ class _CustomerTableRow extends StatelessWidget {
               Expanded(
                 flex: 1,
                 child: Text(
-                  customer.orderCount.toString(),
+                  invoiceCountError
+                      ? '—'
+                      : invoiceCountLoaded
+                          ? (invoiceCount ?? 0).toString()
+                          : '...',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontSize: 11,
