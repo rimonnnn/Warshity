@@ -242,7 +242,7 @@
   "product_image": "Product Image",
   "upload_product_image": "Upload Product Image",
   "product_name": "Product Name",
-  "product_name_hint": "Example: Beech Wood Chair",
+  "prpduct_name_hint": "Enter product name",
   "category": "Category",
   "select_category": "Select Category",
   "product_code1": "Product Code",
@@ -620,7 +620,8 @@
   "hide_password": "Hide password",
   "workspace": "Workspace",
 "main_menu": "MAIN MENU",
-"sales_invoice": "Sales Invoice"
+"sales_invoice": "Sales Invoice",
+"generating_product_code": "Generating product code..."
 
  
 }

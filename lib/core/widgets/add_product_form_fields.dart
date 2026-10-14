@@ -76,7 +76,7 @@ class AddProductFormFields extends StatelessWidget {
           width: double.infinity,
           height: productNameFieldHeight,
           label: 'Product Name'.tr(),
-          hint: 'Example: Beech Wood Chair'.tr(),
+          hint: 'prpduct_name_hint'.tr(),
           iconSize: iconSize,
           controller: nameController,
           keyboardType: TextInputType.name,
@@ -107,7 +107,7 @@ class AddProductFormFields extends StatelessWidget {
               width: double.infinity,
               label: 'Product Code'.tr(),
               height: productCodeFieldHeight,
-              hint: 'Generating product code...'.tr(),
+              hint: 'generating_product_code'.tr(),
               controller: barcodeController,
               iconSize: iconSize,
               keyboardType: TextInputType.text,
@@ -115,7 +115,7 @@ class AddProductFormFields extends StatelessWidget {
               readOnly: true,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Required'.tr();
+                  return 'required'.tr();
                 }
                 return null;
               },
@@ -137,7 +137,11 @@ class AddProductFormFields extends StatelessWidget {
 
             if (narrow) {
               return Column(
-                children: [codeField, SizedBox(height: gap), priceField],
+                children: [
+                  codeField,
+                  SizedBox(height: gap),
+                  priceField,
+                ],
               );
             }
 

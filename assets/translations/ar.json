@@ -391,7 +391,7 @@
   "Product Image" : "صورة المنتج",
   "Upload Product Image" : "تحميل صورة المنتج",
   "Product Name" : "اسم المنتج",
-  "Example: Beech Wood Chair" : "مثال: صناعة الخشب البيضاء",
+  "prpduct_name_hint" : "أدخل اسم المنتج",
   "Product name is required" : "اسم المنتج مطلوب",
   "Category" : "الفئة",
   "Select Category" : "اختر الفئة",
@@ -629,7 +629,8 @@
   "hide_password": "إخفاء كلمة المرور",
   "workspace": "مساحة العمل",
 "main_menu": "القائمة الرئيسية",
-"sales_invoice" : "فاتورة المبيعات"
+"sales_invoice" : "فاتورة المبيعات",
+"generating_product_code": "جارٍ إنشاء كود المنتج..."
 
 }
 
