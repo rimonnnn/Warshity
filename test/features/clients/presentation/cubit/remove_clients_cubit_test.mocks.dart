@@ -95,6 +95,17 @@ class MockClientsRepository extends _i1.Mock implements _i3.ClientsRepository {
           as _i4.Future<void>);
 
   @override
+  _i4.Future<int> reconcileInvoiceOutstandingAmountsWithClientBalances() =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #reconcileInvoiceOutstandingAmountsWithClientBalances,
+              [],
+            ),
+            returnValue: _i4.Future<int>.value(0),
+          )
+          as _i4.Future<int>);
+
+  @override
   _i4.Future<void> increaseDebt({
     required String? clientId,
     required num? amount,

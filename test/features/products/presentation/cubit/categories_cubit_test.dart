@@ -1,4 +1,3 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -36,8 +35,9 @@ void main() {
 
   group('watchCategories', () {
     test('Should emit loading then loaded', () async {
-      when(repository.watchCategories())
-          .thenAnswer((_) => Stream.value(categories));
+      when(
+        repository.watchCategories(),
+      ).thenAnswer((_) => Stream.value(categories));
 
       final expectation = expectLater(
         cubit.stream,
@@ -52,7 +52,6 @@ void main() {
       await expectation;
 
       final state = cubit.state as CategoriesLoaded;
-
       expect(state.categories, categories);
     });
 
@@ -76,11 +75,7 @@ void main() {
       await expectation;
 
       final state = cubit.state as CategoriesError;
-
-      expect(
-        state.message,
-        'Exception: Failed to load categories',
-      );
+      expect(state.message, 'Exception: Failed to load categories');
     });
   });
 
@@ -89,30 +84,27 @@ void main() {
       await cubit.addCategory('   ');
 
       expect(cubit.state, isA<CategoriesInitial>());
-
       verifyNever(repository.addCategory(any));
     });
 
     test('Should trim category name before adding', () async {
-      when(repository.addCategory('Furniture'))
-          .thenAnswer((_) async {});
+      when(
+        repository.addCategory('Furniture'),
+      ).thenAnswer((_) async {});
 
       await cubit.addCategory('  Furniture  ');
 
-      verify(
-        repository.addCategory('Furniture'),
-      ).called(1);
+      verify(repository.addCategory('Furniture')).called(1);
     });
 
     test('Should emit AddCategoryLoading before adding category', () async {
-      when(repository.addCategory('Furniture'))
-          .thenAnswer((_) async {});
+      when(
+        repository.addCategory('Furniture'),
+      ).thenAnswer((_) async {});
 
       final expectation = expectLater(
         cubit.stream,
-        emits(
-          isA<AddCategoryLoading>(),
-        ),
+        emits(isA<AddCategoryLoading>()),
       );
 
       await cubit.addCategory('Furniture');
@@ -120,24 +112,33 @@ void main() {
       await expectation;
     });
 
-    test('Should not emit success state after adding category', () async {
-      when(repository.addCategory('Furniture'))
-          .thenAnswer((_) async {});
+    test(
+      'Should return to CategoriesLoaded after adding category successfully',
+      () async {
+        when(
+          repository.addCategory('Furniture'),
+        ).thenAnswer((_) async {});
 
-      await cubit.addCategory('Furniture');
+        final expectation = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            isA<AddCategoryLoading>(),
+            isA<CategoriesLoaded>(),
+          ]),
+        );
 
-      expect(
-        cubit.state,
-        isA<AddCategoryLoading>(),
-      );
-    });
+        await cubit.addCategory('Furniture');
+        await expectation;
 
-    test('Should emit AddCategoryError when adding category fails',
-        () async {
-      when(repository.addCategory('Furniture'))
-          .thenThrow(
-        Exception('Failed to add category'),
-      );
+        final state = cubit.state as CategoriesLoaded;
+        expect(state.categories, isEmpty);
+      },
+    );
+
+    test('Should emit AddCategoryError when adding category fails', () async {
+      when(
+        repository.addCategory('Furniture'),
+      ).thenThrow(Exception('Failed to add category'));
 
       final expectation = expectLater(
         cubit.stream,
@@ -148,40 +149,35 @@ void main() {
       );
 
       await cubit.addCategory('Furniture');
-
       await expectation;
 
       final state = cubit.state as AddCategoryError;
-
       expect(
         state.message,
-        'Exception: Failed to add category',
+        'Failed to add category. Please try again.',
       );
     });
 
-    test('Should preserve current categories when adding fails',
-        () async {
-      when(repository.watchCategories())
-          .thenAnswer((_) => Stream.value(categories));
+    test('Should preserve current categories when adding fails', () async {
+      when(
+        repository.watchCategories(),
+      ).thenAnswer((_) => Stream.value(categories));
 
       cubit.watchCategories();
-
       await Future<void>.delayed(Duration.zero);
 
-      when(repository.addCategory('Tools'))
-          .thenThrow(
-        Exception('Failed to add category'),
-      );
+      when(
+        repository.addCategory('Tools'),
+      ).thenThrow(Exception('Failed to add category'));
 
       await cubit.addCategory('Tools');
 
       final state = cubit.state as AddCategoryError;
-
+      expect(state.categories, categories);
       expect(
-        state.categories,
-        categories,
+        state.message,
+        'Failed to add category. Please try again.',
       );
     });
   });
 }
-

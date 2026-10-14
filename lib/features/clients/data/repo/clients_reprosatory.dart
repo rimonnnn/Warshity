@@ -25,6 +25,8 @@ class ClientsRepository {
     await remoteDataSource.decreaseDebt(clientId: clientId, amount: amount);
   }
 
+  /// Repairs historic payments that lowered a customer's debt but were not
+  /// written back to the corresponding invoice paid/remaining amounts.
   Future<int> reconcileInvoiceOutstandingAmountsWithClientBalances() {
     return remoteDataSource.reconcileInvoiceOutstandingAmountsWithClientBalances();
   }

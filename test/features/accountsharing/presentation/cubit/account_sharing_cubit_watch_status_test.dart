@@ -15,6 +15,18 @@ void main() {
 
   setUp(() {
     mockRepository = createMockRepository();
+
+    // The Cubit subscribes to these streams together when watching starts.
+    when(
+      mockRepository.watchActiveSharedAccounts(),
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      mockRepository.watchSentInvitationStatuses(),
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      mockRepository.watchReceivedInvitations(),
+    ).thenAnswer((_) => const Stream.empty());
+
     accountSharingCubit = AccountSharingCubit(mockRepository);
   });
 
@@ -23,7 +35,7 @@ void main() {
   });
 
   group('watchReceivedInvitations', () {
-    test('should return repository watchReceivedInvitations stream', () {
+    test('should return repository watchReceivedInvitations stream', () async {
       final stream = Stream.value(<ShareInvitationModel>[]);
 
       when(
@@ -43,7 +55,9 @@ void main() {
     test(
       'should emit AccountSharingStatusChanged when shared accounts stream emits',
       () async {
-        final controller = StreamController<List<Map<String, dynamic>>>();
+        final controller =
+            StreamController<List<Map<String, dynamic>>>();
+        addTearDown(() => controller.close());
 
         when(
           mockRepository.watchActiveSharedAccounts(),
@@ -63,8 +77,6 @@ void main() {
         await stateExpectation;
 
         expect(accountSharingCubit.sharedAccountId, 'connection-1');
-
-        await controller.close();
       },
     );
   });

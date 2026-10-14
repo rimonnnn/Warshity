@@ -313,20 +313,15 @@ class InvoicesRemoteDataSource {
     return _sharingRepository.watchActiveConnectionIds().asyncExpand((
       connectionIds,
     ) {
-      final streams = <Stream<QuerySnapshot<Map<String, dynamic>>>>[];
-
-      streams.add(
+      final streams = <Stream<QuerySnapshot<Map<String, dynamic>>>>[
         firestore
             .collection('invoices')
             .where('userId', isEqualTo: uid)
             .snapshots(),
-      );
+      ];
 
       for (final connectionId in connectionIds) {
-        if (connectionId.isEmpty) {
-          continue;
-        }
-
+        if (connectionId.isEmpty) continue;
         streams.add(
           firestore
               .collection('invoices')
@@ -335,64 +330,7 @@ class InvoicesRemoteDataSource {
         );
       }
 
-      if (streams.length == 1) {
-        return streams.first.map(_mapInvoiceSnapshot);
-      }
-
-      return Stream.multi((controller) {
-        final documentsByQuery =
-            List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
-              streams.length,
-              (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
-            );
-        final initialSnapshotsReceived = List<bool>.filled(
-          streams.length,
-          false,
-        );
-
-        final subscriptions =
-            <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
-
-        void emit() {
-          if (initialSnapshotsReceived.any((received) => !received)) {
-            return;
-          }
-
-          final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
-          for (final queryDocuments in documentsByQuery) {
-            documents.addAll(queryDocuments);
-          }
-          final invoices = documents.values
-              .where((doc) => doc.exists && doc.data() != null)
-              .map((doc) => InvoiceModel.fromJson(doc.data()!))
-              .toList();
-
-          invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-          controller.add(invoices);
-        }
-
-        for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
-          final stream = streams[streamIndex];
-          final subscription = stream.listen((snapshot) {
-            final queryDocuments = documentsByQuery[streamIndex];
-            queryDocuments
-              ..clear()
-              ..addEntries(snapshot.docs.map((doc) => MapEntry(doc.id, doc)));
-            initialSnapshotsReceived[streamIndex] = true;
-
-            emit();
-          }, onError: controller.addError);
-
-          subscriptions.add(subscription);
-        }
-
-        controller.onCancel = () async {
-          for (final subscription in subscriptions) {
-            await subscription.cancel();
-          }
-        };
-      });
+      return _mergeInvoiceQueryStreams(streams);
     });
   }
 
@@ -402,21 +340,16 @@ class InvoicesRemoteDataSource {
     return _sharingRepository.watchActiveConnectionIds().asyncExpand((
       connectionIds,
     ) {
-      final streams = <Stream<QuerySnapshot<Map<String, dynamic>>>>[];
-
-      streams.add(
+      final streams = <Stream<QuerySnapshot<Map<String, dynamic>>>>[
         firestore
             .collection('invoices')
             .where('userId', isEqualTo: uid)
             .where('customerId', isEqualTo: customerId)
             .snapshots(),
-      );
+      ];
 
       for (final connectionId in connectionIds) {
-        if (connectionId.isEmpty) {
-          continue;
-        }
-
+        if (connectionId.isEmpty) continue;
         streams.add(
           firestore
               .collection('invoices')
@@ -426,72 +359,7 @@ class InvoicesRemoteDataSource {
         );
       }
 
-      if (streams.length == 1) {
-        return streams.first.map((snapshot) {
-          final invoices = snapshot.docs
-              .map((doc) => InvoiceModel.fromJson(doc.data()))
-              .toList();
-
-          invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-          return invoices.take(5).toList();
-        });
-      }
-
-      return Stream.multi((controller) {
-        final documentsByQuery =
-            List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
-              streams.length,
-              (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
-            );
-        final initialSnapshotsReceived = List<bool>.filled(
-          streams.length,
-          false,
-        );
-
-        final subscriptions =
-            <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
-
-        void emit() {
-          if (initialSnapshotsReceived.any((received) => !received)) {
-            return;
-          }
-
-          final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
-          for (final queryDocuments in documentsByQuery) {
-            documents.addAll(queryDocuments);
-          }
-          final invoices = documents.values
-              .where((doc) => doc.exists && doc.data() != null)
-              .map((doc) => InvoiceModel.fromJson(doc.data()!))
-              .toList();
-
-          invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-          controller.add(invoices.take(5).toList());
-        }
-
-        for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
-          final stream = streams[streamIndex];
-          final subscription = stream.listen((snapshot) {
-            final queryDocuments = documentsByQuery[streamIndex];
-            queryDocuments
-              ..clear()
-              ..addEntries(snapshot.docs.map((doc) => MapEntry(doc.id, doc)));
-            initialSnapshotsReceived[streamIndex] = true;
-
-            emit();
-          }, onError: controller.addError);
-
-          subscriptions.add(subscription);
-        }
-
-        controller.onCancel = () async {
-          for (final subscription in subscriptions) {
-            await subscription.cancel();
-          }
-        };
-      });
+      return _mergeInvoiceQueryStreams(streams, limit: 5);
     });
   }
 
@@ -564,21 +432,16 @@ class InvoicesRemoteDataSource {
     return _sharingRepository.watchActiveConnectionIds().asyncExpand((
       connectionIds,
     ) {
-      final streams = <Stream<QuerySnapshot<Map<String, dynamic>>>>[];
-
-      streams.add(
+      final streams = <Stream<QuerySnapshot<Map<String, dynamic>>>>[
         firestore
             .collection('invoices')
             .where('userId', isEqualTo: uid)
             .where('customerId', isEqualTo: customerId)
             .snapshots(),
-      );
+      ];
 
       for (final connectionId in connectionIds) {
-        if (connectionId.isEmpty) {
-          continue;
-        }
-
+        if (connectionId.isEmpty) continue;
         streams.add(
           firestore
               .collection('invoices')
@@ -588,72 +451,7 @@ class InvoicesRemoteDataSource {
         );
       }
 
-      if (streams.length == 1) {
-        return streams.first.map((snapshot) {
-          final invoices = snapshot.docs
-              .map((doc) => InvoiceModel.fromJson(doc.data()))
-              .toList();
-
-          invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-          return invoices;
-        });
-      }
-
-      return Stream.multi((controller) {
-        final documentsByQuery =
-            List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
-              streams.length,
-              (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
-            );
-        final initialSnapshotsReceived = List<bool>.filled(
-          streams.length,
-          false,
-        );
-
-        final subscriptions =
-            <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
-
-        void emit() {
-          if (initialSnapshotsReceived.any((received) => !received)) {
-            return;
-          }
-
-          final documents = <String, DocumentSnapshot<Map<String, dynamic>>>{};
-          for (final queryDocuments in documentsByQuery) {
-            documents.addAll(queryDocuments);
-          }
-          final invoices = documents.values
-              .where((doc) => doc.exists && doc.data() != null)
-              .map((doc) => InvoiceModel.fromJson(doc.data()!))
-              .toList();
-
-          invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-          controller.add(invoices);
-        }
-
-        for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
-          final stream = streams[streamIndex];
-          final subscription = stream.listen((snapshot) {
-            final queryDocuments = documentsByQuery[streamIndex];
-            queryDocuments
-              ..clear()
-              ..addEntries(snapshot.docs.map((doc) => MapEntry(doc.id, doc)));
-            initialSnapshotsReceived[streamIndex] = true;
-
-            emit();
-          }, onError: controller.addError);
-
-          subscriptions.add(subscription);
-        }
-
-        controller.onCancel = () async {
-          for (final subscription in subscriptions) {
-            await subscription.cancel();
-          }
-        };
-      });
+      return _mergeInvoiceQueryStreams(streams);
     });
   }
 
@@ -717,15 +515,79 @@ class InvoicesRemoteDataSource {
     });
   }
 
-  List<InvoiceModel> _mapInvoiceSnapshot(
-    QuerySnapshot<Map<String, dynamic>> snapshot,
-  ) {
-    final invoices = snapshot.docs
-        .map((doc) => InvoiceModel.fromJson(doc.data()))
-        .toList();
+  List<InvoiceModel> _mapInvoiceDocuments(
+    Iterable<DocumentSnapshot<Map<String, dynamic>>> documents, {
+    int? limit,
+  }) {
+    final uniqueDocuments = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+    for (final document in documents) {
+      uniqueDocuments[document.id] = document;
+    }
 
-    invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final invoices =
+        uniqueDocuments.values
+            .where((document) => document.exists && document.data() != null)
+            .map((document) => InvoiceModel.fromJson(document.data()!))
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-    return invoices;
+    return limit == null ? invoices : invoices.take(limit).toList();
+  }
+
+  Stream<List<InvoiceModel>> _mergeInvoiceQueryStreams(
+    List<Stream<QuerySnapshot<Map<String, dynamic>>>> streams, {
+    int? limit,
+  }) {
+    if (streams.length == 1) {
+      return streams.first.map(
+        (snapshot) => _mapInvoiceDocuments(snapshot.docs, limit: limit),
+      );
+    }
+
+    return Stream.multi((controller) {
+      final documentsByQuery =
+          List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
+            streams.length,
+            (_) => <String, DocumentSnapshot<Map<String, dynamic>>>{},
+          );
+      final initialSnapshotsReceived = List<bool>.filled(streams.length, false);
+      final subscriptions =
+          <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
+
+      void emit() {
+        if (initialSnapshotsReceived.any((received) => !received)) return;
+
+        final uniqueDocuments =
+            <String, DocumentSnapshot<Map<String, dynamic>>>{};
+        for (final queryDocuments in documentsByQuery) {
+          uniqueDocuments.addAll(queryDocuments);
+        }
+
+        controller.add(
+          _mapInvoiceDocuments(uniqueDocuments.values, limit: limit),
+        );
+      }
+
+      for (var streamIndex = 0; streamIndex < streams.length; streamIndex++) {
+        final subscription = streams[streamIndex].listen((snapshot) {
+          final queryDocuments = documentsByQuery[streamIndex];
+          queryDocuments.clear();
+          for (final document in snapshot.docs) {
+            queryDocuments[document.id] = document;
+          }
+
+          initialSnapshotsReceived[streamIndex] = true;
+          emit();
+        }, onError: controller.addError);
+
+        subscriptions.add(subscription);
+      }
+
+      controller.onCancel = () async {
+        for (final subscription in subscriptions) {
+          await subscription.cancel();
+        }
+      };
+    });
   }
 }

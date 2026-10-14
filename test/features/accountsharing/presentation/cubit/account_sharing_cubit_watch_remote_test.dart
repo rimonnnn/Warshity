@@ -14,6 +14,19 @@ void main() {
 
   setUp(() {
     mockRepository = createMockRepository();
+
+    // startWatchingSharedAccounts subscribes to all three streams.
+    // Give streams that are not relevant to a test safe defaults.
+    when(
+      mockRepository.watchActiveSharedAccounts(),
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      mockRepository.watchSentInvitationStatuses(),
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      mockRepository.watchReceivedInvitations(),
+    ).thenAnswer((_) => const Stream.empty());
+
     accountSharingCubit = AccountSharingCubit(mockRepository);
   });
 
@@ -23,39 +36,42 @@ void main() {
 
   group('startWatchingSharedAccounts - remote changes', () {
     test(
-      'should emit AccountInvitationAcceptedRemotely when new connection is added',
+      'should emit AccountInvitationAcceptedRemotely when a sent invitation '
+      'changes from pending to accepted',
       () async {
-        final controller = StreamController<List<Map<String, dynamic>>>();
+        final statusesController = StreamController<Map<String, String>>();
+        addTearDown(() => statusesController.close());
 
         when(
-          mockRepository.watchActiveSharedAccounts(),
-        ).thenAnswer((_) => controller.stream);
-
-        accountSharingCubit.startWatchingSharedAccounts();
-
-        controller.add([]);
-
-        await Future<void>.delayed(Duration.zero);
+          mockRepository.watchSentInvitationStatuses(),
+        ).thenAnswer((_) => statusesController.stream);
 
         final stateExpectation = expectLater(
           accountSharingCubit.stream,
-          emits(isA<AccountInvitationAcceptedRemotely>()),
+          emitsThrough(isA<AccountInvitationAcceptedRemotely>()),
         );
 
-        controller.add([
-          {'id': 'connection-1'},
-        ]);
+        accountSharingCubit.startWatchingSharedAccounts();
+
+        // The first snapshot establishes the baseline and should not emit an
+        // "accepted remotely" event by itself.
+        statusesController.add({'invitation-1': 'pending'});
+        await Future<void>.delayed(Duration.zero);
+
+        // The transition from pending to accepted is what the Cubit detects.
+        statusesController.add({'invitation-1': 'accepted'});
 
         await stateExpectation;
-
-        await controller.close();
       },
     );
 
     test(
-      'should emit AccountSharedAccountDeletedRemotely when connection is removed',
+      'should emit AccountSharedAccountDeletedRemotely when a connection '
+      'disappears from the remote stream',
       () async {
-        final controller = StreamController<List<Map<String, dynamic>>>();
+        final controller =
+            StreamController<List<Map<String, dynamic>>>();
+        addTearDown(() => controller.close());
 
         when(
           mockRepository.watchActiveSharedAccounts(),
@@ -63,22 +79,21 @@ void main() {
 
         accountSharingCubit.startWatchingSharedAccounts();
 
+        // First snapshot initializes the current connection IDs.
         controller.add([
           {'id': 'connection-1'},
         ]);
-
         await Future<void>.delayed(Duration.zero);
 
         final stateExpectation = expectLater(
           accountSharingCubit.stream,
-          emits(isA<AccountSharedAccountDeletedRemotely>()),
+          emitsThrough(isA<AccountSharedAccountDeletedRemotely>()),
         );
 
+        // The next snapshot removes the connection remotely.
         controller.add([]);
 
         await stateExpectation;
-
-        await controller.close();
       },
     );
   });

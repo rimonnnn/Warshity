@@ -82,6 +82,19 @@ class MockProductsRepository extends _i1.Mock
           as _i4.Future<String>);
 
   @override
+  _i4.Future<String> generateProductBarcode() =>
+      (super.noSuchMethod(
+            Invocation.method(#generateProductBarcode, []),
+            returnValue: _i4.Future<String>.value(
+              _i7.dummyValue<String>(
+                this,
+                Invocation.method(#generateProductBarcode, []),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
+
+  @override
   _i4.Future<void> addProduct(_i5.ProductModel? product) =>
       (super.noSuchMethod(
             Invocation.method(#addProduct, [product]),

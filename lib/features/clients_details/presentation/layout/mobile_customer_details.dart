@@ -9,6 +9,8 @@ import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
+import 'package:warshity/features/add_invoices/data/repo/add_invoice_repository.dart';
+import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/clients/presentation/cubit/debt_cubit.dart';
 import 'package:warshity/features/clients_details/presentation/widgets/customer_debt_card.dart';
 import 'package:warshity/features/clients_details/presentation/widgets/customer_details_shimmer.dart';
@@ -108,26 +110,47 @@ class MobileCustomerDetails extends StatelessWidget {
 
                   HeightSpace(20.h),
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomerStatCard(
-                          title: 'total_purchases'.tr(),
-                          value: customer.totalPurchases.toString(),
-                          icon: Icons.trending_up,
-                        ),
-                      ),
+                  // Use the invoices stream as the source of truth for
+                  // purchases and order count; the cached client fields may be
+                  // outdated when older invoices or payments were saved.
+                  StreamBuilder<List<InvoiceModel>>(
+                    stream: getIt<InvoicesRepository>()
+                        .watchAllClientInvoices(customer.id!),
+                    builder: (context, invoiceSnapshot) {
+                      final invoices =
+                          invoiceSnapshot.data ?? const <InvoiceModel>[];
+                      final totalPurchases = invoices.fold<double>(
+                        0,
+                        (sum, invoice) => sum + invoice.total,
+                      );
 
-                      SizedBox(width: 12.w),
+                      final statsValue = invoiceSnapshot.hasError
+                          ? '—'
+                          : invoiceSnapshot.hasData
+                              ? null
+                              : '...';
 
-                      Expanded(
-                        child: CustomerStatCard(
-                          title: 'order_count'.tr(),
-                          value: customer.orderCount.toString(),
-                          icon: Icons.shopping_bag_outlined,
-                        ),
-                      ),
-                    ],
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: CustomerStatCard(
+                              title: 'total_purchases'.tr(),
+                              value: statsValue ??
+                                  totalPurchases.toStringAsFixed(2),
+                              icon: Icons.trending_up,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: CustomerStatCard(
+                              title: 'order_count'.tr(),
+                              value: statsValue ?? invoices.length.toString(),
+                              icon: Icons.shopping_bag_outlined,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
