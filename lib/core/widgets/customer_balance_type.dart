@@ -24,30 +24,36 @@ class CustomerBalanceType extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: RadioListTile<bool>(
-                value: false,
-                groupValue: value,
-                onChanged: onChanged == null ? null : (v) => onChanged!(v!),
-                title: Text("not_debit".tr()),
-                contentPadding: EdgeInsets.zero,
+              child: Material(
+                color: Colors.transparent,
+                child: RadioListTile<bool>(
+                  value: false,
+                  groupValue: value,
+                  onChanged: onChanged == null ? null : (v) => onChanged!(v!),
+                  title: Text("not_debit".tr()),
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
             ),
 
             Expanded(
-              child: RadioListTile<bool>(
-                value: true,
-                // ignore: deprecated_member_use
-                groupValue: value,
-                // ignore: deprecated_member_use
-                onChanged: onChanged == null
-                    ? null
-                    : (v) {
-                        if (v != null) {
-                          onChanged!(v);
-                        }
-                      },
-                title: Text("debit".tr()),
-                contentPadding: EdgeInsets.zero,
+              child: Material(
+                color: Colors.transparent,
+                child: RadioListTile<bool>(
+                  value: true,
+
+                  groupValue: value,
+
+                  onChanged: onChanged == null
+                      ? null
+                      : (v) {
+                          if (v != null) {
+                            onChanged!(v);
+                          }
+                        },
+                  title: Text("debit".tr()),
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
             ),
           ],
