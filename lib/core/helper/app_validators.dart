@@ -128,6 +128,4 @@ class AppValidators {
 
     return null;
   }
-
- 
 }
