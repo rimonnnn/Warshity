@@ -62,6 +62,12 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                 type: AnimatedSnackBarType.success,
               );
               context.pushReplacementNamed(AppRoutes.mainScreen);
+            } else if (state is EmailVerificationSent) {
+              showAnimatedSnackDialog(
+                context,
+                message: 'verification_email_sent'.tr(),
+                type: AnimatedSnackBarType.success,
+              );
             }
           },
           builder: (context, state) {
@@ -104,7 +110,7 @@ class _LoginMobileLayoutState extends State<LoginMobileLayout> {
                               children: [
                                 CustomTextField(
                                   prefixIconData: Icons.email_outlined,
-                                  
+
                                   label: "email".tr(),
                                   hint: "enter_your_email".tr(),
                                   borderRadius: AppRadius.sm,

@@ -303,7 +303,11 @@ class _RegisterWebLayoutState extends State<RegisterWebLayout> {
                                     hint: "hash".tr(),
                                     width: 270,
                                     controller: confirmPasswordController,
-                                    validator: AppValidators.password,
+                                    validator: (value) =>
+                                        AppValidators.confirmPassword(
+                                          value ?? '',
+                                          passwordController.text,
+                                        ),
                                     prefixIconData: Icons.lock,
                                     iconSize: 20,
                                     borderRadius: AppRadius.sm,
