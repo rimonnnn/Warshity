@@ -28,7 +28,9 @@ class CustomerBalanceType extends StatelessWidget {
                 color: Colors.transparent,
                 child: RadioListTile<bool>(
                   value: false,
+                  // ignore: deprecated_member_use
                   groupValue: value,
+                  // ignore: deprecated_member_use
                   onChanged: onChanged == null ? null : (v) => onChanged!(v!),
                   title: Text("not_debit".tr()),
                   contentPadding: EdgeInsets.zero,
@@ -42,8 +44,10 @@ class CustomerBalanceType extends StatelessWidget {
                 child: RadioListTile<bool>(
                   value: true,
 
+                  // ignore: deprecated_member_use
                   groupValue: value,
 
+                  // ignore: deprecated_member_use
                   onChanged: onChanged == null
                       ? null
                       : (v) {

@@ -113,11 +113,13 @@ class _ForgetPassWebState extends State<ForgetPassWeb> {
                       const SizedBox(height: 32),
                       CustomTextField(
                         label: "email".tr(),
-                        hint: "email1".tr(),
+                        hint: "enter_your_email".tr(),
                         keyboardType: TextInputType.emailAddress,
                         controller: emailController,
                         validator: AppValidators.email,
                         width: double.infinity,
+                        prefixIconData: Icons.email_outlined,
+                        iconSize: 20,
                       ),
                       const SizedBox(height: 28),
                       BlocBuilder<AuthCubit, AuthState>(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/widgets/animated_loading_indicator.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 
 class PrimaryButtonWidget extends StatelessWidget {
@@ -52,46 +53,52 @@ class PrimaryButtonWidget extends StatelessWidget {
         ),
       ),
       onPressed: isLoading ? null : onPress,
-      child: isLoading
-          ? SizedBox(
-              width: 16.w,
-              height: 16.w,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5.w,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  textColor ?? context.colors.onPrimary,
-                ),
-              ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  iconData,
-                  color: iconeColor ?? context.colors.onSurfaceVariant,
-                  size: iconSize ?? 20,
-                ),
-                WidthSpace(buttonspacing ?? 12),
-                Text(
-                  buttonText ?? "",
-                  style: context.text.titleMedium?.copyWith(
-                    color: textColor ?? context.colors.onPrimary,
-                    fontSize: fontSize ?? 16.sp,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        child: isLoading
+            ? AnimatedLoadingIndicator(
+                key: const ValueKey('loading'),
+                color: textColor ?? context.colors.onPrimary,
+                size: ((height ?? 57.h) * 0.1).clamp(4.0, 6.0),
+              )
+            : Row(
+                key: const ValueKey('content'),
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (iconData != null) ...[
+                    Icon(
+                      iconData,
+                      color: iconeColor ?? context.colors.onPrimary,
+                      size: iconSize ?? 20,
+                    ),
+                    WidthSpace(buttonspacing ?? 12),
+                  ],
+                  Flexible(
+                    child: Text(
+                      buttonText ?? '',
+                      overflow: TextOverflow.ellipsis,
+                      style: context.text.titleMedium?.copyWith(
+                        color: textColor ?? context.colors.onPrimary,
+                        fontSize: fontSize ?? 16.sp,
+                      ),
+                    ),
                   ),
-                ),
-                SizedBox(width: buttonspacing ?? 12.w),
-                if (suffixicon == true && iconPath != null)
-                  Expanded(
-                    child: Image.asset(
+                  if (suffixicon == true && iconPath != null) ...[
+                    SizedBox(width: buttonspacing ?? 12.w),
+                    Image.asset(
                       iconPath!,
                       width: 24.w,
                       height: 24.h,
                       color: textColor ?? context.colors.onPrimary,
                       fit: BoxFit.contain,
                     ),
-                  ),
-              ],
-            ),
+                  ],
+                ],
+              ),
+      ),
     );
   }
 }

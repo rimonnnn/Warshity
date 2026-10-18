@@ -56,7 +56,7 @@ Future<void> main() async {
       path: AppAssets.translations,
       fallbackLocale: const Locale('ar'),
       startLocale: const Locale('ar'),
-      child: const MyApp(), 
+      child: const MyApp(),
     ),
   );
 
