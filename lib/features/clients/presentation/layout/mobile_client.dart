@@ -7,13 +7,13 @@ import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/widgets/add_client_dialog.dart';
+import 'package:warshity/core/widgets/app_filter_tabs.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/clients_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/remove_clients_cubit.dart';
 import 'package:warshity/features/clients/presentation/widgets/add_customer_button.dart';
 import 'package:warshity/features/clients/presentation/widgets/clients_shimmer.dart';
-import 'package:warshity/features/clients/presentation/widgets/customer_filter_tabs.dart';
 import 'package:warshity/features/clients/presentation/widgets/customer_list.dart';
 import 'package:warshity/features/clients/presentation/widgets/customer_map_card.dart';
 import 'package:warshity/features/clients/presentation/widgets/delivery_orders_card.dart';
@@ -86,8 +86,8 @@ class _MobileCustomersState extends State<MobileClient> {
                     return ClientFilter.all;
                   },
                   builder: (context, currentFilter) {
-                    return CustomerFilterTabs(
-                      categories: filters,
+                    return AppFilterTabs(
+                      items: filters,
                       selectedIndex: switch (currentFilter) {
                         ClientFilter.all => 0,
                         ClientFilter.hasDebt => 1,

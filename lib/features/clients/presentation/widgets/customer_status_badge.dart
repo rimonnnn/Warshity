@@ -16,11 +16,12 @@ class CustomerStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = hasDebt ? context.colors.error : context.colors.primary;
+    final color = hasDebt ? context.colors.error : context.appColors.success;
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: color.withOpacity(.08),
         borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: color),
@@ -37,9 +38,7 @@ class CustomerStatusBadge extends StatelessWidget {
           SizedBox(width: 6.w),
 
           Text(
-            hasDebt
-                ? "customer_debt".tr(args: [amount])
-                : "customer_balance".tr(args: [amount]),
+            hasDebt ? "customer_debt".tr() : "customer_balance".tr(),
             style: context.text.bodySmall?.copyWith(
               color: color,
               fontWeight: FontWeight.w600,

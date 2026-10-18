@@ -41,10 +41,9 @@ class CustomerCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: context.colors.onSurface.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -118,7 +117,7 @@ class CustomerCard extends StatelessWidget {
                             onTap: tapToDelete,
                             child: Icon(
                               Icons.delete_outline_outlined,
-                              color: Colors.red,
+                              color: context.colors.error,
                             ),
                           ),
                         ],

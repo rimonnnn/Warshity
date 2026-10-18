@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
+import 'package:warshity/core/widgets/app_filter_tabs.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
@@ -12,7 +13,6 @@ import 'package:warshity/features/products/presentation/cubit/products_cubit.dar
 import 'package:warshity/features/products/presentation/cubit/products_state.dart';
 import 'package:warshity/features/products/presentation/widgets/empty_products_widget.dart';
 import 'package:warshity/features/products/presentation/widgets/floating_add_product_button.dart';
-import 'package:warshity/features/products/presentation/widgets/product_category_tabs.dart';
 import 'package:warshity/features/products/presentation/widgets/product_list.dart';
 import 'package:warshity/features/products/presentation/widgets/product_search_widget.dart';
 import 'package:warshity/features/products/presentation/widgets/product_shimmer.dart';
@@ -102,17 +102,12 @@ class _MobileProductsState extends State<MobileProduct> {
                               ? selectedCategory
                               : 0;
 
-                          return ProductCategoryTabs(
-                            categories: categoryNames,
+                          return AppFilterTabs(
+                            items: categoryNames,
                             selectedIndex: safeSelectedCategory,
                             onSelected: (index) {
-                              if (index == selectedCategory) {
-                                return;
-                              }
-
-                              setState(() {
-                                selectedCategory = index;
-                              });
+                              if (index == selectedCategory) return;
+                              setState(() => selectedCategory = index);
                             },
                           );
                         }
