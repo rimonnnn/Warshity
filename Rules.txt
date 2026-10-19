@@ -1,0 +1,240 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow get: if request.auth != null
+        && (resource == null || request.auth.uid == userId);
+      allow list: if request.auth != null;
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.uid == userId
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'ownerName', 'shopName', 'activity']);
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['shopName', 'activity'])
+        && request.resource.data.shopName is string
+        && request.resource.data.activity is string;
+      allow delete: if false;
+    }
+
+    match /business_categories/{categoryId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['name', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+      allow update, delete: if false;
+    }
+
+    match /account_shares/{invitationId} {
+      allow get, list: if request.auth != null
+        && (resource.data.fromUid == request.auth.uid
+            || (request.auth.token.email != null
+                && resource.data.toEmail == request.auth.token.email));
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['fromUid', 'fromEmail', 'toEmail', 'status', 'createdAt'])
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.fromEmail is string
+        && request.resource.data.toEmail is string
+        && request.resource.data.toEmail.size() > 0;
+      allow update: if request.auth != null
+        && request.auth.token.email != null
+        && resource.data.toEmail == request.auth.token.email
+        && resource.data.status == 'pending'
+        && request.resource.data.status in ['accepted', 'rejected']
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'respondedAt', 'sharedAccountId'])
+        && (!request.resource.data.keys().has('sharedAccountId')
+            || request.resource.data.sharedAccountId == invitationId);
+      allow delete: if false;
+    }
+
+    match /shared_accounts/{sharedAccountId} {
+      allow get: if request.auth != null
+        && request.auth.uid in resource.data.members;
+      allow list: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['members', 'emails', 'invitationId', 'createdAt'])
+        && request.auth.uid in request.resource.data.members
+        && request.resource.data.members.size() == 2
+        && request.resource.data.invitationId == sharedAccountId;
+      allow update: if false;
+      allow delete: if request.auth != null
+        && request.auth.uid in resource.data.members;
+    }
+
+    match /user_shared_accounts/{uid} {
+      allow get: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['connectionIds', 'connectionsCount'])
+        && request.resource.data.connectionIds is list
+        && request.resource.data.connectionIds.size() <= 5
+        && request.resource.data.connectionsCount == request.resource.data.connectionIds.size();
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['connectionIds', 'connectionsCount'])
+        && request.resource.data.connectionIds is list
+        && request.resource.data.connectionIds.size() <= 5
+        && request.resource.data.connectionsCount == request.resource.data.connectionIds.size()
+        && (request.auth.uid == uid
+            || !resource.data.keys().has('connectionIds')
+            || request.resource.data.connectionIds.hasAll(resource.data.connectionIds));
+      allow delete: if false;
+    }
+
+    match /appCounters/{counterId} {
+      allow get: if request.auth != null
+        && counterId == 'productBarcode';
+      allow create: if request.auth != null
+        && counterId == 'productBarcode'
+        && request.resource.data.keys().hasOnly(['value', 'updatedAt'])
+        && request.resource.data.value is int
+        && request.resource.data.value > 0;
+      allow update: if request.auth != null
+        && counterId == 'productBarcode'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['value', 'updatedAt'])
+        && request.resource.data.value == resource.data.value + 1;
+      allow delete: if false;
+    }
+
+    match /productBarcodeRegistry/{barcode} {
+      allow get: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['code', 'userId', 'status', 'createdAt'])
+        && request.resource.data.code == barcode
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'reserved';
+      allow update: if request.auth != null
+        && resource.data.userId == request.auth.uid
+        && resource.data.status == 'reserved'
+        && request.resource.data.status == 'used'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'productId', 'usedAt']);
+      allow delete: if false;
+    }
+
+    match /clients/{clientId} {
+      function canAccess() {
+        return resource == null
+          || resource.data.userId == request.auth.uid
+          || (resource.data.keys().has('userIds')
+              && resource.data.userIds.hasAny([request.auth.uid]))
+          || (exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && get(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid)).data.connectionIds.hasAny(resource.data.sharedConnectionIds));
+      }
+      function stampValid() {
+        return (!exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && request.resource.data.sharedConnectionIds.size() == 0)
+          || (exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && request.resource.data.sharedConnectionIds.hasOnly(get(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid)).data.connectionIds));
+      }
+      allow get: if request.auth != null && canAccess();
+      allow list: if request.auth != null
+        && (resource.data.userId == request.auth.uid
+            || resource.data.userIds.hasAny([request.auth.uid]));
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userIds.size() == 1
+        && request.resource.data.userIds.hasAny([request.auth.uid])
+        && stampValid();
+      allow update: if request.auth != null
+        && canAccess()
+        && (request.resource.data.userId == resource.data.userId
+            || request.resource.data.userId == request.auth.uid);
+      allow delete: if request.auth != null && canAccess();
+    }
+
+    match /products/{productId} {
+      function canAccess() {
+        return resource == null
+          || resource.data.userId == request.auth.uid
+          || (resource.data.keys().has('userIds')
+              && resource.data.userIds.hasAny([request.auth.uid]))
+          || (exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && get(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid)).data.connectionIds.hasAny(resource.data.sharedConnectionIds));
+      }
+      function stampValid() {
+        return (!exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && request.resource.data.sharedConnectionIds.size() == 0)
+          || (exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && request.resource.data.sharedConnectionIds.hasOnly(get(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid)).data.connectionIds));
+      }
+      allow get: if request.auth != null && canAccess();
+      allow list: if request.auth != null
+        && (resource.data.userId == request.auth.uid
+            || resource.data.userIds.hasAny([request.auth.uid]));
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userIds.size() == 1
+        && request.resource.data.userIds.hasAny([request.auth.uid])
+        && stampValid();
+      allow update: if request.auth != null
+        && canAccess()
+        && (request.resource.data.userId == resource.data.userId
+            || request.resource.data.userId == request.auth.uid);
+      allow delete: if request.auth != null && canAccess();
+    }
+
+    match /categories/{categoryId} {
+      function canAccess() {
+        return resource == null
+          || resource.data.userId == request.auth.uid
+          || (resource.data.keys().has('userIds')
+              && resource.data.userIds.hasAny([request.auth.uid]))
+          || (exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && get(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid)).data.connectionIds.hasAny(resource.data.sharedConnectionIds));
+      }
+      function stampValid() {
+        return (!exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && request.resource.data.sharedConnectionIds.size() == 0)
+          || (exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && request.resource.data.sharedConnectionIds.hasOnly(get(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid)).data.connectionIds));
+      }
+      allow get: if request.auth != null && canAccess();
+      allow list: if request.auth != null
+        && (resource.data.userId == request.auth.uid
+            || resource.data.userIds.hasAny([request.auth.uid]));
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userIds.size() == 1
+        && request.resource.data.userIds.hasAny([request.auth.uid])
+        && stampValid();
+      allow update: if request.auth != null
+        && canAccess()
+        && (request.resource.data.userId == resource.data.userId
+            || request.resource.data.userId == request.auth.uid);
+      allow delete: if request.auth != null && canAccess();
+    }
+
+    match /invoices/{invoiceId} {
+      function canAccess() {
+        return resource == null
+          || resource.data.userId == request.auth.uid
+          || (resource.data.keys().has('userIds')
+              && resource.data.userIds.hasAny([request.auth.uid]))
+          || (exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && get(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid)).data.connectionIds.hasAny(resource.data.sharedConnectionIds));
+      }
+      function stampValid() {
+        return (!exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && request.resource.data.sharedConnectionIds.size() == 0)
+          || (exists(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid))
+              && request.resource.data.sharedConnectionIds.hasOnly(get(/databases/$(database)/documents/user_shared_accounts/$(request.auth.uid)).data.connectionIds));
+      }
+      allow get: if request.auth != null && canAccess();
+      allow list: if request.auth != null
+        && (resource.data.userId == request.auth.uid
+            || resource.data.userIds.hasAny([request.auth.uid]));
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userIds.size() == 1
+        && request.resource.data.userIds.hasAny([request.auth.uid])
+        && stampValid();
+      allow update: if request.auth != null
+        && canAccess()
+        && (request.resource.data.userId == resource.data.userId
+            || request.resource.data.userId == request.auth.uid);
+      allow delete: if request.auth != null && canAccess();
+    }
+  }
+}

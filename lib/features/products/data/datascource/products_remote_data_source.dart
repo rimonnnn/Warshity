@@ -192,55 +192,80 @@ class ProductsRemoteDataSource {
 
     // Retry with the next number if an existing code is encountered.
     for (var attempt = 0; attempt < 100; attempt++) {
-      final code = await firestore.runTransaction<String?>((transaction) async {
-        // Read the central counter.
-        final counterSnapshot = await transaction.get(counterRef);
+      String? code;
 
-        final currentValue =
-            (counterSnapshot.data()?['value'] as num?)?.toInt() ?? 0;
+      try {
+        code = await firestore.runTransaction<String?>((transaction) async {
+          // Read the central counter.
+          final counterSnapshot = await transaction.get(counterRef);
 
-        final nextValue = currentValue + 1;
+          final currentValue =
+              (counterSnapshot.data()?['value'] as num?)?.toInt() ?? 0;
 
-        final candidate = 'MST-${nextValue.toString().padLeft(6, '0')}';
+          final nextValue = currentValue + 1;
 
-        // Reserve each generated code in a separate document.
-        final reservationRef = registry.doc(candidate);
-        final reservationSnapshot = await transaction.get(reservationRef);
+          final candidate = 'MST-${nextValue.toString().padLeft(6, '0')}';
 
-        // All transaction reads happen before writes.
-        transaction.set(counterRef, {
-          'value': nextValue,
-          'updatedAt': FieldValue.serverTimestamp(),
+          // Reserve each generated code in a separate document.
+          final reservationRef = registry.doc(candidate);
+          final reservationSnapshot = await transaction.get(reservationRef);
+
+          // All transaction reads happen before writes.
+          transaction.set(counterRef, {
+            'value': nextValue,
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+
+          // If already reserved, skip this number.
+          if (reservationSnapshot.exists) {
+            return null;
+          }
+
+          transaction.set(reservationRef, {
+            'code': candidate,
+            'userId': uid,
+            'status': 'reserved',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+
+          return candidate;
         });
-
-        // If already reserved, skip this number.
-        if (reservationSnapshot.exists) {
-          return null;
-        }
-
-        transaction.set(reservationRef, {
-          'code': candidate,
-          'userId': uid,
-          'status': 'reserved',
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-
-        return candidate;
-      });
+      } on FirebaseException catch (e) {
+        throw Exception(
+          'Barcode reservation transaction failed: [${e.code}] ${e.message}',
+        );
+      } catch (e) {
+        throw Exception('Barcode reservation transaction failed: $e');
+      }
 
       if (code == null) {
         continue;
       }
 
-      // Avoid conflicting with an existing product's barcode.
-      final existingProducts = await firestore
-          .collection('products')
-          .where('barcode', isEqualTo: code)
-          .limit(1)
-          .get();
+      // Legacy collision check, scoped to the current user's products.
+      //
+      // The products list security rule only permits queries that prove
+      // `userId == request.auth.uid` (or userIds membership). A barcode-only
+      // query is denied by the rules regardless of the result set, so the
+      // query must also filter on userId. Other users' legacy products are
+      // covered by productBarcodeRegistry, which is the global authority:
+      // a registry document is never deleted, so a reserved/used code is
+      // never issued again.
+      try {
+        final existingProducts = await firestore
+            .collection('products')
+            .where('barcode', isEqualTo: code)
+            .where('userId', isEqualTo: uid)
+            .limit(1)
+            .get();
 
-      if (existingProducts.docs.isEmpty) {
-        return code;
+        if (existingProducts.docs.isEmpty) {
+          return code;
+        }
+      } on FirebaseException catch (e) {
+        throw Exception(
+          'Barcode uniqueness check failed: [${e.code}] ${e.message}',
+        );
       }
 
       // A conflicting legacy code was found.
