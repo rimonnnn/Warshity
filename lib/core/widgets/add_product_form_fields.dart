@@ -25,6 +25,7 @@ class AddProductFormFields extends StatelessWidget {
     required this.onPickImage,
     required this.onCategoryChanged,
     required this.onUnitChanged,
+    required this.onAddUnit,
     this.productNameFieldHeight,
     this.productCodeFieldHeight,
     this.sellingPriceFieldHeight,
@@ -53,6 +54,7 @@ class AddProductFormFields extends StatelessWidget {
   final VoidCallback onPickImage;
   final ValueChanged<String?> onCategoryChanged;
   final ValueChanged<String> onUnitChanged;
+  final ValueChanged<String> onAddUnit;
 
   @override
   Widget build(BuildContext context) {

@@ -10,6 +10,7 @@ import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/add_client_dialog.dart';
+import 'package:warshity/core/widgets/app_filter_tabs.dart';
 import 'package:warshity/core/widgets/loading_widget.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';

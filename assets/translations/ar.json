@@ -630,7 +630,12 @@
   "workspace": "مساحة العمل",
 "main_menu": "القائمة الرئيسية",
 "sales_invoice" : "فاتورة المبيعات",
-"generating_product_code": "جارٍ إنشاء كود المنتج..."
+"generating_product_code": "جارٍ إنشاء كود المنتج...",
+"new_unit": "وحدة جديدة",
+  "unit_name": "اسم الوحدة",
+  "required_field": "هذا الحقل مطلوب",
+  "unit_already_exists": "هذه الوحدة موجودة بالفعل",
+  "add": "إضافة"
 
 }
 

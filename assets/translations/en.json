@@ -621,10 +621,18 @@
   "workspace": "Workspace",
 "main_menu": "MAIN MENU",
 "sales_invoice": "Sales Invoice",
-"generating_product_code": "Generating product code..."
+"generating_product_code": "Generating product code...",
 
+  "new_unit": "New unit",
+  "unit_name": "Unit name",
+  "required_field": "This field is required",
+  "unit_already_exists": "This unit already exists",
+  "add": "Add"
  
 }
+
+ 
+
 
 
 

@@ -117,6 +117,7 @@ class _WebTopBarState extends State<WebTopBar> {
           const SizedBox(width: 8),
 
           TopBarIconButton(
+            tooltip: "change_language".tr(),
             icon: Icons.translate,
             onPressed: () {
               final isArabic = context.locale.languageCode == 'ar';
@@ -130,6 +131,7 @@ class _WebTopBarState extends State<WebTopBar> {
           const SizedBox(width: 8),
 
           TopBarIconButton(
+            tooltip: "change_theme".tr(),
             icon: isDark ? Icons.dark_mode : Icons.light_mode,
             onPressed: () {
               context.read<ThemeCubit>().toggleTheme();

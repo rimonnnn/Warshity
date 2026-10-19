@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/widgets/app_filter_tabs.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_state.dart';
 
@@ -47,47 +47,14 @@ class ProductsCategories extends StatelessWidget {
             ? selectedIndex
             : 0;
 
-        return SizedBox(
+        return AppFilterTabs(
+          items: names,
+          selectedIndex: safeIndex,
+          onSelected: onSelected,
+          padding: EdgeInsets.zero,
           height: 42,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: names.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
-            itemBuilder: (context, index) {
-              final selected = index == safeIndex;
-
-              return InkWell(
-                onTap: () => onSelected(index),
-                borderRadius: BorderRadius.circular(22),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: selected
-                        ? context.colors.primary
-                        : context.colors.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(
-                      color: selected
-                          ? Colors.transparent
-                          : context.colors.outlineVariant,
-                    ),
-                  ),
-                  child: Text(
-                    names[index],
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: selected ? context.colors.onPrimary : null,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+          spacing: 8,
+          radius: 22,
         );
       },
     );

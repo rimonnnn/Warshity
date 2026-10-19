@@ -98,7 +98,7 @@ class _InvoiceWebState extends State<InvoiceWeb> {
           statusFilter: _statusFilter,
           onStatusChanged: (s) => setState(() => _statusFilter = s),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         InvoiceWebTable(
           selectedId: wide ? _selectedId : null,
           statusFilter: _statusFilter,

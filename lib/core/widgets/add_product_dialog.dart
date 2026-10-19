@@ -55,7 +55,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
   bool isSaving = false;
   bool isGeneratingBarcode = false;
 
-  final units = ['Piece'.tr(), 'Meter'.tr(), 'Kg'.tr()];
+  // مش final عشان نقدر نضيف وحدات جديدة
+  List<String> units = ['Piece'.tr(), 'Meter'.tr(), 'Kg'.tr()];
 
   @override
   void initState() {
@@ -127,6 +128,15 @@ class _AddProductDialogState extends State<AddProductDialog> {
     } catch (e) {
       debugPrint('Image Picker Error: $e');
     }
+  }
+
+  void _addUnit(String name) {
+    // مؤقتاً الوحدة بتتضاف للجلسة الحالية بس.
+    // لما يبقى عندك repository للوحدات: await repo.add(name) قبل setState.
+    setState(() {
+      units = [...units, name];
+      selectedUnit = name;
+    });
   }
 
   Future<void> _save() async {
@@ -337,6 +347,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                           onUnitChanged: (unit) {
                             setState(() => selectedUnit = unit);
                           },
+                          onAddUnit: _addUnit,
                         ),
 
                         SizedBox(height: isWeb ? 24 : 22),

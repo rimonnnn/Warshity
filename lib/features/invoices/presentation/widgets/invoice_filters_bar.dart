@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/widgets/app_filter_tabs.dart';
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_cubit.dart';
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_state.dart';
 import 'package:warshity/features/invoices/presentation/widgets/invoice_status_utils.dart';
@@ -35,68 +35,30 @@ class InvoiceFiltersBar extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<InvoiceHistoryCubit>();
 
-        return Material(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final (filter, key) in _timeFilters)
-                  _chip(
-                    context,
-                    label: key.tr(),
-                    selected: statusFilter == null && state.filter == filter,
-                    onTap: () {
-                      onStatusChanged(null);
-                      cubit.changeFilter(filter);
-                    },
-                  ),
-                for (final (status, key) in _statusFilters)
-                  _chip(
-                    context,
-                    label: key.tr(),
-                    selected: statusFilter == status,
-                    onTap: () {
-                      onStatusChanged(status);
-                      cubit.changeFilter(InvoiceFilter.all);
-                    },
-                  ),
-              ],
-            ),
-          ),
+        // الـ index: الـ time filters الأول (0..3) وبعدها الـ status (4..6)
+        final timeCount = _timeFilters.length;
+
+        final selectedIndex = statusFilter != null
+            ? timeCount + _statusFilters.indexWhere((e) => e.$1 == statusFilter)
+            : _timeFilters.indexWhere((e) => e.$1 == state.filter);
+
+        return AppFilterTabs(
+          items: [
+            for (final (_, key) in _timeFilters) key.tr(),
+            for (final (_, key) in _statusFilters) key.tr(),
+          ],
+          selectedIndex: selectedIndex,
+          onSelected: (index) {
+            if (index < timeCount) {
+              onStatusChanged(null);
+              cubit.changeFilter(_timeFilters[index].$1);
+            } else {
+              onStatusChanged(_statusFilters[index - timeCount].$1);
+              cubit.changeFilter(InvoiceFilter.all);
+            }
+          },
         );
       },
-    );
-  }
-
-  Widget _chip(
-    BuildContext context, {
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    final colors = context.colors;
-
-    return ChoiceChip(
-      label: Text(label),
-      selected: selected,
-      onSelected: (_) => onTap(),
-      showCheckmark: true,
-      checkmarkColor: colors.primary,
-      selectedColor: colors.primaryContainer,
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      // side هنا بيغلب الـ side الافتراضي بتاع Material 3
-      side: BorderSide(
-        color: selected ? colors.primary : colors.outlineVariant,
-      ),
-      shape: const StadiumBorder(),
-      labelStyle: context.text.labelMedium?.copyWith(
-        color: selected ? colors.primary : colors.onSurface,
-        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-      ),
     );
   }
 }
