@@ -4,17 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/theme/cubit/theme_cubit.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
-import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
-import 'package:warshity/features/account_sharing/presentation/screens/shared_accounts_screen.dart';
-import 'package:warshity/features/account_sharing/presentation/widgets/received_invitations_bottom_sheet.dart';
-import 'package:warshity/features/account_sharing/presentation/widgets/send_invitation_bottom_sheet.dart';
+import 'package:warshity/features/account_sharing/presentation/widgets/shared_accounts_coming_soon.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
 import 'package:warshity/features/settings/presentation/cubit/settings_cubit.dart';
@@ -37,47 +33,10 @@ class MobileSettingsScreen extends StatefulWidget {
 class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
   bool autoSync = true;
 
-  void _openSendInvitation() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return BlocProvider.value(
-          value: getIt<AccountSharingCubit>(),
-          child: const SendInvitationBottomSheet(),
-        );
-      },
-    );
-  }
-
-  void _openReceivedInvitations() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return BlocProvider.value(
-          value: getIt<AccountSharingCubit>(),
-          child: const ReceivedInvitationsBottomSheet(),
-        );
-      },
-    );
-  }
-
   void _openSharedAccounts() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) {
-          return BlocProvider.value(
-            value: getIt<AccountSharingCubit>(),
-            child: const SharedAccountsScreen(),
-          );
-        },
-      ),
-    );
+    // Account sharing is temporarily disabled: the feature is replaced with a
+    // premium "Coming Soon" announcement until it launches.
+    showSharedAccountsComingSoon(context);
   }
 
   void _editStoreInfo() {
@@ -232,18 +191,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   title: "change_password".tr(),
                   icon: Icons.lock_outline,
                   onTap: _openChangePassword,
-                ),
-
-                SettingsTile(
-                  title: "share_account".tr(),
-                  icon: Icons.share_outlined,
-                  onTap: _openSendInvitation,
-                ),
-
-                SettingsTile(
-                  title: "account_invitations".tr(),
-                  icon: Icons.mail_outline,
-                  onTap: _openReceivedInvitations,
                 ),
 
                 SettingsTile(
