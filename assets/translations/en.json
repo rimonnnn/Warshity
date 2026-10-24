@@ -457,6 +457,7 @@
   "account_sharing_invitation_received": "You received an invitation to share an account",
   "activities.painting": "Painting",
   "activities.blacksmith": "Blacksmithing",
+  "debt_payment_must_be_greater_than_zero" : "Debt payment must be greater than zero",
   "activities.ac": "Air conditioning",
   "Requested:" : "Requested:",
   "export_image" : "Export as Image",
@@ -627,7 +628,12 @@
   "unit_name": "Unit name",
   "required_field": "This field is required",
   "unit_already_exists": "This unit already exists",
-  "add": "Add"
+  "add": "Add",
+
+  "shared_accounts_coming_soon_title": "This feature is coming soon",
+  "shared_accounts_coming_soon_description": "We're putting the finishing touches on shared accounts so you can collaborate on your store data with the people you trust. It will be available in a future update.",
+  "shared_accounts_coming_soon_badge": "Coming Soon",
+  "close": "Close"
  
 }
 
