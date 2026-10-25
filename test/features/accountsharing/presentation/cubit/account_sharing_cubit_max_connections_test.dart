@@ -17,40 +17,13 @@ void main() {
     await accountSharingCubit.close();
   });
 
-  group('hasReachedMaxConnections', () {
-    test('should return false when connections are less than 5', () async {
-      when(
-        mockRepository.getActiveSharedAccounts(),
-      ).thenAnswer(
-        (_) async => [
-          {'id': '1'},
-          {'id': '2'},
-          {'id': '3'},
-          {'id': '4'},
-        ],
-      );
-
+  group('hasReachedMaxConnections while account sharing is disabled', () {
+    test('returns false because no shared connections are loaded', () async {
       await accountSharingCubit.getActiveSharedAccounts();
 
-      expect(accountSharingCubit.hasReachedMaxConnections, false);
-    });
-
-    test('should return true when connections reach 5', () async {
-      when(
-        mockRepository.getActiveSharedAccounts(),
-      ).thenAnswer(
-        (_) async => [
-          {'id': '1'},
-          {'id': '2'},
-          {'id': '3'},
-          {'id': '4'},
-          {'id': '5'},
-        ],
-      );
-
-      await accountSharingCubit.getActiveSharedAccounts();
-
-      expect(accountSharingCubit.hasReachedMaxConnections, true);
+      expect(accountSharingCubit.hasReachedMaxConnections, isFalse);
+      expect(accountSharingCubit.activeConnectionsCount, 0);
+      verifyNever(mockRepository.getActiveSharedAccounts());
     });
   });
 }

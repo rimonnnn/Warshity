@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,7 +39,6 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       await registerRepo.addCategory(categoryName);
     } catch (e) {
-      log('Add Category Error: $e');
 
       rethrow;
     }
@@ -82,15 +80,11 @@ Stream<List<String>> get categoriesStream {
       _watchUserData();
 
       emit(LoginSuccess('login_success'.tr()));
-    } on FirebaseAuthException catch (e) {
-      log(
-        '$providerName Sign-In Error: '
-        '${e.code} - ${e.message}',
-      );
+    } on FirebaseAuthException catch (_) {
 
       emit(AuthError('generic_error_message'.tr()));
     } catch (e) {
-      log('$providerName Sign-In Error: $e');
+
 
       emit(AuthError('generic_error_message'.tr()));
     }
@@ -106,7 +100,6 @@ Stream<List<String>> get categoriesStream {
         }
       },
       onError: (error) {
-        log('User data error: $error');
       },
     );
   }
@@ -176,10 +169,6 @@ Future<void> changePassword({
       ),
     );
   } on FirebaseAuthException catch (e) {
-    log(
-      'Change Password Error: '
-      '${e.code} - ${e.message}',
-    );
 
     if (e.code == 'wrong-password' ||
         e.code == 'invalid-credential') {
@@ -202,9 +191,7 @@ Future<void> changePassword({
       );
     }
   } catch (e) {
-    log(
-      'Change Password Error: $e',
-    );
+
 
     emit(
       AuthError(

@@ -17,54 +17,21 @@ void main() {
     await accountSharingCubit.close();
   });
 
-  group('getSharedAccountId', () {
-    test('should return existing shared account id', () async {
-      when(
-        mockRepository.getActiveSharedAccounts(),
-      ).thenAnswer(
-        (_) async => [
-          {'id': 'connection-1'},
-        ],
+  group('getSharedAccountId while account sharing is disabled', () {
+    test('returns null even when the repository has a shared account', () async {
+      when(mockRepository.getActiveSharedAccounts()).thenAnswer(
+        (_) async => [{'id': 'connection-1'}],
       );
 
-      await accountSharingCubit.getActiveSharedAccounts();
-
-      final result = await accountSharingCubit.getSharedAccountId();
-
-      expect(result, 'connection-1');
-
-      verify(mockRepository.getActiveSharedAccounts()).called(1);
+      expect(await accountSharingCubit.getSharedAccountId(), isNull);
+      verifyNever(mockRepository.getActiveSharedAccounts());
     });
 
-    test(
-      'should call getActiveSharedAccounts when connections are empty',
-      () async {
-        when(
-          mockRepository.getActiveSharedAccounts(),
-        ).thenAnswer(
-          (_) async => [
-            {'id': 'connection-1'},
-          ],
-        );
+    test('returns null when there is no shared account', () async {
+      when(mockRepository.getActiveSharedAccounts()).thenAnswer((_) async => []);
 
-        final result = await accountSharingCubit.getSharedAccountId();
-
-        expect(result, 'connection-1');
-
-        verify(mockRepository.getActiveSharedAccounts()).called(1);
-      },
-    );
-
-    test('should return null when there is no shared account', () async {
-      when(
-        mockRepository.getActiveSharedAccounts(),
-      ).thenAnswer((_) async => []);
-
-      final result = await accountSharingCubit.getSharedAccountId();
-
-      expect(result, isNull);
-
-      verify(mockRepository.getActiveSharedAccounts()).called(1);
+      expect(await accountSharingCubit.getSharedAccountId(), isNull);
+      verifyNever(mockRepository.getActiveSharedAccounts());
     });
   });
 }

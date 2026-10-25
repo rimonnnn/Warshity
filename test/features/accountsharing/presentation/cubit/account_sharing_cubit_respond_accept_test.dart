@@ -19,73 +19,28 @@ void main() {
     await accountSharingCubit.close();
   });
 
-  group('respondToInvitation - accept', () {
-    test(
-      'should emit [AccountSharingLoading, AccountInvitationAccepted] when invitation is accepted',
-      () async {
-        when(
-          mockRepository.respondToInvitation(
-            invitationId: 'invitation-1',
-            accept: true,
-          ),
-        ).thenAnswer((_) async {});
+  group('respondToInvitation - accept while account sharing is disabled', () {
+    test('emits a disabled error without calling the repository', () async {
+      final stateExpectation = expectLater(
+        accountSharingCubit.stream,
+        emits(isA<AccountSharingError>()),
+      );
 
-        final stateExpectation = expectLater(
-          accountSharingCubit.stream,
-          emitsInOrder([
-            isA<AccountSharingLoading>(),
-            isA<AccountInvitationAccepted>(),
-          ]),
-        );
+      await accountSharingCubit.respondToInvitation(
+        invitationId: 'invitation-1',
+        accept: true,
+      );
+      await stateExpectation;
 
-        await accountSharingCubit.respondToInvitation(
-          invitationId: 'invitation-1',
-          accept: true,
-        );
-
-        await stateExpectation;
-
-        verify(
-          mockRepository.respondToInvitation(
-            invitationId: 'invitation-1',
-            accept: true,
-          ),
-        ).called(1);
-      },
-    );
-
-    test(
-      'should emit [AccountSharingLoading, AccountSharingError] when accepting invitation fails',
-      () async {
-        when(
-          mockRepository.respondToInvitation(
-            invitationId: 'invitation-1',
-            accept: true,
-          ),
-        ).thenThrow(Exception('Accept failed'));
-
-        final stateExpectation = expectLater(
-          accountSharingCubit.stream,
-          emitsInOrder([
-            isA<AccountSharingLoading>(),
-            isA<AccountSharingError>(),
-          ]),
-        );
-
-        await accountSharingCubit.respondToInvitation(
-          invitationId: 'invitation-1',
-          accept: true,
-        );
-
-        await stateExpectation;
-
-        verify(
-          mockRepository.respondToInvitation(
-            invitationId: 'invitation-1',
-            accept: true,
-          ),
-        ).called(1);
-      },
-    );
+      expect(accountSharingCubit.state, isA<AccountSharingError>());
+      expect(
+        (accountSharingCubit.state as AccountSharingError).message,
+        'Account sharing is temporarily disabled.',
+      );
+      verifyNever(mockRepository.respondToInvitation(
+        invitationId: anyNamed('invitationId'),
+        accept: anyNamed('accept'),
+      ));
+    });
   });
 }

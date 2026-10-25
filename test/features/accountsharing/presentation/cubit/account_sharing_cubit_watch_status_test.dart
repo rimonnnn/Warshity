@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:warshity/features/account_sharing/data/models/share_invitation_model.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
 
@@ -15,18 +12,6 @@ void main() {
 
   setUp(() {
     mockRepository = createMockRepository();
-
-    // The Cubit subscribes to these streams together when watching starts.
-    when(
-      mockRepository.watchActiveSharedAccounts(),
-    ).thenAnswer((_) => const Stream.empty());
-    when(
-      mockRepository.watchSentInvitationStatuses(),
-    ).thenAnswer((_) => const Stream.empty());
-    when(
-      mockRepository.watchReceivedInvitations(),
-    ).thenAnswer((_) => const Stream.empty());
-
     accountSharingCubit = AccountSharingCubit(mockRepository);
   });
 
@@ -34,50 +19,23 @@ void main() {
     await accountSharingCubit.close();
   });
 
-  group('watchReceivedInvitations', () {
-    test('should return repository watchReceivedInvitations stream', () async {
-      final stream = Stream.value(<ShareInvitationModel>[]);
-
-      when(
-        mockRepository.watchReceivedInvitations(),
-      ).thenAnswer((_) => stream);
-
-      expect(
-        accountSharingCubit.watchReceivedInvitations(),
-        emits(isEmpty),
-      );
-
-      verify(mockRepository.watchReceivedInvitations()).called(1);
+  group('watchReceivedInvitations while account sharing is disabled', () {
+    test('returns an empty stream without calling the repository', () async {
+      final stream = accountSharingCubit.watchReceivedInvitations();
+      await expectLater(stream, emitsDone);
+      verifyNever(mockRepository.watchReceivedInvitations());
     });
   });
 
-  group('startWatchingSharedAccounts - status', () {
-    test(
-      'should emit AccountSharingStatusChanged when shared accounts stream emits',
-      () async {
-        final controller =
-            StreamController<List<Map<String, dynamic>>>();
-        addTearDown(() => controller.close());
+  group('startWatchingSharedAccounts while account sharing is disabled', () {
+    test('does not emit a status or subscribe to streams', () async {
+      accountSharingCubit.startWatchingSharedAccounts();
+      await Future<void>.delayed(Duration.zero);
 
-        when(
-          mockRepository.watchActiveSharedAccounts(),
-        ).thenAnswer((_) => controller.stream);
-
-        final stateExpectation = expectLater(
-          accountSharingCubit.stream,
-          emits(isA<AccountSharingStatusChanged>()),
-        );
-
-        accountSharingCubit.startWatchingSharedAccounts();
-
-        controller.add([
-          {'id': 'connection-1'},
-        ]);
-
-        await stateExpectation;
-
-        expect(accountSharingCubit.sharedAccountId, 'connection-1');
-      },
-    );
+      expect(accountSharingCubit.state, isA<AccountSharingInitial>());
+      verifyNever(mockRepository.watchActiveSharedAccounts());
+      verifyNever(mockRepository.watchSentInvitationStatuses());
+      verifyNever(mockRepository.watchReceivedInvitations());
+    });
   });
 }

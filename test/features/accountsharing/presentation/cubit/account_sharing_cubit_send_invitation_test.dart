@@ -20,61 +20,25 @@ void main() {
   });
 
   test('initial state should be AccountSharingInitial', () {
-    expect(
-      accountSharingCubit.state,
-      isA<AccountSharingInitial>(),
-    );
+    expect(accountSharingCubit.state, isA<AccountSharingInitial>());
   });
 
-  group('sendInvitation', () {
-    test(
-      'should emit [AccountSharingLoading, AccountInvitationSent] when succeeds',
-      () async {
-        when(
-          mockRepository.sendInvitation(email: 'test@gmail.com'),
-        ).thenAnswer((_) async {});
+  group('sendInvitation while account sharing is disabled', () {
+    test('emits a clear disabled error without calling the repository', () async {
+      final stateExpectation = expectLater(
+        accountSharingCubit.stream,
+        emits(isA<AccountSharingError>()),
+      );
 
-        final stateExpectation = expectLater(
-          accountSharingCubit.stream,
-          emitsInOrder([
-            isA<AccountSharingLoading>(),
-            isA<AccountInvitationSent>(),
-          ]),
-        );
+      await accountSharingCubit.sendInvitation(email: 'test@gmail.com');
+      await stateExpectation;
 
-        await accountSharingCubit.sendInvitation(email: 'test@gmail.com');
-
-        await stateExpectation;
-
-        verify(
-          mockRepository.sendInvitation(email: 'test@gmail.com'),
-        ).called(1);
-      },
-    );
-
-    test(
-      'should emit [AccountSharingLoading, AccountSharingError] when sending invitation fails',
-      () async {
-        when(
-          mockRepository.sendInvitation(email: 'test@gmail.com'),
-        ).thenThrow(Exception('Failed'));
-
-        final stateExpectation = expectLater(
-          accountSharingCubit.stream,
-          emitsInOrder([
-            isA<AccountSharingLoading>(),
-            isA<AccountSharingError>(),
-          ]),
-        );
-
-        await accountSharingCubit.sendInvitation(email: 'test@gmail.com');
-
-        await stateExpectation;
-
-        verify(
-          mockRepository.sendInvitation(email: 'test@gmail.com'),
-        ).called(1);
-      },
-    );
+      expect(accountSharingCubit.state, isA<AccountSharingError>());
+      expect(
+        (accountSharingCubit.state as AccountSharingError).message,
+        'Account sharing is temporarily disabled.',
+      );
+      verifyNever(mockRepository.sendInvitation(email: anyNamed('email')));
+    });
   });
 }

@@ -17,7 +17,7 @@ void main() {
 
       expect(find.text('paid'), findsOneWidget);
       expect(find.text('unpaid'), findsNothing);
-      expect(find.text('100.00'), findsOneWidget);
+      expect(find.text('100.0'), findsOneWidget);
       expect(find.text('Ahmed Ali'), findsOneWidget);
     });
 

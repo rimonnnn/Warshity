@@ -1,4 +1,4 @@
-import 'dart:developer';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -23,11 +23,9 @@ class RegisterRepoImpl implements RegisterRepo {
         password: password,
       );
 
-      log("User Created: ${credential.user?.email}");
 
       await credential.user!.sendEmailVerification();
 
-      log("Verification Email Sent");
 
       final newUser = user.copyWith(
         uid: credential.user!.uid,
@@ -37,11 +35,7 @@ class RegisterRepoImpl implements RegisterRepo {
           .collection('users')
           .doc(credential.user!.uid)
           .set(newUser.toMap());
-
-      log("User Saved Successfully");
-    } on FirebaseAuthException catch (e) {
-      log("CODE: ${e.code}");
-      log("MESSAGE: ${e.message}");
+    } on FirebaseAuthException catch (_) {
       rethrow;
     }
   }
@@ -72,13 +66,7 @@ Future<void> addCategory(String categoryName) async {
       'createdAt': FieldValue.serverTimestamp(),
     });
 
-    log(
-      'Category Added Successfully: $name',
-    );
   } catch (e) {
-    log(
-      'Add Category Error: $e',
-    );
 
     rethrow;
   }
@@ -94,10 +82,7 @@ Future<void> addCategory(String categoryName) async {
 
       await user.sendEmailVerification();
 
-      log("Verification Email Sent");
-    } on FirebaseAuthException catch (e) {
-      log("CODE: ${e.code}");
-      log("MESSAGE: ${e.message}");
+    } on FirebaseAuthException catch (_) {
       rethrow;
     }
   }

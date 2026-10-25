@@ -17,57 +17,31 @@ void main() {
     await accountSharingCubit.close();
   });
 
-  group('getActiveConnectionIds', () {
-    test('should return active connection ids', () async {
-      final ids = ['connection-1', 'connection-2'];
-
-      when(
-        mockRepository.getActiveConnectionIds(),
-      ).thenAnswer((_) async => ids);
-
+  group('getActiveConnectionIds while account sharing is disabled', () {
+    test('returns no connection ids without querying the repository', () async {
       final result = await accountSharingCubit.getActiveConnectionIds();
-
-      expect(result, ids);
-
-      verify(mockRepository.getActiveConnectionIds()).called(1);
+      expect(result, isEmpty);
+      verifyNever(mockRepository.getActiveConnectionIds());
     });
   });
 
   group('getConnectedUserIds', () {
-    test('should return connected user ids', () async {
+    test('returns connected user ids from the repository', () async {
       final ids = ['user-1', 'user-2'];
-
-      when(
-        mockRepository.getConnectedUserIds(),
-      ).thenAnswer((_) async => ids);
+      when(mockRepository.getConnectedUserIds()).thenAnswer((_) async => ids);
 
       final result = await accountSharingCubit.getConnectedUserIds();
 
       expect(result, ids);
-
       verify(mockRepository.getConnectedUserIds()).called(1);
     });
   });
 
-  group('connectionIds', () {
-    test('should return only valid connection ids', () async {
-      when(
-        mockRepository.getActiveSharedAccounts(),
-      ).thenAnswer(
-        (_) async => [
-          {'id': 'connection-1'},
-          {'id': ''},
-          {},
-          {'id': 'connection-2'},
-        ],
-      );
-
+  group('connectionIds while account sharing is disabled', () {
+    test('remains empty without querying shared accounts', () async {
       await accountSharingCubit.getActiveSharedAccounts();
-
-      expect(
-        accountSharingCubit.connectionIds,
-        ['connection-1', 'connection-2'],
-      );
+      expect(accountSharingCubit.connectionIds, isEmpty);
+      verifyNever(mockRepository.getActiveSharedAccounts());
     });
   });
 }

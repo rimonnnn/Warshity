@@ -19,72 +19,26 @@ void main() {
     await accountSharingCubit.close();
   });
 
-  group('deleteSharedAccount', () {
-    test(
-      'should emit [Loading, SharedAccountDeleted, StatusChanged] when succeeds',
-      () async {
-        when(
-          mockRepository.getActiveSharedAccounts(),
-        ).thenAnswer(
-          (_) async => [
-            {'id': 'connection-1'},
-          ],
-        );
+  group('deleteSharedAccount while account sharing is disabled', () {
+    test('emits a disabled error without deleting remotely', () async {
+      final stateExpectation = expectLater(
+        accountSharingCubit.stream,
+        emits(isA<AccountSharingError>()),
+      );
 
-        await accountSharingCubit.getActiveSharedAccounts();
+      await accountSharingCubit.deleteSharedAccount('connection-1');
+      await stateExpectation;
 
-        when(
-          mockRepository.deleteSharedAccount('connection-1'),
-        ).thenAnswer((_) async {});
+      expect(accountSharingCubit.state, isA<AccountSharingError>());
+      verifyNever(mockRepository.deleteSharedAccount(any));
+      expect(accountSharingCubit.connections, isEmpty);
+    });
 
-        final stateExpectation = expectLater(
-          accountSharingCubit.stream,
-          emitsInOrder([
-            isA<AccountSharingLoading>(),
-            isA<AccountSharedAccountDeleted>(),
-            isA<AccountSharingStatusChanged>(),
-          ]),
-        );
-
-        await accountSharingCubit.deleteSharedAccount('connection-1');
-
-        await stateExpectation;
-
-        verify(mockRepository.deleteSharedAccount('connection-1')).called(1);
-
-        expect(accountSharingCubit.connections, isEmpty);
-      },
-    );
-
-    test('should not call repository when connection id is empty', () async {
+    test('does not call the repository when connection id is empty', () async {
       await accountSharingCubit.deleteSharedAccount('');
 
       verifyNever(mockRepository.deleteSharedAccount(any));
-
       expect(accountSharingCubit.state, isA<AccountSharingInitial>());
     });
-
-    test(
-      'should emit [AccountSharingLoading, AccountSharingError] when delete fails',
-      () async {
-        when(
-          mockRepository.deleteSharedAccount('connection-1'),
-        ).thenThrow(Exception('Delete failed'));
-
-        final stateExpectation = expectLater(
-          accountSharingCubit.stream,
-          emitsInOrder([
-            isA<AccountSharingLoading>(),
-            isA<AccountSharingError>(),
-          ]),
-        );
-
-        await accountSharingCubit.deleteSharedAccount('connection-1');
-
-        await stateExpectation;
-
-        verify(mockRepository.deleteSharedAccount('connection-1')).called(1);
-      },
-    );
   });
 }

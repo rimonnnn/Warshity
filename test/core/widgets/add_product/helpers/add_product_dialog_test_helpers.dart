@@ -89,6 +89,7 @@ class TestAddProductCubit extends AddProductCubit {
   Object? saveError;
   int saveCalls = 0;
 
+  @override
   Future<String> generateProductBarcode() async {
     generateBarcodeCalls++;
     final completer = barcodeCompleter;
@@ -97,6 +98,12 @@ class TestAddProductCubit extends AddProductCubit {
     if (error != null) throw error;
     return barcode;
   }
+
+  @override
+  Future<List<String>> getCustomUnits() async => <String>[];
+
+  @override
+  Future<void> addCustomUnit(String name) async {}
 
   @override
   Future<void> addProduct({

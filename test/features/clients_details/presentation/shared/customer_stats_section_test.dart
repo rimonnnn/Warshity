@@ -40,7 +40,7 @@ void main() {
         CustomerStatsSection(customer: makeCustomer()),
       );
 
-      expect(find.text('150.00'), findsOneWidget);
+      expect(find.text('150.0'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
     });
 

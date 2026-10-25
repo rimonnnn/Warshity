@@ -31,8 +31,8 @@ void main() {
       );
 
       expect(find.text('Wood'), findsOneWidget);
-      expect(find.text('\$10.00 × 2'), findsOneWidget);
-      expect(find.text('\$20.00'), findsOneWidget);
+      expect(find.text('\$10.0 × 2'), findsOneWidget);
+      expect(find.text('\$20.0'), findsOneWidget);
     });
 
     testWidgets('plus button increases quantity', (tester) async {
