@@ -9,6 +9,10 @@ mixin _AccountSharingMerge on _AccountSharingCore {
     required bool firstHadOtherConnections,
     required bool secondHadOtherConnections,
   }) async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      throw StateError('Account sharing is temporarily disabled.');
+    }
+
     for (final collectionName in _dataCollections) {
       final firstSnapshot = await firestore
           .collection(collectionName)
@@ -203,6 +207,10 @@ mixin _AccountSharingMerge on _AccountSharingCore {
     required String connectionId,
     required bool hadOtherConnectionsBeforeLink,
   }) async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      throw StateError('Account sharing is temporarily disabled.');
+    }
+
     if (ownerUid.isEmpty || connectionId.isEmpty) {
       return;
     }

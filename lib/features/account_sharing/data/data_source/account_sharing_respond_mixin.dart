@@ -1,11 +1,17 @@
 part of 'account_sharing_remote_data_source.dart';
 
 /// Accepting / rejecting invitations.
-mixin _AccountSharingRespond on _AccountSharingCore, _AccountSharingConnections, _AccountSharingMerge {
+mixin _AccountSharingRespond
+    on _AccountSharingCore, _AccountSharingConnections, _AccountSharingMerge {
   Future<void> respondToInvitation({
     required String invitationId,
     required bool accept,
   }) async {
+    // Prevent accepting or rejecting invitations while sharing is disabled.
+    if (!FeatureFlags.accountSharingEnabled) {
+      throw StateError('Account sharing is temporarily disabled.');
+    }
+
     final currentUser = auth.currentUser;
 
     if (currentUser == null || currentUser.email == null) {
@@ -51,6 +57,7 @@ mixin _AccountSharingRespond on _AccountSharingCore, _AccountSharingConnections,
       throw Exception('cannot_connect_to_yourself'.tr());
     }
 
+    // Reject invitation.
     if (!accept) {
       await invitationRef.update({
         'status': 'rejected',
@@ -60,6 +67,7 @@ mixin _AccountSharingRespond on _AccountSharingCore, _AccountSharingConnections,
       return;
     }
 
+    // Validate connection limits.
     final senderCount = await _getActiveConnectionCount(fromUid);
 
     final receiverCount = await _getActiveConnectionCount(currentUser.uid);
@@ -103,6 +111,7 @@ mixin _AccountSharingRespond on _AccountSharingCore, _AccountSharingConnections,
 
     final receiverHadOtherConnections = receiverCount > 0;
 
+    // Create the shared account and update both users' mappings.
     await firestore.runTransaction((transaction) async {
       final senderMappingSnapshot = await transaction.get(senderMappingRef);
 
@@ -156,6 +165,7 @@ mixin _AccountSharingRespond on _AccountSharingCore, _AccountSharingConnections,
       });
     });
 
+    // Merge data after the connection has been created.
     await _mergeDataForConnection(
       firstUid: fromUid,
       secondUid: currentUser.uid,
@@ -164,6 +174,7 @@ mixin _AccountSharingRespond on _AccountSharingCore, _AccountSharingConnections,
       secondHadOtherConnections: receiverHadOtherConnections,
     );
 
+    // Add the connection to both users' data.
     await Future.wait([
       _addConnectionToUserData(
         ownerUid: fromUid,

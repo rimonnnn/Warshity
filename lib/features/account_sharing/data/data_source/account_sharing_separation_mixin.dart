@@ -9,9 +9,11 @@ mixin _AccountSharingSeparation on _AccountSharingCore {
     required Map<String, String> productLogicalIdsByDocumentId,
   }) {
     final customerId = invoiceData['customerId']?.toString();
+
     final customerLogicalId = customerId == null
         ? null
         : clientLogicalIdsByDocumentId[customerId];
+
     if (customerLogicalId != null) {
       invoiceData['customerId'] = _getSeparatedDocumentId(
         collectionName: 'clients',
@@ -22,9 +24,11 @@ mixin _AccountSharingSeparation on _AccountSharingCore {
 
     for (final itemsKey in const ['items', 'productsItem']) {
       final rawItems = invoiceData[itemsKey];
+
       if (rawItems is! List) continue;
 
       final remappedItems = <dynamic>[];
+
       for (final rawItem in rawItems) {
         if (rawItem is! Map) {
           remappedItems.add(rawItem);
@@ -32,10 +36,13 @@ mixin _AccountSharingSeparation on _AccountSharingCore {
         }
 
         final item = Map<String, dynamic>.from(rawItem);
+
         final productId = item['productId']?.toString();
+
         final productLogicalId = productId == null
             ? null
             : productLogicalIdsByDocumentId[productId];
+
         if (productLogicalId != null) {
           item['productId'] = _getSeparatedDocumentId(
             collectionName: 'products',
@@ -43,8 +50,10 @@ mixin _AccountSharingSeparation on _AccountSharingCore {
             uid: uid,
           );
         }
+
         remappedItems.add(item);
       }
+
       invoiceData[itemsKey] = remappedItems;
     }
   }
@@ -53,6 +62,11 @@ mixin _AccountSharingSeparation on _AccountSharingCore {
     required String uid,
     required String connectionId,
   }) async {
+    // Prevent Firestore operations while account sharing is disabled.
+    if (!FeatureFlags.accountSharingEnabled) {
+      throw StateError('Account sharing is temporarily disabled.');
+    }
+
     final ref = firestore.collection('user_shared_accounts').doc(uid);
 
     final snapshot = await ref.get();

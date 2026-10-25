@@ -1,8 +1,17 @@
 part of 'account_sharing_remote_data_source.dart';
 
 /// Deleting a shared account and splitting the data back into per-user copies.
-mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, _AccountSharingSeparation {
+mixin _AccountSharingDelete
+    on
+        _AccountSharingCore,
+        _AccountSharingConnections,
+        _AccountSharingSeparation {
   Future<void> deleteSharedAccount(String connectionId) async {
+    // Prevent all Firebase operations while account sharing is disabled.
+    if (!FeatureFlags.accountSharingEnabled) {
+      throw StateError('Account sharing is temporarily disabled.');
+    }
+
     final currentUser = auth.currentUser;
 
     if (currentUser == null) {
@@ -49,6 +58,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
 
     final snapshotsByCollection =
         <String, QuerySnapshot<Map<String, dynamic>>>{};
+
     for (final collectionName in _dataCollections) {
       snapshotsByCollection[collectionName] = await firestore
           .collection(collectionName)
@@ -57,6 +67,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
     }
 
     final clientLogicalIdsByDocumentId = <String, String>{};
+
     for (final doc in snapshotsByCollection['clients']!.docs) {
       clientLogicalIdsByDocumentId[doc.id] = _getLogicalDataId(
         doc.data(),
@@ -65,6 +76,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
     }
 
     final productLogicalIdsByDocumentId = <String, String>{};
+
     for (final doc in snapshotsByCollection['products']!.docs) {
       productLogicalIdsByDocumentId[doc.id] = _getLogicalDataId(
         doc.data(),
@@ -121,6 +133,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
             sourceData[_sharedConnectionIdsField],
           );
 
+          // Create the current user's separated copy.
           final currentCopyId = _getSeparatedDocumentId(
             collectionName: collectionName,
             logicalDataId: logicalDataId,
@@ -134,7 +147,6 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
           final currentCopyData = Map<String, dynamic>.from(sourceData);
 
           currentCopyData['userId'] = currentUser.uid;
-
           currentCopyData['userIds'] = [currentUser.uid];
 
           final currentRemaining = sourceConnectionIds
@@ -160,8 +172,10 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
           }
 
           currentCopyData['sharedDataId'] = logicalDataId;
+
           if (collectionName == 'invoices') {
             currentCopyData['invoiceId'] = currentCopyId;
+
             _remapInvoiceReferenceIdsForSeparatedCopy(
               invoiceData: currentCopyData,
               uid: currentUser.uid,
@@ -172,6 +186,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
 
           batch.set(currentCopyRef, currentCopyData);
 
+          // Create the other user's separated copy.
           final otherCopyId = _getSeparatedDocumentId(
             collectionName: collectionName,
             logicalDataId: logicalDataId,
@@ -185,7 +200,6 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
           final otherCopyData = Map<String, dynamic>.from(sourceData);
 
           otherCopyData['userId'] = otherUserId;
-
           otherCopyData['userIds'] = [otherUserId];
 
           final otherRemaining = sourceConnectionIds
@@ -211,8 +225,10 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
           }
 
           otherCopyData['sharedDataId'] = logicalDataId;
+
           if (collectionName == 'invoices') {
             otherCopyData['invoiceId'] = otherCopyId;
+
             _remapInvoiceReferenceIdsForSeparatedCopy(
               invoiceData: otherCopyData,
               uid: otherUserId,
@@ -223,6 +239,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
 
           batch.set(otherCopyRef, otherCopyData);
 
+          // Delete obsolete documents after creating the separated copies.
           final targetCopyIds = <String>{currentCopyId, otherCopyId};
 
           for (final oldDoc in snapshot.docs.where(
@@ -231,6 +248,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
             if (targetCopyIds.contains(oldDoc.id)) {
               continue;
             }
+
             batch.delete(oldDoc.reference);
           }
         }
@@ -239,6 +257,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
       }
     }
 
+    // Remove the connection from both users' mappings.
     await Future.wait([
       _removeConnectionFromUserMapping(
         uid: currentUser.uid,
@@ -250,6 +269,7 @@ mixin _AccountSharingDelete on _AccountSharingCore, _AccountSharingConnections, 
       ),
     ]);
 
+    // Delete the shared-account document.
     await sharedAccountRef.delete();
   }
 }

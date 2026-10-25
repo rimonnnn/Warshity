@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:warshity/core/config/feature_flags.dart';
 import 'package:warshity/features/account_sharing/data/models/share_invitation_model.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
@@ -44,7 +45,19 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     return _connections.first['id']?.toString();
   }
 
+  void _emitFeatureDisabledError() {
+    if (!isClosed) {
+      emit(AccountSharingError('Account sharing is temporarily disabled.'));
+    }
+  }
+
+  // Starts the sharing-related streams only when the feature is enabled.
   void startWatchingSharedAccounts() {
+    if (!FeatureFlags.accountSharingEnabled) {
+      unawaited(stopWatchingSharedAccounts());
+      return;
+    }
+
     if (_sharedAccountsSubscription != null &&
         _sentInvitationsSubscription != null &&
         _receivedInvitationsSubscription != null) {
@@ -58,6 +71,7 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     _sharedWatcherInitialized = false;
     _sentWatcherInitialized = false;
     _receivedInvitationsWatcherInitialized = false;
+
     _connections = [];
     _lastWatchedConnectionIds = {};
     _lastSentStatuses = {};
@@ -66,7 +80,9 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     _sharedAccountsSubscription = repository.watchActiveSharedAccounts().listen(
       _handleSharedAccountsChange,
       onError: (error) {
-        if (!isClosed) emit(AccountSharingError(error.toString()));
+        if (!isClosed) {
+          emit(AccountSharingError(error.toString()));
+        }
       },
     );
 
@@ -75,7 +91,9 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
         .listen(
           _handleSentInvitationStatuses,
           onError: (error) {
-            if (!isClosed) emit(AccountSharingError(error.toString()));
+            if (!isClosed) {
+              emit(AccountSharingError(error.toString()));
+            }
           },
         );
 
@@ -84,7 +102,9 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
         .listen(
           _handleReceivedInvitationsChange,
           onError: (error) {
-            if (!isClosed) emit(AccountSharingError(error.toString()));
+            if (!isClosed) {
+              emit(AccountSharingError(error.toString()));
+            }
           },
         );
   }
@@ -93,6 +113,7 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
 
   void _handleSharedAccountsChange(List<Map<String, dynamic>> value) {
     final newConnections = List<Map<String, dynamic>>.from(value);
+
     final newIds = newConnections
         .map((connection) => connection['id']?.toString() ?? '')
         .where((id) => id.isNotEmpty)
@@ -102,13 +123,16 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
       _sharedWatcherInitialized = true;
       _lastWatchedConnectionIds = newIds;
       _connections = newConnections;
+
       if (!isClosed) {
         emit(AccountSharingStatusChanged(sharedAccountId: sharedAccountId));
       }
+
       return;
     }
 
     final removedIds = _lastWatchedConnectionIds.difference(newIds);
+
     _lastWatchedConnectionIds = newIds;
     _connections = newConnections;
 
@@ -119,6 +143,7 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
         if (_locallyDeletedConnectionIds.remove(removedId)) {
           continue;
         }
+
         hasRemoteDeletion = true;
       }
 
@@ -130,6 +155,7 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     final loadingState = state is AccountSharingLoading
         ? state as AccountSharingLoading
         : null;
+
     final keepActionLoading =
         loadingState?.action == 'accept' ||
         loadingState?.action == 'reject' ||
@@ -155,6 +181,7 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     }
 
     final addedIds = newIds.difference(_lastReceivedInvitationIds);
+
     _lastReceivedInvitationIds = newIds;
 
     if (addedIds.isNotEmpty && !isClosed) {
@@ -195,16 +222,31 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
   Future<void> sendInvitation({required String email}) async {
     if (isClosed) return;
 
+    if (!FeatureFlags.accountSharingEnabled) {
+      _emitFeatureDisabledError();
+      return;
+    }
+
     emit(AccountSharingLoading(action: 'send'));
+
     try {
       await repository.sendInvitation(email: email);
-      if (!isClosed) emit(AccountInvitationSent());
+
+      if (!isClosed) {
+        emit(AccountInvitationSent());
+      }
     } catch (e) {
-      if (!isClosed) emit(AccountSharingError(e.toString()));
+      if (!isClosed) {
+        emit(AccountSharingError(e.toString()));
+      }
     }
   }
 
   Stream<List<ShareInvitationModel>> watchReceivedInvitations() {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return const Stream<List<ShareInvitationModel>>.empty();
+    }
+
     return repository.watchReceivedInvitations();
   }
 
@@ -213,6 +255,11 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     required bool accept,
   }) async {
     if (isClosed) return;
+
+    if (!FeatureFlags.accountSharingEnabled) {
+      _emitFeatureDisabledError();
+      return;
+    }
 
     emit(
       AccountSharingLoading(
@@ -228,39 +275,71 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
       );
 
       if (isClosed) return;
+
       if (accept) {
         emit(AccountInvitationAccepted());
       } else {
         emit(AccountInvitationRejected());
       }
     } catch (e) {
-      if (!isClosed) emit(AccountSharingError(e.toString()));
+      if (!isClosed) {
+        emit(AccountSharingError(e.toString()));
+      }
     }
   }
 
   Future<List<Map<String, dynamic>>> getActiveSharedAccounts() async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      _connections = [];
+      return [];
+    }
+
     final result = await repository.getActiveSharedAccounts();
+
     _connections = List<Map<String, dynamic>>.from(result);
+
     return connections;
   }
 
-  Future<List<String>> getActiveConnectionIds() =>
-      repository.getActiveConnectionIds();
+  Future<List<String>> getActiveConnectionIds() async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return [];
+    }
 
-  Future<List<String>> getConnectedUserIds() =>
-      repository.getConnectedUserIds();
+    return repository.getActiveConnectionIds();
+  }
 
-  Future<List<String>> getConnectionMembers(String connectionId) =>
-      repository.getConnectionMembers(connectionId);
+  Future<List<String>> getConnectedUserIds() async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return [];
+    }
+
+    return repository.getConnectedUserIds();
+  }
+
+  Future<List<String>> getConnectionMembers(String connectionId) async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return [];
+    }
+
+    return repository.getConnectionMembers(connectionId);
+  }
 
   Future<void> deleteSharedAccount(String connectionId) async {
     if (isClosed || connectionId.trim().isEmpty) return;
+
+    if (!FeatureFlags.accountSharingEnabled) {
+      _emitFeatureDisabledError();
+      return;
+    }
 
     emit(AccountSharingLoading(action: 'delete', itemId: connectionId));
 
     try {
       _locallyDeletedConnectionIds.add(connectionId);
+
       await repository.deleteSharedAccount(connectionId);
+
       _connections.removeWhere(
         (connection) => connection['id']?.toString() == connectionId,
       );
@@ -271,12 +350,22 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
       }
     } catch (e) {
       _locallyDeletedConnectionIds.remove(connectionId);
-      if (!isClosed) emit(AccountSharingError(e.toString()));
+
+      if (!isClosed) {
+        emit(AccountSharingError(e.toString()));
+      }
     }
   }
 
   Future<String?> getSharedAccountId() async {
-    if (_connections.isEmpty) await getActiveSharedAccounts();
+    if (!FeatureFlags.accountSharingEnabled) {
+      return null;
+    }
+
+    if (_connections.isEmpty) {
+      await getActiveSharedAccounts();
+    }
+
     return sharedAccountId;
   }
 
@@ -296,10 +385,12 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     _sharedWatcherInitialized = false;
     _sentWatcherInitialized = false;
     _receivedInvitationsWatcherInitialized = false;
+
     _connections = [];
     _lastWatchedConnectionIds = {};
     _lastSentStatuses = {};
     _lastReceivedInvitationIds = {};
+
     _locallyDeletedConnectionIds.clear();
   }
 
