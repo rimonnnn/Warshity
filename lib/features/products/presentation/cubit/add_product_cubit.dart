@@ -15,14 +15,15 @@ class AddProductCubit extends Cubit<AddProductState> {
     return await repository.generateProductBarcode();
   }
 
-  // ============================================================
-  // DEFAULT IMAGE
-  // ============================================================
+  Future<List<String>> getCustomUnits() {
+    return repository.getCustomUnits();
+  }
+
+  Future<void> addCustomUnit(String name) {
+    return repository.addCustomUnit(name);
+  }
 
   static const String defaultProductImage = "";
-  // ============================================================
-  // ADD PRODUCT
-  // ============================================================
 
   Future<void> addProduct({
     required ProductModel product,
@@ -34,20 +35,12 @@ class AddProductCubit extends Cubit<AddProductState> {
     try {
       String imageUrl = defaultProductImage;
 
-      // ==========================================================
-      // UPLOAD SELECTED IMAGE
-      // ==========================================================
-
       if (imageBytes != null && imageBytes.isNotEmpty) {
         imageUrl = await repository.uploadProductImage(
           imageBytes,
           imageName ?? 'product_image',
         );
       }
-
-      // ==========================================================
-      // CREATE PRODUCT
-      // ==========================================================
 
       final ProductModel productWithImage = ProductModel(
         id: product.id,
@@ -60,15 +53,7 @@ class AddProductCubit extends Cubit<AddProductState> {
         imageUrl: imageUrl,
       );
 
-      // ==========================================================
-      // SAVE TO FIRESTORE
-      // ==========================================================
-
       await repository.addProduct(productWithImage);
-
-      // ==========================================================
-      // SUCCESS
-      // ==========================================================
 
       emit(AddProductSuccess());
     } catch (e) {
