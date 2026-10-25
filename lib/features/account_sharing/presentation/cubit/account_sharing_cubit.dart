@@ -309,19 +309,11 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     return repository.getActiveConnectionIds();
   }
 
-  Future<List<String>> getConnectedUserIds() async {
-    if (!FeatureFlags.accountSharingEnabled) {
-      return [];
-    }
-
+  Future<List<String>> getConnectedUserIds() {
     return repository.getConnectedUserIds();
   }
 
-  Future<List<String>> getConnectionMembers(String connectionId) async {
-    if (!FeatureFlags.accountSharingEnabled) {
-      return [];
-    }
-
+  Future<List<String>> getConnectionMembers(String connectionId) {
     return repository.getConnectionMembers(connectionId);
   }
 

@@ -37,7 +37,7 @@ class AccountSharingRepository {
 
   Stream<Map<String, String>> watchSentInvitationStatuses() {
     if (!FeatureFlags.accountSharingEnabled) {
-      return const Stream<Map<String, String>>.empty();
+      return Stream<Map<String, String>>.value(<String, String>{});
     }
 
     return remoteDataSource.watchSentInvitationStatuses();
@@ -69,7 +69,7 @@ class AccountSharingRepository {
 
   Stream<List<Map<String, dynamic>>> watchActiveSharedAccounts() {
     if (!FeatureFlags.accountSharingEnabled) {
-      return const Stream<List<Map<String, dynamic>>>.empty();
+      return Stream<List<Map<String, dynamic>>>.value(<Map<String, dynamic>>[]);
     }
 
     return remoteDataSource.watchActiveSharedAccounts();
@@ -85,33 +85,21 @@ class AccountSharingRepository {
 
   Stream<List<String>> watchActiveConnectionIds() {
     if (!FeatureFlags.accountSharingEnabled) {
-      return const Stream<List<String>>.empty();
+      return Stream<List<String>>.value(<String>[]);
     }
 
     return remoteDataSource.watchActiveConnectionIds();
   }
 
-  Future<List<String>> getConnectedUserIds() async {
-    if (!FeatureFlags.accountSharingEnabled) {
-      return [];
-    }
-
+  Future<List<String>> getConnectedUserIds() {
     return remoteDataSource.getConnectedUserIds();
   }
 
   Stream<List<String>> watchConnectedUserIds() {
-    if (!FeatureFlags.accountSharingEnabled) {
-      return const Stream<List<String>>.empty();
-    }
-
     return remoteDataSource.watchConnectedUserIds();
   }
 
-  Future<List<String>> getConnectionMembers(String connectionId) async {
-    if (!FeatureFlags.accountSharingEnabled) {
-      return [];
-    }
-
+  Future<List<String>> getConnectionMembers(String connectionId) {
     return remoteDataSource.getConnectionMembers(connectionId);
   }
 
@@ -135,7 +123,7 @@ class AccountSharingRepository {
 
   Stream<String?> watchSharedAccountId() {
     if (!FeatureFlags.accountSharingEnabled) {
-      return const Stream<String?>.empty();
+      return Stream<String?>.value(null);
     }
 
     return remoteDataSource.watchSharedAccountId();
