@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _navigateNext() async {
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(milliseconds: 2500));
       if (!mounted) return;
 
       final hasSeenOnboarding = getIt<OnboardingLocalDataSource>()

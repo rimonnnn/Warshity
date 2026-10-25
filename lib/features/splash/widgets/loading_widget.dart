@@ -32,7 +32,7 @@ class _LoadingWidgetState extends State<LoadingWidget>
 
   // توقيت الكتابة (الـ delay جزء من نفس الـ controller)
   static const Duration _typingDelay = Duration(milliseconds: 350);
-  static const Duration _typingDuration = Duration(milliseconds: 1600);
+  static const Duration _typingDuration = Duration(milliseconds: 1100);
   static final Duration _titleTotal = _typingDelay + _typingDuration;
 
   // مدة النبضة
@@ -153,8 +153,10 @@ class _LoadingWidgetState extends State<LoadingWidget>
     return AnimatedBuilder(
       animation: _titleTyping,
       builder: (context, _) {
+        // round() بدل ceil() عشان الحرف الأول ما يظهرش فوراً
+        // وكل حرف ياخد نفس الزمن تقريباً.
         final count = (_titleTyping.value * text.length)
-            .ceil()
+            .round()
             .clamp(0, text.length)
             .toInt();
 
