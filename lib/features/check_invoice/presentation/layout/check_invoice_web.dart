@@ -75,7 +75,6 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
         await _saveInvoice();
       }
     } catch (e) {
-      debugPrint('Print invoice error: $e');
 
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -94,7 +93,6 @@ class _CheckInvoiceWebState extends State<CheckInvoiceWeb> {
         filename: '${widget.invoice.invoiceId}.pdf',
       );
     } catch (e) {
-      debugPrint('Share invoice error: $e');
 
       if (context.mounted) {
         ScaffoldMessenger.of(

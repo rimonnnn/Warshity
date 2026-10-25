@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:warshity/features/auth/cubit/auth_state.dart';
@@ -33,16 +32,6 @@ void main() {
         // Process pending frames and animations.
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
-
-        // Debug: inspect the actual text displayed by the widget tree.
-        debugPrint(
-          tester
-              .widgetList<Text>(find.byType(Text))
-              .map((widget) => widget.data)
-              .whereType<String>()
-              .toList()
-              .toString(),
-        );
 
         expect(find.text('verification_email_sent'), findsOneWidget);
 

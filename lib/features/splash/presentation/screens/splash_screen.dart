@@ -53,9 +53,8 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         context.pushReplacementNamed(AppRoutes.loginScreen);
       }
-    } catch (e, stackTrace) {
-      debugPrint('Splash navigation error: $e');
-      debugPrint('$stackTrace');
+    // ignore: empty_catches
+    } catch (e) {
     }
   }
 

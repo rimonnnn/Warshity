@@ -98,8 +98,6 @@ class _AddProductDialogState extends State<AddProductDialog> {
         isGeneratingBarcode = false;
       });
 
-      debugPrint('Product barcode generation error: $e');
-
       _message('Failed to generate product code. Please try again.'.tr());
     }
   }
@@ -130,9 +128,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
         selectedImage = image;
         selectedImageBytes = bytes;
       });
-    } catch (e) {
-      debugPrint('Image Picker Error: $e');
-    }
+    // ignore: empty_catches
+    } catch (e) {}
   }
 
   List<String> _mergeUnits(Iterable<String> values) {
@@ -174,7 +171,6 @@ class _AddProductDialogState extends State<AddProductDialog> {
         isLoadingCustomUnits = false;
       });
     } catch (e) {
-      debugPrint('Failed to load custom units: $e');
       if (!mounted) return;
       setState(() => isLoadingCustomUnits = false);
       _showUnitMessage(
@@ -212,7 +208,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
       if (!mounted) return;
 
       setState(() => isAddingUnit = false);
-      debugPrint('Failed to save custom unit: $e');
+      
       _showUnitMessage(
         'custom_unit_save_failed',
         type: AnimatedSnackBarType.error,

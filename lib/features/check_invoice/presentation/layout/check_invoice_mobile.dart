@@ -50,7 +50,6 @@ class _CheckInvoiceMobileState extends State<CheckInvoiceMobile> {
   }
 
   void _showError(Object error) {
-    debugPrint('Invoice action error: $error');
     if (!mounted) return;
     ScaffoldMessenger.of(
       context,

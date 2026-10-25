@@ -33,7 +33,6 @@ class DashBoardStatistics extends StatelessWidget {
   final double? iconSize;
   final String? value;
 
- 
   @override
   Widget build(BuildContext context) {
     final scheme = context.colors;
@@ -91,7 +90,7 @@ class DashBoardStatistics extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Align(
-                            alignment: AlignmentDirectional.centerStart,
+                            alignment: AlignmentDirectional.center,
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
                               alignment: AlignmentDirectional.centerStart,

@@ -92,7 +92,6 @@ mixin _WebAddInvoiceActions on State<WebAddInvoice> {
 
       if (printed) await _finalizeInvoiceIfNeeded();
     } catch (e) {
-      debugPrint('Print invoice error: $e');
       _showError(e);
     }
   }
@@ -109,7 +108,6 @@ mixin _WebAddInvoiceActions on State<WebAddInvoice> {
         filename: '${invoice.invoiceId}.pdf',
       );
     } catch (e) {
-      debugPrint('Share invoice error: $e');
       _showError(e);
     }
   }
@@ -124,7 +122,6 @@ mixin _WebAddInvoiceActions on State<WebAddInvoice> {
         filename: '${invoice.invoiceId}.png',
       );
     } catch (e) {
-      debugPrint('Share invoice image error: $e');
       _showError(e);
     }
   }

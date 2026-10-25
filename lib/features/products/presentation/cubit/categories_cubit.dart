@@ -74,7 +74,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
         emit(CategoriesLoaded(currentCategories));
       }
     } catch (e) {
-      debugPrint('Add category error: $e');
       emit(
         AddCategoryError(
           currentCategories,

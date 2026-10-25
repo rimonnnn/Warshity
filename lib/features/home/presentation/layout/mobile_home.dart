@@ -104,17 +104,17 @@ class MobileHome extends StatelessWidget {
             (
               'number_of_Invoices'.tr(),
               Icons.receipt_long_outlined,
-              '${state.invoiceCount} ${'invoice'.tr()}',
+              '${state.invoiceCount}',
             ),
             (
               'total_clients'.tr(),
               Icons.group_outlined,
-              '${state.clientCount} ${'client'.tr()}',
+              '${state.clientCount}',
             ),
             (
               'total_products'.tr(),
               Icons.inventory_2_outlined,
-              '${state.productCount} ${'product'.tr()}',
+              '${state.productCount}',
             ),
           ];
 
