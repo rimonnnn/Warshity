@@ -40,6 +40,9 @@ class InvoiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = context.colors;
+    final displayInvoiceNumber =
+        RegExp(r'INV-[^_]+').firstMatch(invoiceNumber)?.group(0) ??
+        invoiceNumber;
 
     return Card(
       color: context.colors.surfaceContainer,
@@ -59,7 +62,7 @@ class InvoiceCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    '#$invoiceNumber',
+                    displayInvoiceNumber,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: context.text.bodySmall?.copyWith(
@@ -107,7 +110,7 @@ class InvoiceCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '$itemCount ${'item_count'.tr()}',
+                      itemCount.toString(),
                       style: context.text.bodyMedium?.copyWith(
                         color: scheme.onSurface,
                       ),
