@@ -99,7 +99,7 @@ class MobileHome extends StatelessWidget {
             (
               'daily_sales'.tr(),
               Icons.trending_up_outlined,
-              (state.todaySales.toStringAsFixed(2)),
+              (state.todaySales.toStringAsFixed(1)),
             ),
             (
               'number_of_Invoices'.tr(),
@@ -224,7 +224,7 @@ class MobileHome extends StatelessWidget {
                         return RecentOperationModel(
                           customerName: invoice.customerName,
                           time: formattedDate,
-                          price: invoice.total.toStringAsFixed(2),
+                          price: invoice.total.toStringAsFixed(1),
                         );
                       }).toList(),
 

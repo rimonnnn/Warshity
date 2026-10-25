@@ -17,7 +17,7 @@ class InvoiceSummaryCard extends StatelessWidget {
   final double discount;
   final double total;
 
-  String _money(double value) => '\$${value.toStringAsFixed(2)}';
+  String _money(double value) => '\$${value.toStringAsFixed(1)}';
 
   @override
   Widget build(BuildContext context) {

@@ -23,19 +23,11 @@ class CustomerStatsSection extends StatelessWidget {
       stream: getIt<InvoicesRepository>().watchAllClientInvoices(customerId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return _buildStats(
-            context,
-            totalPurchases: '—',
-            orderCount: '—',
-          );
+          return _buildStats(context, totalPurchases: '—', orderCount: '—');
         }
 
         if (!snapshot.hasData) {
-          return _buildStats(
-            context,
-            totalPurchases: '...',
-            orderCount: '...',
-          );
+          return _buildStats(context, totalPurchases: '...', orderCount: '...');
         }
 
         final invoices = snapshot.data!;
@@ -46,7 +38,7 @@ class CustomerStatsSection extends StatelessWidget {
 
         return _buildStats(
           context,
-          totalPurchases: totalPurchases.toStringAsFixed(2),
+          totalPurchases: totalPurchases.toStringAsFixed(1),
           orderCount: invoices.length.toString(),
         );
       },

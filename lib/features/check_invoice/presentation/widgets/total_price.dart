@@ -15,7 +15,7 @@ class TotalPrice extends StatelessWidget {
     final currencyFormatter = NumberFormat.currency(
       locale: context.locale.toString(),
       symbol: context.locale.languageCode == 'ar' ? 'ج.م' : 'EGP',
-      decimalDigits: 2,
+      decimalDigits: 1,
     );
 
     final finalTotal = subtotal - discount;

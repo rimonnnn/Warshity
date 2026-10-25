@@ -43,7 +43,7 @@ class InvoiceTotalsWidget {
           // Subtotal
           _row(
             labels['subtotal'] ?? 'Subtotal',
-            data.subtotal.toStringAsFixed(2),
+            data.subtotal.toStringAsFixed(1),
             fontSize: fontSize,
             labelColor: PdfColors.grey700,
             valueColor: PdfColors.grey800,
@@ -54,7 +54,7 @@ class InvoiceTotalsWidget {
           if (data.discount > 0) ...[
             _row(
               labels['discount'] ?? 'Discount',
-              '- ${data.discount.toStringAsFixed(2)}',
+              '- ${data.discount.toStringAsFixed(1)}',
               fontSize: fontSize,
               labelColor: PdfColors.grey700,
               valueColor: PdfColors.grey700,
@@ -68,7 +68,7 @@ class InvoiceTotalsWidget {
           // Final total
           _row(
             labels['total'] ?? 'Total',
-            data.total.toStringAsFixed(2),
+            data.total.toStringAsFixed(1),
             fontSize: fontSize + 1.5,
             bold: true,
             horizontalPadding: isA4 ? 8 : 2,
@@ -82,7 +82,7 @@ class InvoiceTotalsWidget {
           // Paid amount
           _row(
             labels['paid'] ?? 'Paid',
-            data.paidAmount.toStringAsFixed(2),
+            data.paidAmount.toStringAsFixed(1),
             fontSize: fontSize,
             labelColor: PdfColors.grey700,
             valueColor: PdfColors.grey800,
@@ -95,7 +95,7 @@ class InvoiceTotalsWidget {
 
             _row(
               labels['remaining'] ?? 'Remaining',
-              data.remainingAmount.toStringAsFixed(2),
+              data.remainingAmount.toStringAsFixed(1),
               fontSize: fontSize + 1,
               bold: true,
               horizontalPadding: isA4 ? 8 : 2,

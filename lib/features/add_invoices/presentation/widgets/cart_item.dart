@@ -92,7 +92,7 @@ class CartItem extends StatelessWidget {
                 ),
                 const HeightSpace(2),
                 Text(
-                  '\$${unitPrice.toStringAsFixed(2)} × $quantity',
+                  '\$${unitPrice.toStringAsFixed(1)} × $quantity',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: context.text.bodySmall?.copyWith(
@@ -110,7 +110,7 @@ class CartItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '\$${_subtotal.toStringAsFixed(2)}',
+                '\$${_subtotal.toStringAsFixed(1)}',
                 style: context.text.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: scheme.primary,

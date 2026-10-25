@@ -56,16 +56,11 @@ class InvoiceList extends StatelessWidget {
     );
   }
 
-  Future<void> _printInvoice(
-    BuildContext context,
-    InvoiceModel invoice,
-  ) async {
+  Future<void> _printInvoice(BuildContext context, InvoiceModel invoice) async {
     try {
       final pdfBytes = await _generatePdf(context, invoice);
 
-      await Printing.layoutPdf(
-        onLayout: (_) async => pdfBytes,
-      );
+      await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
     } catch (e) {
       if (!context.mounted) return;
 
@@ -77,10 +72,7 @@ class InvoiceList extends StatelessWidget {
     }
   }
 
-  Future<void> _exportPdf(
-    BuildContext context,
-    InvoiceModel invoice,
-  ) async {
+  Future<void> _exportPdf(BuildContext context, InvoiceModel invoice) async {
     try {
       final pdfBytes = await _generatePdf(context, invoice);
 
@@ -99,16 +91,11 @@ class InvoiceList extends StatelessWidget {
     }
   }
 
-  Future<void> _exportImage(
-    BuildContext context,
-    InvoiceModel invoice,
-  ) async {
+  Future<void> _exportImage(BuildContext context, InvoiceModel invoice) async {
     final invoiceKey = GlobalKey();
 
     try {
-      final actions = InvoiceActionsService(
-        getIt<InvoicePdfService>(),
-      );
+      final actions = InvoiceActionsService(getIt<InvoicePdfService>());
 
       await showDialog(
         context: context,
@@ -119,9 +106,7 @@ class InvoiceList extends StatelessWidget {
               await WidgetsBinding.instance.endOfFrame;
               await WidgetsBinding.instance.endOfFrame;
 
-              final imageBytes = await actions.captureAsImage(
-                invoiceKey,
-              );
+              final imageBytes = await actions.captureAsImage(invoiceKey);
 
               await actions.shareImage(
                 imageBytes: imageBytes,
@@ -139,10 +124,7 @@ class InvoiceList extends StatelessWidget {
               if (context.mounted) {
                 showAnimatedSnackDialog(
                   context,
-                  message: e.toString().replaceFirst(
-                    'Exception: ',
-                    '',
-                  ),
+                  message: e.toString().replaceFirst('Exception: ', ''),
                   type: AnimatedSnackBarType.error,
                 );
               }
@@ -154,9 +136,7 @@ class InvoiceList extends StatelessWidget {
             child: SingleChildScrollView(
               child: RepaintBoundary(
                 key: invoiceKey,
-                child: CheckInvoiceContent(
-                  invoice: invoice,
-                ),
+                child: CheckInvoiceContent(invoice: invoice),
               ),
             ),
           );
@@ -173,105 +153,85 @@ class InvoiceList extends StatelessWidget {
     }
   }
 
- Future<void> _deleteInvoice(
-  BuildContext context,
-  InvoiceModel invoice,
-) async {
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) {
-      return AlertDialog(
-        title: Text('delete'.tr()),
-        content: Text(
-          'Are you sure you want to delete this invoice?'.tr(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext, false);
-            },
-            child: Text('cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext, true);
-            },
-            child: Text('delete'.tr()),
-          ),
-        ],
+  Future<void> _deleteInvoice(
+    BuildContext context,
+    InvoiceModel invoice,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('delete'.tr()),
+          content: Text('Are you sure you want to delete this invoice?'.tr()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, false);
+              },
+              child: Text('cancel'.tr()),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, true);
+              },
+              child: Text('delete'.tr()),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    // Loading أثناء الحذف
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      builder: (_) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+
+    try {
+      await getIt<InvoiceRepository>().deleteInvoice(invoice.invoiceId!);
+
+      if (!context.mounted) return;
+
+      // نقفل Loading Dialog فقط
+      Navigator.of(context, rootNavigator: true).pop();
+
+      showAnimatedSnackDialog(
+        context,
+        message: 'invoice_deleted_successfully'.tr(),
+        type: AnimatedSnackBarType.success,
       );
-    },
-  );
+    } catch (e) {
+      if (!context.mounted) return;
 
-  if (confirmed != true) return;
+      // نقفل Loading Dialog في حالة الخطأ
+      Navigator.of(context, rootNavigator: true).pop();
 
-  // Loading أثناء الحذف
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    useRootNavigator: true,
-    builder: (_) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      showAnimatedSnackDialog(
+        context,
+        message: e.toString().replaceFirst('Exception: ', ''),
+        type: AnimatedSnackBarType.error,
       );
-    },
-  );
-
-  try {
-    await getIt<InvoiceRepository>().deleteInvoice(
-      invoice.invoiceId!,
-    );
-
-    if (!context.mounted) return;
-
-    // نقفل Loading Dialog فقط
-    Navigator.of(
-      context,
-      rootNavigator: true,
-    ).pop();
-
-    showAnimatedSnackDialog(
-      context,
-      message: 'invoice_deleted_successfully'.tr(),
-      type: AnimatedSnackBarType.success,
-    );
-  } catch (e) {
-    if (!context.mounted) return;
-
-    // نقفل Loading Dialog في حالة الخطأ
-    Navigator.of(
-      context,
-      rootNavigator: true,
-    ).pop();
-
-    showAnimatedSnackDialog(
-      context,
-      message: e.toString().replaceFirst(
-        'Exception: ',
-        '',
-      ),
-      type: AnimatedSnackBarType.error,
-    );
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<InvoiceHistoryCubit, InvoiceHistoryState>(
       builder: (context, state) {
         // لو مفيش فواتير والـStream رجع Loading
         // نعرض الحالة الفارغة بدل Loading لا نهائي.
-        if (state is InvoiceHistoryLoading &&
-            state.invoices.isEmpty) {
-          return Center(
-            child: Text('no_invoice_found'.tr()),
-          );
+        if (state is InvoiceHistoryLoading && state.invoices.isEmpty) {
+          return Center(child: Text('no_invoice_found'.tr()));
         }
 
-        if (state is InvoiceHistoryError &&
-            state.invoices.isEmpty) {
-          return Center(
-            child: Text(state.message),
-          );
+        if (state is InvoiceHistoryError && state.invoices.isEmpty) {
+          return Center(child: Text(state.message));
         }
 
         if (state is! InvoiceHistoryLoaded) {
@@ -281,9 +241,7 @@ class InvoiceList extends StatelessWidget {
         final invoices = state.filteredInvoices;
 
         if (invoices.isEmpty) {
-          return Center(
-            child: Text('no_invoice_found'.tr()),
-          );
+          return Center(child: Text('no_invoice_found'.tr()));
         }
 
         return ListView.builder(
@@ -298,17 +256,10 @@ class InvoiceList extends StatelessWidget {
                 invoiceNumber: invoice.invoiceId ?? '',
                 customerName: invoice.customerName,
                 date: _formatDate(invoice.createdAt),
-                paymentMethod:
-                    invoice.remainingAmount <= 0
-                        ? 'paid'
-                        : 'unpaid',
+                paymentMethod: invoice.remainingAmount <= 0 ? 'paid' : 'unpaid',
                 itemCount: invoice.items.length,
-                totalPrice:
-                    '\$${invoice.total.toStringAsFixed(2)}',
-                status:
-                    invoice.remainingAmount <= 0
-                        ? 'paid'
-                        : 'unpaid',
+                totalPrice: '\$${invoice.total.toStringAsFixed(1)}',
+                status: invoice.remainingAmount <= 0 ? 'paid' : 'unpaid',
                 onPrint: () {
                   _printInvoice(context, invoice);
                 },

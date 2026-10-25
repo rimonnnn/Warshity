@@ -145,8 +145,8 @@ class _CustomerDetailsPanel extends StatelessWidget {
                     value: invoiceStatsError
                         ? '—'
                         : invoiceStatsLoaded
-                            ? (totalPurchases ?? 0).toStringAsFixed(2)
-                            : '...',
+                        ? (totalPurchases ?? 0).toStringAsFixed(1)
+                        : '...',
                     icon: Icons.trending_up_rounded,
                   ),
                 ),
@@ -157,8 +157,8 @@ class _CustomerDetailsPanel extends StatelessWidget {
                     value: invoiceStatsError
                         ? '—'
                         : invoiceStatsLoaded
-                            ? (invoiceCount ?? 0).toString()
-                            : '...',
+                        ? (invoiceCount ?? 0).toString()
+                        : '...',
                     icon: Icons.shopping_bag_outlined,
                   ),
                 ),

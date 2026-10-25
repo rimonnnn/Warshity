@@ -138,7 +138,7 @@ class InvoiceItemsTableWidget {
 
               // Unit price
               _cell(
-                item.price.toStringAsFixed(2),
+                item.price.toStringAsFixed(1),
                 fontSize: fontSize,
                 padding: cellPadding,
                 textAlign: pw.TextAlign.right,
@@ -147,7 +147,7 @@ class InvoiceItemsTableWidget {
 
               // Line total
               _cell(
-                (item.price * item.quantity).toStringAsFixed(2),
+                (item.price * item.quantity).toStringAsFixed(1),
                 fontSize: fontSize,
                 padding: cellPadding,
                 textAlign: pw.TextAlign.right,

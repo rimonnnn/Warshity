@@ -114,8 +114,9 @@ class MobileCustomerDetails extends StatelessWidget {
                   // purchases and order count; the cached client fields may be
                   // outdated when older invoices or payments were saved.
                   StreamBuilder<List<InvoiceModel>>(
-                    stream: getIt<InvoicesRepository>()
-                        .watchAllClientInvoices(customer.id!),
+                    stream: getIt<InvoicesRepository>().watchAllClientInvoices(
+                      customer.id!,
+                    ),
                     builder: (context, invoiceSnapshot) {
                       final invoices =
                           invoiceSnapshot.data ?? const <InvoiceModel>[];
@@ -127,16 +128,17 @@ class MobileCustomerDetails extends StatelessWidget {
                       final statsValue = invoiceSnapshot.hasError
                           ? '—'
                           : invoiceSnapshot.hasData
-                              ? null
-                              : '...';
+                          ? null
+                          : '...';
 
                       return Row(
                         children: [
                           Expanded(
                             child: CustomerStatCard(
                               title: 'total_purchases'.tr(),
-                              value: statsValue ??
-                                  totalPurchases.toStringAsFixed(2),
+                              value:
+                                  statsValue ??
+                                  totalPurchases.toStringAsFixed(1),
                               icon: Icons.trending_up,
                             ),
                           ),

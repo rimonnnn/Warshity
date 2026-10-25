@@ -38,25 +38,25 @@ class InvoiceStatisticsSection extends StatelessWidget {
                 value: '$totalInvoices',
                 color: 'primary',
               ),
-        
+
               SizedBox(width: 12.w),
-        
+
               InvoiceStatisticsCard(
                 title: 'today_invoices',
                 value: '$todayInvoices',
                 color: 'secondary',
               ),
-        
+
               SizedBox(width: 12.w),
-        
+
               InvoiceStatisticsCard(
                 title: 'total_sales',
-                value: '\$${totalSales.toStringAsFixed(2)}',
+                value: '\$${totalSales.toStringAsFixed(1)}',
                 color: 'success',
               ),
-        
+
               SizedBox(width: 12.w),
-        
+
               InvoiceStatisticsCard(
                 title: 'unpaid_invoices',
                 value: '$unpaidInvoices',

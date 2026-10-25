@@ -3,5 +3,5 @@ String formatPrice(double value) {
     return value.toInt().toString();
   }
 
-  return value.toStringAsFixed(2);
+  return value.toStringAsFixed(1);
 }

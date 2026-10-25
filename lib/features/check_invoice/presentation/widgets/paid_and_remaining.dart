@@ -47,7 +47,7 @@ class PaidAndRemaining extends StatelessWidget {
 
             Flexible(
               child: Text(
-                paidAmount.toStringAsFixed(2),
+                paidAmount.toStringAsFixed(1),
                 textAlign: TextAlign.end,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -97,7 +97,7 @@ class PaidAndRemaining extends StatelessWidget {
 
               Flexible(
                 child: Text(
-                  remainingAmount.toStringAsFixed(2),
+                  remainingAmount.toStringAsFixed(1),
                   textAlign: TextAlign.end,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

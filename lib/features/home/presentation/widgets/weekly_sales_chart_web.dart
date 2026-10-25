@@ -268,7 +268,7 @@ class _SalesBarState extends State<_SalesBar> {
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: Tooltip(
-        message: '${widget.label}\n${widget.value.toStringAsFixed(2)}',
+        message: '${widget.label}\n${widget.value.toStringAsFixed(1)}',
         triggerMode: TooltipTriggerMode.tap,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,

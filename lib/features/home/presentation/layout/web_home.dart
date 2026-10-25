@@ -58,25 +58,25 @@ class WebHome extends StatelessWidget {
               (
                 title: 'daily_sales'.tr(),
                 icon: Icons.trending_up_outlined,
-                value: 'EGP ${state.todaySales.toStringAsFixed(2)}',
+                value: state.todaySales.toStringAsFixed(1),
                 destination: 0,
               ),
               (
                 title: 'number_of_Invoices'.tr(),
                 icon: Icons.receipt_long_outlined,
-                value: '${state.invoiceCount} ${'invoice'.tr()}',
+                value: '${state.invoiceCount} ',
                 destination: 1,
               ),
               (
                 title: 'total_products'.tr(),
                 icon: Icons.inventory_2_outlined,
-                value: '${state.productCount} ${'product'.tr()}',
+                value: '${state.productCount} ',
                 destination: 2,
               ),
               (
                 title: 'total_clients'.tr(),
                 icon: Icons.group_outlined,
-                value: '${state.clientCount} ${'client'.tr()}',
+                value: '${state.clientCount} ',
                 destination: 3,
               ),
             ];
@@ -372,7 +372,7 @@ class WebHome extends StatelessWidget {
                                     time: context
                                         .read<HomeCubit>()
                                         .formatInvoiceDate(invoice.createdAt),
-                                    price: invoice.total.toStringAsFixed(2),
+                                    price: invoice.total.toStringAsFixed(1),
                                   );
                                 }).toList(),
                               ),

@@ -116,7 +116,7 @@ class AmountAndPriceWidget extends StatelessWidget {
           // Price
           _textCell(
             context,
-            item.price.toStringAsFixed(2),
+            item.price.toStringAsFixed(1),
             flex: 3,
             align: TextAlign.end,
             fontWeight: FontWeight.w600,

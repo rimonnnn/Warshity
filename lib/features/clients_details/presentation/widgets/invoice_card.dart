@@ -104,7 +104,7 @@ class InvoiceCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    invoice.total.toStringAsFixed(2),
+                    invoice.total.toStringAsFixed(1),
                     maxLines: 1,
                     style: context.text.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,

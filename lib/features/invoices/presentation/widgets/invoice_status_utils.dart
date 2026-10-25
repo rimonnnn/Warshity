@@ -9,4 +9,4 @@ InvoiceStatus invoiceStatusOf(InvoiceModel invoice) {
   return InvoiceStatus.unpaid;
 }
 
-String money(double value) => '${value.toStringAsFixed(2)} ${'currency'.tr()}';
+String money(double value) => '${value.toStringAsFixed(1)} ${'currency'.tr()}';
