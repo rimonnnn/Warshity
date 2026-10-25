@@ -10,6 +10,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+import 'package:warshity/core/config/feature_flags.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/services/shared_pref_service.dart';
 import 'package:warshity/core/styling/app_assets.dart';
@@ -60,7 +61,9 @@ Future<void> main() async {
     ),
   );
 
-  if (kIsWeb) unawaited(revealApp());
+  if (kIsWeb) {
+    unawaited(revealApp());
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -87,9 +90,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit(getIt())),
-
         BlocProvider<AuthCubit>(create: (_) => getIt<AuthCubit>()),
-
         BlocProvider<AccountSharingCubit>(
           create: (_) => getIt<AccountSharingCubit>(),
         ),
@@ -102,7 +103,8 @@ class MyApp extends StatelessWidget {
             builder: (context, themeState) {
               return BlocListener<AuthCubit, AuthState>(
                 listener: (context, authState) {
-                  if (authState is UserLoaded) {
+                  if (authState is UserLoaded &&
+                      FeatureFlags.accountSharingEnabled) {
                     context
                         .read<AccountSharingCubit>()
                         .startWatchingSharedAccounts();

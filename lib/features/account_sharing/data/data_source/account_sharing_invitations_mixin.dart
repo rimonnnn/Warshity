@@ -1,8 +1,14 @@
 part of 'account_sharing_remote_data_source.dart';
 
 /// Sending and watching share invitations.
-mixin _AccountSharingInvitations on _AccountSharingCore, _AccountSharingConnections {
+mixin _AccountSharingInvitations
+    on _AccountSharingCore, _AccountSharingConnections {
   Future<void> sendInvitation({required String email}) async {
+    // Prevent invitation operations while account sharing is disabled.
+    if (!FeatureFlags.accountSharingEnabled) {
+      throw StateError('Account sharing is temporarily disabled.');
+    }
+
     final currentUser = auth.currentUser;
 
     if (currentUser == null) {
@@ -99,6 +105,10 @@ mixin _AccountSharingInvitations on _AccountSharingCore, _AccountSharingConnecti
   }
 
   Stream<List<ShareInvitationModel>> watchReceivedInvitations() {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return Stream<List<ShareInvitationModel>>.value(<ShareInvitationModel>[]);
+    }
+
     final currentUser = auth.currentUser;
 
     if (currentUser == null || currentUser.email == null) {
@@ -120,6 +130,10 @@ mixin _AccountSharingInvitations on _AccountSharingCore, _AccountSharingConnecti
   }
 
   Stream<Map<String, String>> watchSentInvitationStatuses() {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return Stream<Map<String, String>>.value(<String, String>{});
+    }
+
     final currentUser = auth.currentUser;
 
     if (currentUser == null) {

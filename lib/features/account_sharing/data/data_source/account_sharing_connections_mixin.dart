@@ -4,6 +4,10 @@ part of 'account_sharing_remote_data_source.dart';
 mixin _AccountSharingConnections on _AccountSharingCore {
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
   _getUserConnectionDocuments(String uid) async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return [];
+    }
+
     final mappingRef = firestore.collection('user_shared_accounts').doc(uid);
 
     final mappingSnapshot = await mappingRef.get();
@@ -49,18 +53,30 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Future<int> _getActiveConnectionCount(String uid) async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return 0;
+    }
+
     final connections = await _getUserConnectionDocuments(uid);
 
     return connections.length;
   }
 
   Future<List<String>> _getActiveConnectionIdsForUser(String uid) async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return [];
+    }
+
     final connections = await _getUserConnectionDocuments(uid);
 
     return connections.map((doc) => doc.id).toSet().toList();
   }
 
   Future<List<Map<String, dynamic>>> getActiveSharedAccounts() async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return [];
+    }
+
     final uid = _currentUserId;
 
     final documents = await _getUserConnectionDocuments(uid);
@@ -75,6 +91,10 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Stream<List<Map<String, dynamic>>> watchActiveSharedAccounts() {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return Stream.value(<Map<String, dynamic>>[]);
+    }
+
     final uid = _currentUserId;
 
     final mappingRef = firestore.collection('user_shared_accounts').doc(uid);
@@ -125,6 +145,11 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Future<List<String>> getConnectedUserIds() async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      final uid = auth.currentUser?.uid ?? '';
+      return uid.isEmpty ? [] : [uid];
+    }
+
     final uid = _currentUserId;
 
     final connections = await getActiveSharedAccounts();
@@ -145,6 +170,12 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Stream<List<String>> watchConnectedUserIds() {
+    if (!FeatureFlags.accountSharingEnabled) {
+      final uid = auth.currentUser?.uid ?? '';
+
+      return Stream.value(uid.isEmpty ? <String>[] : <String>[uid]);
+    }
+
     return watchActiveSharedAccounts().map((connections) {
       final uid = auth.currentUser?.uid ?? '';
 
@@ -169,6 +200,10 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Future<List<String>> getActiveConnectionIds() async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return [];
+    }
+
     final connections = await getActiveSharedAccounts();
 
     return connections
@@ -178,6 +213,10 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Stream<List<String>> watchActiveConnectionIds() {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return Stream.value(<String>[]);
+    }
+
     return watchActiveSharedAccounts().map((connections) {
       return connections
           .map((connection) => connection['id']?.toString() ?? '')
@@ -187,6 +226,11 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Future<List<String>> getConnectionMembers(String connectionId) async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      final uid = auth.currentUser?.uid ?? '';
+      return uid.isEmpty ? [] : [uid];
+    }
+
     final doc = await firestore
         .collection('shared_accounts')
         .doc(connectionId)
@@ -206,6 +250,10 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Future<String?> getSharedAccountId() async {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return null;
+    }
+
     final ids = await getActiveConnectionIds();
 
     if (ids.isEmpty) {
@@ -216,6 +264,10 @@ mixin _AccountSharingConnections on _AccountSharingCore {
   }
 
   Stream<String?> watchSharedAccountId() {
+    if (!FeatureFlags.accountSharingEnabled) {
+      return Stream<String?>.value(null);
+    }
+
     return watchActiveConnectionIds().map((ids) {
       if (ids.isEmpty) {
         return null;
