@@ -29,6 +29,72 @@ class ProductsRemoteDataSource {
     return uid;
   }
 
+  List<String> _normalizeCustomUnits(dynamic value) {
+    if (value is! List) return <String>[];
+
+    final result = <String>[];
+    final seen = <String>{};
+
+    for (final item in value) {
+      if (item is! String) continue;
+      final unit = item.trim();
+      if (unit.isEmpty) continue;
+
+      if (seen.add(unit.toLowerCase())) {
+        result.add(unit);
+      }
+    }
+
+    return result;
+  }
+
+  Future<List<String>> getCustomUnits() async {
+    final uid = _currentUserId;
+    final snapshot = await firestore.collection('users').doc(uid).get();
+
+    if (!snapshot.exists) return <String>[];
+
+    return _normalizeCustomUnits(snapshot.data()?['customUnits']);
+  }
+
+  Future<void> addCustomUnit(String name) async {
+    final uid = _currentUserId;
+    final normalizedName = name.trim();
+
+    if (normalizedName.isEmpty) {
+      throw ArgumentError('اسم الوحدة لا يمكن أن يكون فارغًا.');
+    }
+    if (normalizedName.length > 40) {
+      throw ArgumentError('اسم الوحدة يجب ألا يزيد عن 40 حرفًا.');
+    }
+
+    final userRef = firestore.collection('users').doc(uid);
+
+    await firestore.runTransaction<void>((transaction) async {
+      final snapshot = await transaction.get(userRef);
+      if (!snapshot.exists) {
+        throw Exception(
+          'ملف المستخدم غير موجود في Firestore. سجّل الدخول مرة أخرى ثم حاول.',
+        );
+      }
+
+      final data = snapshot.data() ?? <String, dynamic>{};
+      final units = _normalizeCustomUnits(data['customUnits']);
+      final duplicate = units.any(
+        (unit) => unit.toLowerCase() == normalizedName.toLowerCase(),
+      );
+      if (duplicate) return;
+
+      if (units.length >= 100) {
+        throw Exception('لا يمكن إضافة أكثر من 100 وحدة مخصصة.');
+      }
+
+      transaction.update(userRef, {
+        'customUnits': <String>[...units, normalizedName],
+      });
+    });
+  }
+
   List<String> _normalizeIds(dynamic value) {
     if (value is! List) {
       return <String>[];
@@ -95,8 +161,6 @@ class ProductsRemoteDataSource {
       }
 
       return Stream.multi((controller) {
-        // Each query owns its own result set. A document may match more than
-        // one query, so removing it from one query must not remove it globally.
         final documentsByQuery =
             List<Map<String, DocumentSnapshot<Map<String, dynamic>>>>.generate(
               streams.length,
@@ -111,8 +175,6 @@ class ProductsRemoteDataSource {
             <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
 
         void emit() {
-          // .first consumers (for example search) must receive the union only
-          // after every query has supplied its initial snapshot.
           if (initialSnapshotsReceived.any((received) => !received)) {
             return;
           }
@@ -177,10 +239,6 @@ class ProductsRemoteDataSource {
     return supabase.storage.from('products').getPublicUrl(filePath);
   }
 
-  // ============================================================
-  // GENERATE UNIQUE PRODUCT BARCODE
-  // ============================================================
-
   Future<String> generateProductBarcode() async {
     final uid = _currentUserId;
 
@@ -190,13 +248,11 @@ class ProductsRemoteDataSource {
 
     final registry = firestore.collection('productBarcodeRegistry');
 
-    // Retry with the next number if an existing code is encountered.
     for (var attempt = 0; attempt < 100; attempt++) {
       String? code;
 
       try {
         code = await firestore.runTransaction<String?>((transaction) async {
-          // Read the central counter.
           final counterSnapshot = await transaction.get(counterRef);
 
           final currentValue =
@@ -206,17 +262,14 @@ class ProductsRemoteDataSource {
 
           final candidate = 'MST-${nextValue.toString().padLeft(6, '0')}';
 
-          // Reserve each generated code in a separate document.
           final reservationRef = registry.doc(candidate);
           final reservationSnapshot = await transaction.get(reservationRef);
 
-          // All transaction reads happen before writes.
           transaction.set(counterRef, {
             'value': nextValue,
             'updatedAt': FieldValue.serverTimestamp(),
           });
 
-          // If already reserved, skip this number.
           if (reservationSnapshot.exists) {
             return null;
           }
@@ -242,15 +295,6 @@ class ProductsRemoteDataSource {
         continue;
       }
 
-      // Legacy collision check, scoped to the current user's products.
-      //
-      // The products list security rule only permits queries that prove
-      // `userId == request.auth.uid` (or userIds membership). A barcode-only
-      // query is denied by the rules regardless of the result set, so the
-      // query must also filter on userId. Other users' legacy products are
-      // covered by productBarcodeRegistry, which is the global authority:
-      // a registry document is never deleted, so a reserved/used code is
-      // never issued again.
       try {
         final existingProducts = await firestore
             .collection('products')
@@ -267,9 +311,6 @@ class ProductsRemoteDataSource {
           'Barcode uniqueness check failed: [${e.code}] ${e.message}',
         );
       }
-
-      // A conflicting legacy code was found.
-      // Its reservation stays in place, so it will not be reused.
     }
 
     throw Exception('Unable to generate a unique product code.');
@@ -285,12 +326,10 @@ class ProductsRemoteDataSource {
 
     final connectionIds = await _getActiveConnectionIds();
 
-    // Reference to the reserved barcode.
     final reservationRef = firestore
         .collection('productBarcodeRegistry')
         .doc(barcode);
 
-    // Generate a Firestore document ID for the new product.
     final productRef = firestore.collection('products').doc();
 
     final data = product.toFirestore();
@@ -303,7 +342,6 @@ class ProductsRemoteDataSource {
 
     data.remove('sharedAccountId');
 
-    // Save the product and consume its barcode reservation atomically.
     await firestore.runTransaction<void>((transaction) async {
       final reservationSnapshot = await transaction.get(reservationRef);
 
@@ -329,10 +367,8 @@ class ProductsRemoteDataSource {
         throw Exception('This product code has already been used.');
       }
 
-      // Create the product document.
       transaction.set(productRef, data);
 
-      // Mark the reservation as consumed.
       transaction.update(reservationRef, {
         'status': 'used',
         'productId': productRef.id,

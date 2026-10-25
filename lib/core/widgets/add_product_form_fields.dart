@@ -13,6 +13,7 @@ class AddProductFormFields extends StatelessWidget {
     super.key,
     required this.isWeb,
     required this.isSaving,
+    required this.isUnitActionInProgress,
     required this.nameController,
     required this.barcodeController,
     required this.priceController,
@@ -34,6 +35,7 @@ class AddProductFormFields extends StatelessWidget {
 
   final bool isWeb;
   final bool isSaving;
+  final bool isUnitActionInProgress;
 
   final TextEditingController nameController;
   final TextEditingController barcodeController;
@@ -54,7 +56,7 @@ class AddProductFormFields extends StatelessWidget {
   final VoidCallback onPickImage;
   final ValueChanged<String?> onCategoryChanged;
   final ValueChanged<String> onUnitChanged;
-  final ValueChanged<String> onAddUnit;
+  final VoidCallback onAddUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +180,9 @@ class AddProductFormFields extends StatelessWidget {
           units: units,
           selectedUnit: selectedUnit,
           enabled: !isSaving,
+          isAddingUnit: isUnitActionInProgress,
           onChanged: onUnitChanged,
+          onAddUnit: onAddUnit,
         ),
       ],
     );
