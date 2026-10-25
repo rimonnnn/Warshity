@@ -483,6 +483,8 @@
 "something_went_wrong": "Something went wrong",
 "activity" : "Activity",
 "trades" : "Trades",
+"Invoice boundary is not ready" : "Invoice boundary is not ready. Please wait a few seconds and try again.",
+"Failed to convert invoice to PNG" : "Failed to convert invoice to PNG. Please try again.",
 "no_current_user" : "No current user",
 "email_not_found" : "Email not found",
 "change_password_description": "Enter your current password and then your new password",

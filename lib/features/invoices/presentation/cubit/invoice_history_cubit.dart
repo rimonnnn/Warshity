@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
@@ -27,10 +28,10 @@ class InvoiceHistoryCubit extends Cubit<InvoiceHistoryState> {
 
     _subscription = repository.watchInvoices().listen(
       (invoices) {
-        print('🔥 INVOICE HISTORY COUNT = ${invoices.length}');
+        log('🔥 INVOICE HISTORY COUNT = ${invoices.length}');
 
         for (final invoice in invoices) {
-          print(
+          log(
             '📄 ${invoice.invoiceId} | '
             '${invoice.customerName} | '
             '${invoice.createdAt} | '

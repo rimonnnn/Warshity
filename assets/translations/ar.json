@@ -148,6 +148,8 @@
 "welcome_message": "إليك نظرة سريعة على نشاطك التجاري والمخزون اليوم.",
     "total_clients" : "اجمالي العملاء",
     "number_of_clients" : "85 عميل",
+    "Invoice boundary is not ready" : "حدود الفاتورة غير جاهزة. يرجى الانتظار بضع ثوانٍ ثم المحاولة مرة أخرى.",
+    "Failed to convert invoice to PNG" : "فشل تحويل الفاتورة إلى PNG. يرجى المحاولة مرة أخرى.",
     "daily_sales" : "مبيعات اليوم",
     "number_of_daily_sales" : "1,250 ج.م",
     "number_of_Invoices" : "عدد الفواتير",
