@@ -1,3 +1,4 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/add_product_form_fields.dart';
+import 'package:warshity/core/widgets/add_unit_dialog.dart';
 import 'package:warshity/core/widgets/dialog_action_buttons.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
@@ -54,8 +57,9 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
   bool isSaving = false;
   bool isGeneratingBarcode = false;
+  bool isLoadingCustomUnits = false;
+  bool isAddingUnit = false;
 
-  // مش final عشان نقدر نضيف وحدات جديدة
   List<String> units = ['Piece'.tr(), 'Meter'.tr(), 'Kg'.tr()];
 
   @override
@@ -65,6 +69,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _generateBarcode();
+        _loadCustomUnits();
       }
     });
   }
@@ -130,13 +135,89 @@ class _AddProductDialogState extends State<AddProductDialog> {
     }
   }
 
-  void _addUnit(String name) {
-    // مؤقتاً الوحدة بتتضاف للجلسة الحالية بس.
-    // لما يبقى عندك repository للوحدات: await repo.add(name) قبل setState.
-    setState(() {
-      units = [...units, name];
-      selectedUnit = name;
-    });
+  List<String> _mergeUnits(Iterable<String> values) {
+    final result = <String>[];
+    final seen = <String>{};
+
+    for (final value in values) {
+      final unit = value.trim();
+      if (unit.isEmpty) continue;
+
+      final key = unit.toLowerCase();
+      if (seen.add(key)) {
+        result.add(unit);
+      }
+    }
+
+    return result;
+  }
+
+  Future<void> _loadCustomUnits() async {
+    if (isLoadingCustomUnits) return;
+
+    setState(() => isLoadingCustomUnits = true);
+
+    try {
+      final customUnits = await context
+          .read<AddProductCubit>()
+          .getCustomUnits();
+
+      if (!mounted) return;
+
+      setState(() {
+        units = _mergeUnits([
+          'Piece'.tr(),
+          'Meter'.tr(),
+          'Kg'.tr(),
+          ...customUnits,
+        ]);
+        isLoadingCustomUnits = false;
+      });
+    } catch (e) {
+      debugPrint('Failed to load custom units: $e');
+      if (!mounted) return;
+      setState(() => isLoadingCustomUnits = false);
+      _showUnitMessage(
+        'custom_units_load_failed',
+        type: AnimatedSnackBarType.error,
+      );
+    }
+  }
+
+  Future<void> _showAddUnitDialog() async {
+    if (isSaving || isAddingUnit || isLoadingCustomUnits) return;
+
+    final name = await AddUnitDialog.show(context, existingUnits: units);
+
+    if (name == null || !mounted) return;
+
+    setState(() => isAddingUnit = true);
+
+    try {
+      final cubit = context.read<AddProductCubit>();
+      await cubit.addCustomUnit(name);
+
+      if (!mounted) return;
+
+      setState(() {
+        units = _mergeUnits([...units, name]);
+        isAddingUnit = false;
+      });
+
+      _showUnitMessage(
+        'custom_unit_added_successfully',
+        type: AnimatedSnackBarType.success,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => isAddingUnit = false);
+      debugPrint('Failed to save custom unit: $e');
+      _showUnitMessage(
+        'custom_unit_save_failed',
+        type: AnimatedSnackBarType.error,
+      );
+    }
   }
 
   Future<void> _save() async {
@@ -162,7 +243,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
       return;
     }
 
-    if (isSaving) return;
+    if (isSaving || isAddingUnit || isLoadingCustomUnits) return;
 
     setState(() {
       isSaving = true;
@@ -217,6 +298,15 @@ class _AddProductDialogState extends State<AddProductDialog> {
     }
   }
 
+  void _showUnitMessage(
+    String translationKey, {
+    required AnimatedSnackBarType type,
+  }) {
+    if (!mounted) return;
+
+    showAnimatedSnackDialog(context, message: translationKey.tr(), type: type);
+  }
+
   void _message(String message) {
     ScaffoldMessenger.of(
       context,
@@ -248,7 +338,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
             horizontal: compact ? 12 : 24,
             vertical: 20,
           ),
-          // surfaceContainer بدل surface، عشان الـ dialog يبان فوق الخلفية
+
           backgroundColor: scheme.surfaceContainer,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -265,7 +355,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 padding: EdgeInsets.all(horizontalPadding),
                 child: Form(
                   key: _formKey,
-                  // الأخطاء بتظهر أول ما اليوزر يسيب الحقل
+
                   autovalidateMode: AutovalidateMode.onUnfocus,
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -308,7 +398,10 @@ class _AddProductDialogState extends State<AddProductDialog> {
                                 context,
                               ).closeButtonTooltip,
                               visualDensity: VisualDensity.compact,
-                              onPressed: isSaving
+                              onPressed:
+                                  (isSaving ||
+                                      isAddingUnit ||
+                                      isLoadingCustomUnits)
                                   ? null
                                   : () => Navigator.pop(context),
                               icon: Icon(
@@ -324,6 +417,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
                         AddProductFormFields(
                           isWeb: isWeb,
                           isSaving: isSaving,
+                          isUnitActionInProgress:
+                              isAddingUnit || isLoadingCustomUnits,
                           nameController: nameController,
                           barcodeController: barcodeController,
                           priceController: priceController,
@@ -347,7 +442,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                           onUnitChanged: (unit) {
                             setState(() => selectedUnit = unit);
                           },
-                          onAddUnit: _addUnit,
+                          onAddUnit: _showAddUnitDialog,
                         ),
 
                         SizedBox(height: isWeb ? 24 : 22),
@@ -358,10 +453,15 @@ class _AddProductDialogState extends State<AddProductDialog> {
                           fontSize: isWeb ? 20 : 16.sp,
                           isLoading: isSaving,
                           fontSize1: isWeb ? 20 : 16.sp,
-                          onCancel: isSaving
+                          onCancel:
+                              (isSaving || isAddingUnit || isLoadingCustomUnits)
                               ? null
                               : () => Navigator.pop(context),
-                          onSave: (isSaving || isGeneratingBarcode)
+                          onSave:
+                              (isSaving ||
+                                  isGeneratingBarcode ||
+                                  isAddingUnit ||
+                                  isLoadingCustomUnits)
                               ? null
                               : _save,
                         ),

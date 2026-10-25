@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:printing/printing.dart';
@@ -45,7 +46,7 @@ class InvoiceActionsService {
     final renderObject = boundaryKey.currentContext?.findRenderObject();
 
     if (renderObject is! RenderRepaintBoundary) {
-      throw Exception('Invoice boundary is not ready');
+      throw Exception('Invoice boundary is not ready'.tr());
     }
 
     final image = await renderObject.toImage(pixelRatio: 3.0);
@@ -53,7 +54,7 @@ class InvoiceActionsService {
     image.dispose();
 
     if (byteData == null) {
-      throw Exception('Failed to convert invoice to PNG');
+      throw Exception('Failed to convert invoice to PNG'.tr());
     }
 
     return byteData.buffer.asUint8List();

@@ -23,6 +23,14 @@ class ProductsRepository {
     return await remoteDataSource.generateProductBarcode();
   }
 
+  Future<List<String>> getCustomUnits() {
+    return remoteDataSource.getCustomUnits();
+  }
+
+  Future<void> addCustomUnit(String name) {
+    return remoteDataSource.addCustomUnit(name);
+  }
+
   Future<void> addProduct(ProductModel product) async {
     await remoteDataSource.addProduct(product);
   }
