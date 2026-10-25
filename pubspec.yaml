@@ -6,15 +6,16 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 flutter_native_splash:
   color: "#F8FAFC"
-  image: assets/images/app_icon_2.png
+  image: assets/images/android_12_splash.png
 
   color_dark: "#0F172A"
 
   android_12:
-    image: assets/images/app_icon_2.png
-    icon_background_color: "#F8FAFC"
-
-    icon_background_color_dark: "#0F172A"
+    image: assets/images/android_12_splash.png
+    color: "#F8FAFC"
+    color_dark: "#0F172A"
+    icon_background_color: "#006B6B"
+    icon_background_color_dark: "#006B6B"
 
   web: false
 
@@ -78,7 +79,6 @@ dependencies:
   share_plus: ^13.3.0
   mockito: ^5.6.4
   build_runner: ^2.15.1
- 
 
 dev_dependencies:
   flutter_test:
@@ -95,6 +95,10 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/app_icon.png"
+
+  adaptive_icon_background: "#0F766E"
+  adaptive_icon_foreground: "assets/images/app_icon_foreground.png"
+  adaptive_icon_foreground_inset: 16
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

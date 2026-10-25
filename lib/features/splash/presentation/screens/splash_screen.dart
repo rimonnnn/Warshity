@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return const LoadingWidget(
       messageKey: 'loading_preparing',
-      animateIntro: false,
+      animateIntro: true,
     );
   }
 }
