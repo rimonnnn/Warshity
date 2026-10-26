@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 import 'package:warshity/features/products/presentation/widgets/product_card.dart';
@@ -163,7 +162,6 @@ class ProductList extends StatelessWidget {
               productCode: product.barcode,
 
               price: product.price,
-              
 
               quantity: product.quantity,
               onIncrease: () {
