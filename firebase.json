@@ -24,7 +24,24 @@
       }
     }
   },
-  "hosting": {
+ "hosting": [
+  {
+    "target": "warshity",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  {
+    "target": "masiter",
     "public": "build/web",
     "ignore": [
       "firebase.json",
@@ -38,4 +55,5 @@
       }
     ]
   }
+]
 }
