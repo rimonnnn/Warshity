@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
@@ -48,11 +49,26 @@ void main() {
 
       final buttons = tester.widgetList<PrimaryButtonWidget>(
         find.byType(PrimaryButtonWidget),
-      );
+      ).toList();
       expect(buttons, hasLength(2));
-      for (final button in buttons) {
-        expect(button.onPress, isNull);
-      }
+
+      final cancelButton = buttons.singleWhere(
+        (button) => button.buttonText == 'Cancel',
+      );
+      final saveButton = buttons.singleWhere(
+        (button) => button.buttonText == 'save',
+      );
+      expect(cancelButton.onPress, isNull);
+      expect(saveButton.isLoading, isTrue);
+
+      final materialButtons = tester.widgetList<ElevatedButton>(
+        find.descendant(
+          of: find.byType(PrimaryButtonWidget),
+          matching: find.byType(ElevatedButton),
+        ),
+      );
+      expect(materialButtons, hasLength(2));
+      expect(materialButtons.every((button) => button.onPressed == null), isTrue);
       expect(find.byType(AddProductDialog), findsOneWidget);
 
       h.productCubit.saveCompleter!.complete();

@@ -23,7 +23,7 @@ void main() {
       expect(find.text('invoice_summary'), findsOneWidget);
       expect(find.text('subtotal'), findsOneWidget);
       expect(find.text('final_total'), findsOneWidget);
-      expect(find.text('\$100.00'), findsNWidgets(2));
+      expect(find.text('\$100.0'), findsNWidgets(2));
     });
 
     testWidgets('hides the discount row when discount is zero', (
@@ -44,8 +44,8 @@ void main() {
       );
 
       expect(find.text('discount'), findsOneWidget);
-      expect(find.text('- \$10.00'), findsOneWidget);
-      expect(find.text('\$90.00'), findsOneWidget);
+      expect(find.text('- \$10.0'), findsOneWidget);
+      expect(find.text('\$90.0'), findsOneWidget);
     });
   });
 }

@@ -95,6 +95,23 @@ class MockProductsRepository extends _i1.Mock
           as _i4.Future<String>);
 
   @override
+  _i4.Future<List<String>> getCustomUnits() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCustomUnits, []),
+            returnValue: _i4.Future<List<String>>.value(<String>[]),
+          )
+          as _i4.Future<List<String>>);
+
+  @override
+  _i4.Future<void> addCustomUnit(String? name) =>
+      (super.noSuchMethod(
+            Invocation.method(#addCustomUnit, [name]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
   _i4.Future<void> addProduct(_i5.ProductModel? product) =>
       (super.noSuchMethod(
             Invocation.method(#addProduct, [product]),

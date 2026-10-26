@@ -12,10 +12,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
   CategoriesCubit(this.repository) : super(CategoriesInitial());
 
-  // ============================================================
-  // Watch Categories
-  // ============================================================
-
   void watchCategories() {
     emit(CategoriesLoading());
 
@@ -31,10 +27,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     );
   }
 
-  // ============================================================
-  // Helpers
-  // ============================================================
-
   List<CategoryModel> _currentCategories() {
     final s = state;
     if (s is CategoriesLoaded) return s.categories;
@@ -42,10 +34,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     if (s is AddCategoryError) return s.categories;
     return const [];
   }
-
-  // ============================================================
-  // Add Category
-  // ============================================================
 
   Future<void> addCategory(String name) async {
     final trimmedName = name.trim();
@@ -66,8 +54,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     try {
       await repository.addCategory(trimmedName);
 
-      // الـ snapshot غالبًا سبق وعمل CategoriesLoaded بالقايمة الجديدة.
-      // لو لسه، نخرج من حالة الـ loading عشان ما نفضلش عالقين.
       if (state is AddCategoryLoading) {
         emit(CategoriesLoaded(currentCategories));
       }
@@ -80,10 +66,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       );
     }
   }
-
-  // ============================================================
-  // Dispose
-  // ============================================================
 
   @override
   Future<void> close() async {
