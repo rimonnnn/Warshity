@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:warshity/features/products/data/models/category_model.dart';
 import 'package:warshity/features/products/data/repo/categories_repository.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_state.dart';
@@ -62,7 +60,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       emit(AddCategoryError(currentCategories, 'Category already exists'));
       return;
     }
-
+ 
     emit(AddCategoryLoading(currentCategories));
 
     try {
