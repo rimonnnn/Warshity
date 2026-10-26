@@ -66,133 +66,176 @@ class _SharedAccountsComingSoonState extends State<SharedAccountsComingSoon>
   Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
     final colors = context.colors;
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+
+    // ---- MediaQuery-based sizing ----
+    final size = MediaQuery.sizeOf(context);
+    final safePadding = MediaQuery.paddingOf(context);
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+
+    final isCompact = size.height < 600;
+
+    // The Dialog already handles the keyboard itself; only the sheet needs it.
+    final bottomInset = widget.isSheet ? keyboard : 0.0;
+
+    final maxHeight = (size.height - safePadding.vertical - bottomInset).clamp(
+      200.0,
+      double.infinity,
+    );
+
+    final illustrationSize = isCompact ? 104.0 : 148.0;
+    final gapAfterIllustration = isCompact ? 12.0 : 20.0;
+    final gapAfterBadge = isCompact ? 12.0 : 18.0;
+    final gapBeforeButton = isCompact ? 16.0 : 26.0;
 
     return Material(
       color: Colors.transparent,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 460),
-        child: Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(
-            16,
-            widget.isSheet ? 8 : 24,
-            16,
-            16 + bottomInset,
-          ),
-          child: FadeTransition(
-            opacity: _fade,
-            child: SlideTransition(
-              position: _slide,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 28),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: theme.colorScheme.outlineVariant),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 30,
-                      spreadRadius: 2,
-                      offset: const Offset(0, 12),
-                      color: Colors.black.withValues(alpha: 0.08),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Align(
-                      alignment: AlignmentDirectional.topEnd,
-                      child: IconButton(
-                        onPressed: _close,
-                        tooltip: MaterialLocalizations.of(
-                          context,
-                        ).closeButtonTooltip,
-                        icon: const Icon(Icons.close_rounded),
+      child: Align(
+        alignment: widget.isSheet
+            ? AlignmentDirectional.bottomCenter
+            : AlignmentDirectional.center,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 460, maxHeight: maxHeight),
+          child: Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(
+              16,
+              widget.isSheet ? 8 : 24,
+              16,
+              16 + bottomInset,
+            ),
+            child: FadeTransition(
+              opacity: _fade,
+              child: SlideTransition(
+                position: _slide,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 8, 24, 24),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: theme.colorScheme.outlineVariant),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 30,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 12),
+                        color: Colors.black.withValues(alpha: 0.08),
                       ),
-                    ),
-
-                    const SizedBox(height: 2),
-
-                    _ComingSoonIllustration(pulse: _pulse),
-
-                    const SizedBox(height: 20),
-
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 7,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [colors.primary, colors.secondary],
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Close button stays pinned at the top.
+                      Align(
+                        alignment: AlignmentDirectional.topEnd,
+                        child: IconButton(
+                          onPressed: _close,
+                          tooltip: MaterialLocalizations.of(
+                            context,
+                          ).closeButtonTooltip,
+                          icon: const Icon(Icons.close_rounded),
                         ),
-                        borderRadius: BorderRadius.circular(999),
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
-                            color: colors.primary.withValues(alpha: 0.30),
+                      ),
+
+                      // Everything else scrolls if the screen is too short.
+                      Flexible(
+                        child: SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _ComingSoonIllustration(
+                                pulse: _pulse,
+                                size: illustrationSize,
+                              ),
+
+                              SizedBox(height: gapAfterIllustration),
+
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 7,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [colors.primary, colors.secondary],
+                                  ),
+                                  borderRadius: BorderRadius.circular(999),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6),
+                                      color: colors.primary.withValues(
+                                        alpha: 0.30,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  'shared_accounts_coming_soon_badge'.tr(),
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: colors.onPrimary,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.4,
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(height: gapAfterBadge),
+
+                              Text(
+                                'shared_accounts_coming_soon_title'.tr(),
+                                textAlign: TextAlign.center,
+                                style:
+                                    (isCompact
+                                            ? theme.textTheme.titleLarge
+                                            : theme.textTheme.headlineSmall)
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          height: 1.25,
+                                        ),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              Text(
+                                'shared_accounts_coming_soon_description'.tr(),
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  height: 1.55,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+
+                              SizedBox(height: gapBeforeButton),
+
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: FilledButton(
+                                  onPressed: _close,
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: colors.primary,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'close'.tr(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: Text(
-                        'shared_accounts_coming_soon_badge'.tr(),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.onPrimary,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.4,
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    Text(
-                      'shared_accounts_coming_soon_title'.tr(),
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        height: 1.25,
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Text(
-                      'shared_accounts_coming_soon_description'.tr(),
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        height: 1.55,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-
-                    const SizedBox(height: 26),
-
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: FilledButton(
-                        onPressed: _close,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: colors.primary,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(
-                          'close'.tr(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -219,17 +262,21 @@ class _SharedAccountsComingSoonState extends State<SharedAccountsComingSoon>
 }
 
 class _ComingSoonIllustration extends StatelessWidget {
-  const _ComingSoonIllustration({required this.pulse});
+  const _ComingSoonIllustration({required this.pulse, this.size = 148});
 
   final Animation<double> pulse;
+
+  /// Overall box size. Everything inside scales relative to the 148 design.
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final k = size / 148;
 
     return SizedBox(
-      width: 148,
-      height: 148,
+      width: size,
+      height: size,
       child: AnimatedBuilder(
         animation: pulse,
         builder: (context, _) {
@@ -239,18 +286,18 @@ class _ComingSoonIllustration extends StatelessWidget {
               _PulseRing(
                 animation: pulse,
                 interval: const Interval(0.0, 0.65, curve: Curves.easeOut),
-                baseSize: 100,
+                baseSize: 100 * k,
                 color: colors.primary,
               ),
               _PulseRing(
                 animation: pulse,
                 interval: const Interval(0.30, 0.95, curve: Curves.easeOut),
-                baseSize: 100,
+                baseSize: 100 * k,
                 color: colors.secondary,
               ),
               Container(
-                width: 96,
-                height: 96,
+                width: 96 * k,
+                height: 96 * k,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: AlignmentDirectional.topStart,
@@ -260,16 +307,16 @@ class _ComingSoonIllustration extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      blurRadius: 28,
+                      blurRadius: 28 * k,
                       spreadRadius: 2,
-                      offset: const Offset(0, 10),
+                      offset: Offset(0, 10 * k),
                       color: colors.primary.withValues(alpha: 0.35),
                     ),
                   ],
                 ),
                 child: Icon(
                   Icons.diversity_3_rounded,
-                  size: 44,
+                  size: 44 * k,
                   color: colors.onPrimary,
                 ),
               ),
