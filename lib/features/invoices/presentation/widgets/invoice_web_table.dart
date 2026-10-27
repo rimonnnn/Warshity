@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/widgets/error_state_view.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_cubit.dart';
 import 'package:warshity/features/invoices/presentation/cubit/invoice_history_state.dart';
@@ -32,11 +33,9 @@ class InvoiceWebTable extends StatelessWidget {
     return BlocBuilder<InvoiceHistoryCubit, InvoiceHistoryState>(
       builder: (context, state) {
         if (state is InvoiceHistoryError && state.invoices.isEmpty) {
-          return Center(
-            child: Text(
-              state.message,
-              style: context.text.bodyMedium?.copyWith(color: colors.error),
-            ),
+          return ErrorStateView(
+            message: state.message,
+            onRetry: () => context.read<InvoiceHistoryCubit>().watchInvoices(),
           );
         }
 

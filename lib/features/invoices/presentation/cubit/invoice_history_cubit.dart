@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
 
 import 'invoice_history_state.dart';
@@ -25,28 +26,42 @@ class InvoiceHistoryCubit extends Cubit<InvoiceHistoryState> {
 
     _subscription?.cancel();
 
-    _subscription = repository.watchInvoices().listen(
-      (invoices) {
+    try {
+      _subscription = repository.watchInvoices().listen(
+        (invoices) {
 
-        emit(
-          InvoiceHistoryLoaded(
-            invoices: invoices,
-            search: state.search,
-            filter: state.filter,
-          ),
-        );
-      },
-      onError: (error) {
-        emit(
-          InvoiceHistoryError(
-            message: error.toString(),
-            invoices: state.invoices,
-            search: state.search,
-            filter: state.filter,
-          ),
-        );
-      },
-    );
+          emit(
+            InvoiceHistoryLoaded(
+              invoices: invoices,
+              search: state.search,
+              filter: state.filter,
+            ),
+          );
+        },
+        onError: (error) {
+          if (isClosed) return;
+          emit(
+            InvoiceHistoryError(
+              message: AppFailure.map(error).message,
+              invoices: state.invoices,
+              search: state.search,
+              filter: state.filter,
+            ),
+          );
+        },
+      );
+    } catch (error) {
+      // Synchronous throw (e.g. no signed-in user) must not crash the build.
+      if (isClosed) return;
+      emit(
+        InvoiceHistoryError(
+          message: AppFailure.map(error).message,
+          invoices: state.invoices,
+          search: state.search,
+          filter: state.filter,
+        ),
+      );
+    }
   }
 
   void searchInvoices(String value) {
@@ -61,9 +76,10 @@ class InvoiceHistoryCubit extends Cubit<InvoiceHistoryState> {
     try {
       await repository.deleteInvoice(invoiceId);
     } catch (e) {
+      if (isClosed) return;
       emit(
         InvoiceHistoryError(
-          message: e.toString(),
+          message: AppFailure.map(e).message,
           invoices: state.invoices,
           search: state.search,
           filter: state.filter,

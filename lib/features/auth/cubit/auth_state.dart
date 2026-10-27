@@ -52,3 +52,9 @@ class ForgotPasswordSuccess extends AuthState {
 }
 
 class LogoutSuccess extends AuthState {}
+
+/// The signed-in user disappeared without an explicit sign out
+/// (expired/revoked session, cleared site data, token refresh failure).
+///
+/// Listeners must stop user-scoped listeners and send the user to login.
+class SessionExpired extends AuthState {}

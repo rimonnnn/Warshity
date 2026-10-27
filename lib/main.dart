@@ -14,6 +14,7 @@ import 'package:warshity/core/config/feature_flags.dart';
 import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/services/shared_pref_service.dart';
 import 'package:warshity/core/styling/app_assets.dart';
+import 'package:warshity/core/theme/app_theme.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/web/reveal_app.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_cubit.dart';
@@ -90,7 +91,9 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit(getIt())),
-        BlocProvider<AuthCubit>(create: (_) => getIt<AuthCubit>()),
+        // Shared instance: AuthCubit is the app-wide auth lifecycle owner and
+        // must not be closed when a subtree using it is disposed.
+        BlocProvider<AuthCubit>.value(value: getIt<AuthCubit>()),
         BlocProvider<AccountSharingCubit>(
           create: (_) => getIt<AccountSharingCubit>(),
         ),
@@ -114,6 +117,24 @@ class MyApp extends StatelessWidget {
                     context
                         .read<AccountSharingCubit>()
                         .stopWatchingSharedAccounts();
+                  }
+
+                  // Firebase reported the user disappeared on its own
+                  // (expired/revoked session, cleared site data).
+                  if (authState is SessionExpired) {
+                    context
+                        .read<AccountSharingCubit>()
+                        .stopWatchingSharedAccounts();
+
+                    showAnimatedSnackDialog(
+                      context,
+                      message: 'session_expired'.tr(),
+                      type: AnimatedSnackBarType.warning,
+                    );
+
+                    if (context.mounted) {
+                      context.goNamed(AppRoutes.loginScreen);
+                    }
                   }
                 },
                 child: BlocListener<AccountSharingCubit, AccountSharingState>(
