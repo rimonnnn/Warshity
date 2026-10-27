@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
 
@@ -309,12 +308,7 @@ class InvoicesRemoteDataSource {
   }
 
   Stream<List<InvoiceModel>> watchInvoices() {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-
-    if (uid == null || uid.isEmpty) {
-      // Never throw during widget build: report as a stream error instead.
-      return Stream.error(const UnauthenticatedException());
-    }
+    final uid = _currentUserId;
 
     return _sharingRepository.watchActiveConnectionIds().asyncExpand((
       connectionIds,
@@ -341,12 +335,7 @@ class InvoicesRemoteDataSource {
   }
 
   Stream<List<InvoiceModel>> watchClientInvoices(String customerId) {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-
-    if (uid == null || uid.isEmpty) {
-      // Never throw during widget build: report as a stream error instead.
-      return Stream.error(const UnauthenticatedException());
-    }
+    final uid = _currentUserId;
 
     return _sharingRepository.watchActiveConnectionIds().asyncExpand((
       connectionIds,
@@ -438,12 +427,7 @@ class InvoicesRemoteDataSource {
   }
 
   Stream<List<InvoiceModel>> watchAllClientInvoices(String customerId) {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-
-    if (uid == null || uid.isEmpty) {
-      // Never throw during widget build: report as a stream error instead.
-      return Stream.error(const UnauthenticatedException());
-    }
+    final uid = _currentUserId;
 
     return _sharingRepository.watchActiveConnectionIds().asyncExpand((
       connectionIds,

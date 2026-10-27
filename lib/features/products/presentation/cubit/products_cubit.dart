@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/data/repo/products_repository.dart';
 
@@ -24,22 +23,15 @@ class ProductsCubit extends Cubit<ProductsState> {
 
     _productsSubscription?.cancel();
 
-    try {
-      _productsSubscription = repository.watchProducts().listen(
-        (products) {
-          _allProducts = products;
-          _emitFilteredProducts();
-        },
-        onError: (error) {
-          if (isClosed) return;
-          emit(ProductsError(AppFailure.map(error).message));
-        },
-      );
-    } catch (error) {
-      // Synchronous throw (e.g. no signed-in user) must not crash the build.
-      if (isClosed) return;
-      emit(ProductsError(AppFailure.map(error).message));
-    }
+    _productsSubscription = repository.watchProducts().listen(
+      (products) {
+        _allProducts = products;
+        _emitFilteredProducts();
+      },
+      onError: (error) {
+        emit(ProductsError(error.toString()));
+      },
+    );
   }
 
   void searchProducts(String query) {

@@ -13,7 +13,7 @@ class SettingsPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => getIt<SettingsCubit>()),
-        BlocProvider.value(value: getIt<AuthCubit>()),
+        BlocProvider(create: (_) => getIt<AuthCubit>()),
       ],
       child: const SettingsScreen(),
     );

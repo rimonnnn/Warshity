@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/data/repo/invoices_repository.dart';
@@ -35,31 +34,24 @@ class HomeCubit extends Cubit<HomeState> {
   void loadHome() {
     emit(const HomeLoading());
 
-    try {
-      _clientsSubscription = clientsRepository.watchClients().listen((
-        clients,
-      ) {
-        _clientCount = clients.length;
-        _emitLoaded();
-      }, onError: _handleError);
+    _clientsSubscription = clientsRepository.watchClients().listen((clients) {
+      _clientCount = clients.length;
+      _emitLoaded();
+    }, onError: _handleError);
 
-      _productsSubscription = productsRepository.watchProducts().listen((
-        products,
-      ) {
-        _products = products;
-        _emitLoaded();
-      }, onError: _handleError);
+    _productsSubscription = productsRepository.watchProducts().listen((
+      products,
+    ) {
+      _products = products;
+      _emitLoaded();
+    }, onError: _handleError);
 
-      _invoicesSubscription = invoicesRepository.watchInvoices().listen((
-        invoices,
-      ) {
-        _invoices = invoices;
-        _emitLoaded();
-      }, onError: _handleError);
-    } catch (error) {
-      // Watch calls may throw synchronously (e.g. no signed-in user yet).
-      _handleError(error);
-    }
+    _invoicesSubscription = invoicesRepository.watchInvoices().listen((
+      invoices,
+    ) {
+      _invoices = invoices;
+      _emitLoaded();
+    }, onError: _handleError);
   }
 
   DateTime? _parseDate(String value) {
@@ -156,8 +148,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void _handleError(Object error) {
-    if (isClosed) return;
-    emit(HomeError(message: AppFailure.map(error).message));
+    emit(HomeError(message: error.toString()));
   }
 
   @override
