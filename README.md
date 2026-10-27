@@ -51,7 +51,7 @@ light and dark themes and Arabic and English interfaces.
 ### Web App
 
 <p align="center">
-  <img src="docs/screenshots/web/dashboard/en-light.png"
+  <img src="docs/screenshots/web/web_dashboard_en_light.png"
        width="85%"
        alt="Masiter Web Dashboard" />
 </p>
