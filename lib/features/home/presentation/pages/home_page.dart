@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => getIt<HomeCubit>()),
-        BlocProvider(create: (_) => getIt<AuthCubit>()),
+        BlocProvider.value(value: getIt<AuthCubit>()),
         BlocProvider(create: (_) => getIt<ProductsCubit>()),
       ],
       child: const HomeScreen(),

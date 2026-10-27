@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 import 'package:warshity/features/global_search/data/model/global_search_result.dart';
@@ -53,7 +54,7 @@ class GlobalSearchCubit extends Cubit<GlobalSearchState> {
     } catch (e) {
       emit(
         GlobalSearchFailure(
-          message: e.toString(),
+          message: AppFailure.map(e).message,
         ),
       );
     }

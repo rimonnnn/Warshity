@@ -10,6 +10,7 @@ import 'package:printing/printing.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/extensions/invoice_pdf_labels.dart';
 import 'package:warshity/core/utils/animated_snack_dialog.dart';
+import 'package:warshity/core/widgets/error_state_view.dart';
 
 import 'package:warshity/features/check_invoice/data/invoice_actions_service.dart';
 import 'package:warshity/features/check_invoice/data/invoice_pdf_data.dart';
@@ -231,7 +232,10 @@ class InvoiceList extends StatelessWidget {
         }
 
         if (state is InvoiceHistoryError && state.invoices.isEmpty) {
-          return Center(child: Text(state.message));
+          return ErrorStateView(
+            message: state.message,
+            onRetry: () => context.read<InvoiceHistoryCubit>().watchInvoices(),
+          );
         }
 
         if (state is! InvoiceHistoryLoaded) {

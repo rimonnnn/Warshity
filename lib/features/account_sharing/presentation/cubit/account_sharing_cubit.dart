@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/core/config/feature_flags.dart';
+import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/account_sharing/data/models/share_invitation_model.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
 import 'package:warshity/features/account_sharing/presentation/cubit/account_sharing_state.dart';
@@ -77,36 +78,46 @@ class AccountSharingCubit extends Cubit<AccountSharingState> {
     _lastSentStatuses = {};
     _lastReceivedInvitationIds = {};
 
-    _sharedAccountsSubscription = repository.watchActiveSharedAccounts().listen(
-      _handleSharedAccountsChange,
-      onError: (error) {
-        if (!isClosed) {
-          emit(AccountSharingError(error.toString()));
-        }
-      },
-    );
+    // The watch calls can throw synchronously when there is no signed-in user
+    // yet (reload/cleared session) — must not crash initState/first frame.
+    try {
+      _sharedAccountsSubscription = repository
+          .watchActiveSharedAccounts()
+          .listen(
+            _handleSharedAccountsChange,
+            onError: (error) {
+              if (!isClosed) {
+                emit(AccountSharingError(AppFailure.map(error).message));
+              }
+            },
+          );
 
-    _sentInvitationsSubscription = repository
-        .watchSentInvitationStatuses()
-        .listen(
-          _handleSentInvitationStatuses,
-          onError: (error) {
-            if (!isClosed) {
-              emit(AccountSharingError(error.toString()));
-            }
-          },
-        );
+      _sentInvitationsSubscription = repository
+          .watchSentInvitationStatuses()
+          .listen(
+            _handleSentInvitationStatuses,
+            onError: (error) {
+              if (!isClosed) {
+                emit(AccountSharingError(AppFailure.map(error).message));
+              }
+            },
+          );
 
-    _receivedInvitationsSubscription = repository
-        .watchReceivedInvitations()
-        .listen(
-          _handleReceivedInvitationsChange,
-          onError: (error) {
-            if (!isClosed) {
-              emit(AccountSharingError(error.toString()));
-            }
-          },
-        );
+      _receivedInvitationsSubscription = repository
+          .watchReceivedInvitations()
+          .listen(
+            _handleReceivedInvitationsChange,
+            onError: (error) {
+              if (!isClosed) {
+                emit(AccountSharingError(AppFailure.map(error).message));
+              }
+            },
+          );
+    } catch (error) {
+      if (!isClosed) {
+        emit(AccountSharingError(AppFailure.map(error).message));
+      }
+    }
   }
 
   void startWatchingSharedAccount() => startWatchingSharedAccounts();

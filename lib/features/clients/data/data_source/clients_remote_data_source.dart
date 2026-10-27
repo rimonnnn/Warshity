@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
 
@@ -69,7 +70,13 @@ class ClientsRemoteDataSource {
   }
 
   Stream<List<CustomerModel>> watchClients() {
-    final uid = _currentUserId;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid == null || uid.isEmpty) {
+      // Deliver the problem as a stream error instead of throwing during
+      // widget build: cubits map it to a friendly error state.
+      return Stream.error(const UnauthenticatedException());
+    }
 
     return _sharingRepository.watchActiveConnectionIds().asyncExpand((
       connectionIds,

@@ -22,6 +22,10 @@ void main() {
       mockAuthRepo.watchUserData(),
     ).thenAnswer((_) => const Stream<UserModel?>.empty());
 
+    when(
+      mockAuthRepo.authStateChanges,
+    ).thenAnswer((_) => const Stream.empty());
+
     authCubit = AuthCubit(mockRegisterRepo, mockAuthRepo);
   });
 

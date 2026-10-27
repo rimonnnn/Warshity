@@ -130,6 +130,11 @@ class LoginTestHarness {
       authRepo.watchUserData(),
     ).thenAnswer((_) => const Stream<UserModel?>.empty());
 
+    // AuthCubit also listens to the session stream in its constructor.
+    when(
+      authRepo.authStateChanges,
+    ).thenAnswer((_) => const Stream.empty());
+
     when(
       authRepo.login(email: anyNamed('email'), password: anyNamed('password')),
     ).thenAnswer((_) async => MockUserCredential());
