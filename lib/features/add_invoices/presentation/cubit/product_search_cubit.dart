@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/data/repo/products_repository.dart';
 
@@ -39,7 +40,7 @@ class ProductSearchCubit extends Cubit<ProductSearchState> {
     } catch (e) {
       emit(
         ProductSearchError(
-          e.toString(),
+          AppFailure.map(e).message,
         ),
       );
     }

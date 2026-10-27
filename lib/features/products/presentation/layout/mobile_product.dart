@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/widgets/add_product_dialog.dart';
 import 'package:warshity/core/widgets/app_filter_tabs.dart';
+import 'package:warshity/core/widgets/error_state_view.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/products/presentation/cubit/add_product_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
@@ -115,7 +116,13 @@ class _MobileProductsState extends State<MobileProduct> {
                         if (categoryState is CategoriesError) {
                           return SizedBox(
                             height: 40.h,
-                            child: Center(child: Text(categoryState.message)),
+                            child: ErrorStateView(
+                              compact: true,
+                              message: categoryState.message,
+                              onRetry: () => context
+                                  .read<CategoriesCubit>()
+                                  .watchCategories(),
+                            ),
                           );
                         }
 
@@ -133,7 +140,11 @@ class _MobileProductsState extends State<MobileProduct> {
                           }
 
                           if (productState is ProductsError) {
-                            return Center(child: Text(productState.message));
+                            return ErrorStateView(
+                              message: productState.message,
+                              onRetry: () =>
+                                  context.read<ProductsCubit>().watchProducts(),
+                            );
                           }
 
                           if (productState is ProductsSuccess) {

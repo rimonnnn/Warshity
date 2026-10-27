@@ -3,22 +3,15 @@ part of '../layout/web_client.dart';
 class _ErrorState extends StatelessWidget {
   const _ErrorState({
     required this.message,
+    this.onRetry,
   });
 
   final String message;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-      ),
-    );
+    return ErrorStateView(message: message, onRetry: onRetry);
   }
 }
 
