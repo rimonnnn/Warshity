@@ -24,7 +24,7 @@ import 'package:warshity/firebase_options.dart';
 
 import 'core/di/injection.dart';
 import 'core/routing/router_generator_config.dart';
-import 'core/theme/app_theme.dart';
+import 'core/theme/app_theme.dart'
 import 'core/theme/cubit/theme_cubit.dart';
 import 'core/theme/cubit/theme_state.dart';
 
