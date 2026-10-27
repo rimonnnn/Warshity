@@ -1,13 +1,12 @@
-
 <div align="center">
   <img src="assets/images/latest_logo.png" alt="Masiter app icon" width="112" />
   <h1>Masiter | مسيطر</h1>
   <p><strong>Practical business management for shops and small businesses.</strong></p>
-  <p>Manage products, sales invoices, customers, inventory, and outstanding balances in one place.</p>
+  <p>Products, sales invoices, customers, inventory, and outstanding balances in one place.</p>
   <p>
-    <a href="https://github.com/rimonnnn/Warshity">Repository</a>
-    &nbsp;•&nbsp;
     <a href="https://github.com/rimonnnn/Warshity/releases">APK Releases</a>
+    &nbsp;•&nbsp;
+    <a href="SCREENSHOTS.md">Screenshot Gallery</a>
     &nbsp;•&nbsp;
     <a href="https://rimonnnn.github.io/">Developer Portfolio</a>
   </p>
@@ -21,85 +20,82 @@
 
 ---
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Screenshots](#screenshots)
+- [Supported Platforms and Configurations](#supported-platforms-and-configurations)
+- [Tech Stack and Architecture](#tech-stack-and-architecture)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Build](#build)
+- [Download](#download)
+- [Testing](#testing)
+- [Design Direction](#design-direction)
+- [Author](#author)
+- [License](#license)
+- [النسخة العربية](#arabic)
+
 ## Overview
 
-**Masiter (مسيطر)** is a Flutter application designed to help shop owners and small businesses organize day-to-day operations without relying on scattered paper records. It brings product management, sales invoices, customer records, stock follow-up, and receivables into one workflow, with cloud-backed data and interfaces for mobile and web use.
+**Masiter (مسيطر)** is a Flutter application that helps shop owners and small businesses replace scattered paper records with one organized workflow: product management, sales invoices, customer records, stock follow-up, and receivables. Data is cloud-backed, and the interface is available on mobile and web.
 
-The application supports Arabic and English, light and dark themes, and printable invoice layouts for common paper sizes. Its product model is based on a **one-time purchase rather than a recurring subscription**.
-
-## Screenshots
-
-Explore Masiter across mobile and web, with support for
-light and dark themes and Arabic and English interfaces.
-
-### Mobile App
-
-<p align="center">
-  <img src="docs/screenshots/mobile/dashboard_en_light.jpg"
-       width="30%"
-       alt="Masiter Mobile Dashboard" />
-
-  <img src="docs/screenshots/mobile/clients_en_light.jpg"
-       width="30%"
-       alt="Masiter Clients Management" />
-
-  <img src="docs/screenshots/mobile/invoices_en_light.jpg"
-       width="30%"
-       alt="Masiter Invoice Management" />
-</p>
-
-### Web App
-
-<p align="center">
-  <img src="docs/screenshots/web/web_dashboard_en_light.png"
-       width="85%"
-       alt="Masiter Web Dashboard" />
-</p>
-
-### Themes & Localization
-
-<p align="center">
-  <img src="docs/screenshots/mobile/dashboard_en_dark.jpg"
-       width="30%"
-       alt="Masiter Dark Mode" />
-
-  <img src="docs/screenshots/mobile/dashboard_ar_light.jpg"
-       width="30%"
-       alt="Masiter Arabic Interface" />
-</p>
-
+It supports Arabic and English, light and dark themes, and printable invoice layouts for common paper sizes. The product model is a **one-time purchase rather than a recurring subscription**.
 
 ## Key Features
 
 ### 📦 Products & Inventory
 - Organize products with details such as category and unit.
-- Store product images using Supabase Storage.
-- Receive low-stock notifications to help identify items that need attention.
+- Store product images in Supabase Storage.
+- Receive low-stock notifications for items that need attention.
 
 ### 🧾 Sales Invoices
 - Create and manage customer sales invoices.
-- Generate invoices as PDFs and print them in formats designed for:
-  - **58 mm** thermal printers
-  - **80 mm** thermal printers
-  - **A4** paper
+- Generate PDF invoices and print them in layouts designed for **58 mm** thermal, **80 mm** thermal, and **A4** paper.
 
 ### 👥 Customers & Receivables
 - Keep customer details and purchase history together.
 - Track customer balances and outstanding debts.
-- Apply debt payments against the oldest outstanding invoice first.
-- Receive morning reminders related to outstanding receivables.
+- Apply debt payments to the oldest outstanding invoice first.
+- Receive morning reminders about outstanding receivables.
 
 ### 🔐 Account Access
-- Register and sign in with Firebase Authentication.
-- Support an email-verification flow during account creation.
+- Register and sign in with Firebase Authentication, including an email-verification flow.
 
 ### 🌐 User Experience
-- Arabic and English localization, including right-to-left layouts where applicable.
+- Arabic and English localization, with right-to-left layouts where applicable.
 - Light and dark themes.
-- Responsive layouts for mobile and web interfaces.
-- Network-image caching and image error handling for a smoother product-browsing experience.
+- Responsive layouts for mobile and web.
+- Network-image caching and image error handling for smoother product browsing.
 
-## Technology Stack
+## Screenshots
+
+Masiter across supported platforms, languages, and themes.
+
+**[View the full screenshot gallery →](SCREENSHOTS.md)**
+
+<p align="center">
+  <img src="docs/screenshots/mobile/dashboard_en_light.jpg" width="22%" alt="Masiter mobile dashboard, English, light mode" />
+  <img src="docs/screenshots/mobile/invoices_en_light.jpg" width="22%" alt="Masiter mobile invoices, English, light mode" />
+  <img src="docs/screenshots/mobile/dashboard_en_dark.jpg" width="22%" alt="Masiter mobile dashboard, English, dark mode" />
+  <img src="docs/screenshots/mobile/dashboard_ar_light.jpg" width="22%" alt="Masiter mobile dashboard, Arabic, light mode" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/web/web_dashboard_en_light.png" width="80%" alt="Masiter web dashboard, English, light mode" />
+</p>
+
+## Supported Platforms and Configurations
+
+| Dimension | Support |
+|---|---|
+| Platforms | Android (APK builds) and Web (Firebase Hosting) |
+| Themes | Light and Dark |
+| Languages | English and Arabic (with RTL) |
+| Invoice print sizes | 58 mm, 80 mm, A4 |
+
+## Tech Stack and Architecture
 
 | Area | Technologies |
 |---|---|
@@ -114,19 +110,39 @@ light and dark themes and Arabic and English interfaces.
 | Product-image storage | Supabase Storage |
 | PDF generation & printing | `pdf`, `printing` |
 | Image loading | `cached_network_image` |
-| Local preferences and secure storage | `shared_preferences`, `flutter_secure_storage` |
+| Local preferences / secure storage | `shared_preferences`, `flutter_secure_storage` |
 | Web hosting | Firebase Hosting |
 
-The codebase uses **data and presentation responsibilities**, with BLoC/Cubit for UI state and dependency injection to manage service dependencies.
+The code separates data and presentation responsibilities: BLoC/Cubit manages UI state, and `get_it` provides service dependencies.
+
+## Project Structure
+
+```text
+.
+├── android/                 # Android platform configuration
+├── ios/                     # iOS platform project
+├── web/                     # Web platform files
+├── lib/                     # Flutter application source
+├── assets/
+│   ├── images/              # App and UI assets
+│   ├── fonts/               # Fonts
+│   └── translations/        # Localization resources
+├── docs/screenshots/        # Screenshots used by README.md and SCREENSHOTS.md
+├── test/                    # Automated tests
+├── firebase.json            # Firebase Hosting configuration
+├── firestore.rules          # Firestore security rules
+├── firestore.indexes.json   # Firestore indexes
+└── pubspec.yaml             # Dependencies and Flutter configuration
+```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Flutter SDK compatible with the Dart SDK constraint declared in `pubspec.yaml` (`^3.10.3`).
-- Git.
-- Android Studio or another configured Android SDK environment for Android builds.
-- Firebase and Supabase projects with the services required by the application enabled.
+- Flutter SDK compatible with the Dart constraint in `pubspec.yaml` (`^3.10.3`)
+- Git
+- Android Studio or another configured Android SDK environment (for Android builds)
+- Firebase and Supabase projects with the required services enabled
 
 ### 1. Clone the repository
 
@@ -135,7 +151,7 @@ git clone https://github.com/rimonnnn/Warshity.git
 cd Warshity
 ```
 
-The repository currently uses the `development` branch for active development. If your clone opens on a different branch, switch to it with:
+Active development happens on the `development` branch. If your clone opens on a different branch:
 
 ```bash
 git checkout development
@@ -149,55 +165,44 @@ flutter pub get
 
 ### 3. Configure backend services
 
-Before running the application, verify that its Firebase and Supabase configuration matches the projects you are authorized to use:
+Make sure the Firebase and Supabase configuration matches projects you are authorized to use:
 
-- **Firebase:** configure Firebase Authentication and Cloud Firestore for the relevant app platforms.
-- **Supabase:** configure the project URL and the appropriate client-side key for product-image storage.
-- Review the app's existing initialization/configuration files before changing project identifiers or service settings.
+- **Firebase:** enable Authentication and Cloud Firestore for the platforms you target.
+- **Supabase:** set the project URL (`<SUPABASE_URL>`) and the public client key (`<SUPABASE_ANON_KEY>`) used for product-image storage.
+- Review the app's existing initialization files before changing project identifiers.
 
-**Security note:** Never put a Supabase service-role key or other server-side secret inside a Flutter client application, and do not commit private credentials to the repository.
+> **Security:** never place a Supabase service-role key or any server-side secret in a Flutter client, and never commit private credentials.
 
-### 4. Run the application
+### 4. Run
 
 ```bash
 flutter run
 ```
 
-Choose a connected device or a configured target when prompted.
+Choose a connected device or target when prompted.
 
 ## Build
 
-### Android APK
-
-Build a release APK:
+**Android APK**
 
 ```bash
 flutter build apk --release
+# output: build/app/outputs/flutter-apk/app-release.apk
 ```
 
-The generated APK is normally located at:
-
-```text
-build/app/outputs/flutter-apk/app-release.apk
-```
-
-To produce separate APKs for different CPU architectures (which can reduce each individual download size), use:
+For smaller per-architecture APKs, use `--split-per-abi` and distribute the file matching the target device:
 
 ```bash
 flutter build apk --release --split-per-abi
 ```
 
-Each split APK targets a specific architecture, so distribute the file that matches the user's device. Use the standard release APK when you prefer one file that is easier to share.
-
-### Web
-
-Build the web version:
+**Web**
 
 ```bash
 flutter build web --release
 ```
 
-If Firebase Hosting is configured for your project and the Firebase CLI is installed and authenticated, deploy with:
+With Firebase Hosting configured and the Firebase CLI installed and authenticated:
 
 ```bash
 firebase deploy --only hosting
@@ -205,69 +210,50 @@ firebase deploy --only hosting
 
 ## Download
 
-Check the [GitHub Releases page](https://github.com/rimonnnn/Warshity/releases) for published APKs. A release must be created and an APK attached before a downloadable build will appear there.
+Published APKs are on the [GitHub Releases page](https://github.com/rimonnnn/Warshity/releases). A build appears there only after a release is created and an APK is attached.
 
-## Repository Structure
-
-```text
-.
-├── android/                 # Android platform configuration
-├── ios/                     # iOS platform project
-├── web/                     # Web platform files
-├── lib/                     # Flutter application source
-├── assets/
-│   ├── images/              # App and UI assets
-│   ├── fonts/               # Fonts
-│   └── translations/        # Localization resources
-├── test/                    # Automated tests
-├── firebase.json            # Firebase Hosting configuration
-├── firestore.rules          # Firestore security rules
-├── firestore.indexes.json   # Firestore indexes
-└── pubspec.yaml             # Dependencies and Flutter configuration
-```
-
-## Design Direction
-
-The current visual identity uses a restrained teal-and-slate palette:
-
-- **Primary teal:** `#0F766E`
-- **Dark slate:** `#0F172A`
-- **Light background:** `#F8FAFC`
-
-## Testing & Code Quality
-
-Run the automated tests available in the repository with:
+## Testing
 
 ```bash
 flutter test
 ```
 
-For changes involving authentication, invoices, balances, or shared business data, test both the expected flow and relevant failure cases before releasing a build.
+For changes touching authentication, invoices, balances, or shared business data, test both the expected flow and relevant failure cases before releasing.
 
-## Developer
+## Design Direction
+
+A restrained teal-and-slate palette:
+
+- **Primary teal:** `#0F766E`
+- **Dark slate:** `#0F172A`
+- **Light background:** `#F8FAFC`
+
+## Author
 
 **Rimon Abdelmasih** — Flutter Developer
 
-- [GitHub](https://github.com/rimonnnn)
-- [LinkedIn](https://www.linkedin.com/in/rimon-abdelmasih/)
-- [Portfolio](https://rimonnnn.github.io/)
+[GitHub](https://github.com/rimonnnn) • [LinkedIn](https://www.linkedin.com/in/rimon-abdelmasih/) • [Portfolio](https://rimonnnn.github.io/)
 
-Masiter has been developed collaboratively. The repository and application branding may continue to evolve as the project is maintained.
+Masiter has been developed collaboratively. Repository and application branding may continue to evolve.
 
 ## License
 
-No license file is currently included in the repository. Please contact the maintainer before reusing, modifying, or redistributing this code.
+No license file is currently included. Please contact the maintainer before reusing, modifying, or redistributing this code.
 
 ---
 
+<a id="arabic"></a>
+
 <details>
   <summary><strong>النسخة العربية</strong></summary>
+
+  <div dir="rtl" align="right">
 
   <h2>مسيطر — إدارة عملية للمحلات والمشروعات الصغيرة</h2>
 
   **مسيطر (Masiter)** هو تطبيق مبني باستخدام Flutter لمساعدة أصحاب المحلات والمشروعات الصغيرة على تنظيم المنتجات، والمخزون، وفواتير البيع، والعملاء، والديون من مكان واحد، بدلًا من الاعتماد على السجلات الورقية المتفرقة.
 
-  ### أهم المميزات
+  <h3>أهم المميزات</h3>
 
   - **إدارة المنتجات والمخزون:** تنظيم المنتجات حسب بياناتها مثل التصنيف والوحدة، مع تخزين صور المنتجات ومتابعة انخفاض المخزون.
   - **فواتير البيع:** إنشاء الفواتير وتصديرها بصيغة PDF وتجهيزها للطباعة بمقاسات A4 وحراري 58 مم و80 مم.
@@ -279,11 +265,13 @@ No license file is currently included in the repository. Please contact the main
   - **تجربة استخدام مرنة:** دعم العربية والإنجليزية، والوضع الفاتح والداكن، وواجهات متجاوبة للموبايل والويب.
   - **نموذج الشراء:** شراء لمرة واحدة دون اشتراك دوري.
 
-  ### التقنيات المستخدمة
+  <h3>التقنيات المستخدمة</h3>
 
   Flutter وDart، وBLoC/Cubit لإدارة الحالة، وGoRouter للتنقل، وGetIt للحقن المعتمد، وEasyLocalization للترجمة، وFirebase Authentication وCloud Firestore للحسابات والبيانات، وSupabase Storage لصور المنتجات، ومكتبتا `pdf` و`printing` لإنشاء الفواتير وطباعتها.
 
-  ### تشغيل المشروع محليًا
+  <h3>تشغيل المشروع محليًا</h3>
+
+  </div>
 
   ```bash
   git clone https://github.com/rimonnnn/Warshity.git
@@ -291,4 +279,6 @@ No license file is currently included in the repository. Please contact the main
   git checkout development
   flutter pub get
   flutter run
-  
+  ```
+
+</details>
