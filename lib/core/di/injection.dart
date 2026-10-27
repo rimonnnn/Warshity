@@ -76,10 +76,7 @@ Future<void> setupDependencies() async {
       getIt<FirebaseFirestore>(),
     ),
   );
-  // Single shared instance: it owns the authStateChanges listener and the
-  // session status used by the router and the splash screen. It must never be
-  // closed by a BlocProvider (callers use BlocProvider.value).
-  getIt.registerLazySingleton<AuthCubit>(
+  getIt.registerFactory<AuthCubit>(
     () => AuthCubit(getIt<RegisterRepo>(), getIt<AuthRepo>()),
   );
 

@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/products/data/models/category_model.dart';
 import 'package:warshity/features/account_sharing/data/repositories/account_sharing_repository.dart';
 
@@ -28,12 +27,7 @@ class CategoriesRemoteDataSource {
   }
 
   Stream<List<CategoryModel>> watchCategories() {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-
-    if (uid == null || uid.isEmpty) {
-      // Never throw during widget build: report as a stream error instead.
-      return Stream.error(const UnauthenticatedException());
-    }
+    final uid = _currentUserId;
 
     return accountSharingRepository.watchActiveConnectionIds().asyncExpand((
       connectionIds,

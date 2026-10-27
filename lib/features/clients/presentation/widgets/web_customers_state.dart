@@ -9,13 +9,7 @@ class _WebCustomersState extends State<WebCustomers> {
   @override
   void initState() {
     super.initState();
-    try {
-      _invoicesStream = getIt<InvoicesRepository>().watchInvoices();
-    } catch (_) {
-      // No signed-in user yet (reload/cleared session): show as a stream
-      // error instead of crashing initState.
-      _invoicesStream = Stream.error(const UnauthenticatedException());
-    }
+    _invoicesStream = getIt<InvoicesRepository>().watchInvoices();
   }
 
   @override
@@ -183,11 +177,7 @@ class _WebCustomersState extends State<WebCustomers> {
                       }
 
                       if (state is ClientsError) {
-                        return _ErrorState(
-                          message: state.message,
-                          onRetry: () =>
-                              context.read<ClientsCubit>().watchClients(),
-                        );
+                        return _ErrorState(message: state.message);
                       }
 
                       if (state is! ClientsLoaded) {

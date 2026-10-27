@@ -14,6 +14,7 @@ import 'package:warshity/features/auth/cubit/auth_cubit.dart';
 import 'package:warshity/features/auth/data/auth_repo.dart';
 import 'package:warshity/features/auth/forget_password/presentation/screens/forget_pass_screen.dart';
 import 'package:warshity/features/auth/login/presentation/screens/login_screen.dart';
+import 'package:warshity/features/auth/register/data/repos/register_repo.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/check_invoice/presentation/screens/check_invoice.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
@@ -25,101 +26,23 @@ import 'package:warshity/features/products/presentation/cubit/products_cubit.dar
 import 'package:warshity/features/splash/presentation/screens/splash_screen.dart';
 
 class RouterGeneratorConfig {
-  /// Routes that must never render without a signed-in Firebase user.
-  static const Set<String> protectedRoutes = {
-    AppRoutes.mainScreen,
-    AppRoutes.invoiceScreen,
-    AppRoutes.addInvoicesScreen,
-    AppRoutes.checkInvoiceScreen,
-    AppRoutes.customerdetailsScreen,
-    AppRoutes.allClientInvoicesScreen,
-    AppRoutes.productdetailsScreen,
-  };
-
-  /// Routes whose page is built from `state.extra` (an id, a model, a cubit).
-  /// `extra` does not survive a browser reload / a direct URL open, so these
-  /// routes are redirected instead of crashing on an unsafe cast.
-  static const Set<String> routesRequiringExtra = {
-    AppRoutes.checkInvoiceScreen,
-    AppRoutes.customerdetailsScreen,
-    AppRoutes.allClientInvoicesScreen,
-    AppRoutes.productdetailsScreen,
-  };
-
-  /// The location the user originally asked for while the session was still
-  /// unknown. Consumed by the splash screen once Firebase answers.
-  static String? _pendingLocation;
-
-  /// Returns (and clears) the location held back during session resolution.
-  static String? consumePendingLocation() {
-    final pending = _pendingLocation;
-    _pendingLocation = null;
-    return pending;
-  }
-
-  static bool _hasExpectedExtra(String location, Object? extra) {
-    switch (location) {
-      case AppRoutes.productdetailsScreen:
-        return extra is Map<String, dynamic>;
-      case AppRoutes.checkInvoiceScreen:
-        return extra is InvoiceModel;
-      case AppRoutes.customerdetailsScreen:
-      case AppRoutes.allClientInvoicesScreen:
-        return extra is String;
-      default:
-        return true;
-    }
-  }
-
   static GoRouter goRouter = GoRouter(
-    // Both platforms start on Splash: it is the single place where the app
-    // waits for Firebase to restore (or deny) the persisted session.
-    initialLocation: AppRoutes.splashScreen,
+    initialLocation: kIsWeb ? AppRoutes.loginScreen : AppRoutes.splashScreen,
 
     errorBuilder: (context, state) => const NotFoundScreen(),
 
     redirect: (context, state) {
-      final location = state.matchedLocation;
-      final authCubit = getIt<AuthCubit>();
-
-      // Splash is the session resolving route, never redirect it.
-      if (location == AppRoutes.splashScreen) {
-        return null;
-      }
-
-      // Firebase has not answered yet (typical right after a reload or when
-      // site data was cleared). Hold the requested location and show Splash
-      // instead of building a protected page with no user.
-      if (authCubit.sessionStatus == AuthSessionStatus.unknown) {
-        _pendingLocation = state.uri.toString();
-        return AppRoutes.splashScreen;
-      }
-
-      // The session is resolved, so `currentUser` can be trusted again.
       final isLoggedIn = getIt<AuthRepo>().currentUser != null;
-
-      if (kIsWeb && location == AppRoutes.onboarding) {
+      if (kIsWeb && state.matchedLocation == AppRoutes.onboarding) {
         return isLoggedIn ? AppRoutes.mainScreen : AppRoutes.loginScreen;
       }
-
       final isGoingToAuthScreen =
-          location == AppRoutes.loginScreen ||
-          location == AppRoutes.registerScreen ||
-          location == AppRoutes.forgetPassScreen ||
-          location == AppRoutes.accessPassScreen;
+          state.matchedLocation == AppRoutes.loginScreen ||
+          state.matchedLocation == AppRoutes.registerScreen ||
+          state.matchedLocation == AppRoutes.forgetPassScreen ||
+          state.matchedLocation == AppRoutes.accessPassScreen;
 
       if (isLoggedIn && isGoingToAuthScreen) {
-        return AppRoutes.mainScreen;
-      }
-
-      if (!isLoggedIn && protectedRoutes.contains(location)) {
-        return AppRoutes.loginScreen;
-      }
-
-      // Direct open / reload of a detail route without a usable `extra`.
-      if (isLoggedIn &&
-          routesRequiringExtra.contains(location) &&
-          !_hasExpectedExtra(location, state.extra)) {
         return AppRoutes.mainScreen;
       }
 
@@ -220,10 +143,8 @@ class RouterGeneratorConfig {
 
       ShellRoute(
         builder: (context, state, child) {
-          // Shared AuthCubit instance (owned by get_it): no duplicate
-          // listeners and the provider must not close the shared cubit.
-          return BlocProvider<AuthCubit>.value(
-            value: getIt<AuthCubit>(),
+          return BlocProvider(
+            create: (_) => AuthCubit(getIt<RegisterRepo>(), getIt<AuthRepo>()),
             child: child,
           );
         },

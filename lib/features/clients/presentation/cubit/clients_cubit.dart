@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/clients/data/model/customer_model.dart';
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 
@@ -20,21 +19,14 @@ class ClientsCubit extends Cubit<ClientsState> {
 
     emit(ClientsLoading());
 
-    try {
-      _clientsSubscription = repository.watchClients().listen(
-        (clients) {
-          emit(ClientsLoaded(clients: clients, displayedClients: clients));
-        },
-        onError: (error) {
-          if (isClosed) return;
-          emit(ClientsError(AppFailure.map(error).message));
-        },
-      );
-    } catch (error) {
-      // Synchronous throw (e.g. no signed-in user) must not crash the build.
-      if (isClosed) return;
-      emit(ClientsError(AppFailure.map(error).message));
-    }
+    _clientsSubscription = repository.watchClients().listen(
+      (clients) {
+        emit(ClientsLoaded(clients: clients, displayedClients: clients));
+      },
+      onError: (error) {
+        emit(ClientsError(error.toString()));
+      },
+    );
   }
 
   void searchClients(String query) {

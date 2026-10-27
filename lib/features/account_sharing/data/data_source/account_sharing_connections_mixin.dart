@@ -95,12 +95,7 @@ mixin _AccountSharingConnections on _AccountSharingCore {
       return Stream.value(<Map<String, dynamic>>[]);
     }
 
-    final uid = auth.currentUser?.uid;
-
-    if (uid == null || uid.isEmpty) {
-      // Never throw during widget build: report as a stream error instead.
-      return Stream.error(const UnauthenticatedException());
-    }
+    final uid = _currentUserId;
 
     final mappingRef = firestore.collection('user_shared_accounts').doc(uid);
 

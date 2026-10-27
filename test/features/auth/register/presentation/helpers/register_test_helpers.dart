@@ -133,11 +133,6 @@ class RegisterTestHarness {
       authRepo.watchUserData(),
     ).thenAnswer((_) => const Stream<UserModel?>.empty());
 
-    // AuthCubit also listens to the session stream in its constructor.
-    when(
-      authRepo.authStateChanges,
-    ).thenAnswer((_) => const Stream.empty());
-
     // The layout reads cubit.categoriesStream in initState.
     when(
       registerRepo.watchCategories(),

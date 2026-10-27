@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
-import 'package:warshity/core/widgets/error_state_view.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_state.dart';
@@ -72,10 +71,7 @@ class ProductsTable extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.all(40),
             decoration: productContainerDecoration(context),
-            child: ErrorStateView(
-              message: state.message,
-              onRetry: () => context.read<ProductsCubit>().watchProducts(),
-            ),
+            child: Center(child: Text(state.message)),
           );
         }
 
