@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-import 'package:warshity/core/widgets/error_state_view.dart';
 import 'package:warshity/core/widgets/quantity_bottom_sheet.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
@@ -89,10 +88,7 @@ class MobileHome extends StatelessWidget {
           }
 
           if (state is HomeError) {
-            return ErrorStateView(
-              message: state.message,
-              onRetry: () => context.read<HomeCubit>().loadHome(),
-            );
+            return Center(child: Text(state.message));
           }
 
           if (state is! HomeLoaded) {

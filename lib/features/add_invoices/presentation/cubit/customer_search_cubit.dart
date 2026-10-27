@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/clients/data/repo/clients_reprosatory.dart';
 
 import 'customer_search_state.dart';
@@ -35,7 +34,7 @@ class CustomerSearchCubit extends Cubit<CustomerSearchState> {
     } catch (e) {
       emit(
         CustomerSearchError(
-          AppFailure.map(e).message,
+          e.toString(),
         ),
       );
     }

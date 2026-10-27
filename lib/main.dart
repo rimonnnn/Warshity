@@ -90,9 +90,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit(getIt())),
-        // Shared instance: AuthCubit is the app-wide auth lifecycle owner and
-        // must not be closed when a subtree using it is disposed.
-        BlocProvider<AuthCubit>.value(value: getIt<AuthCubit>()),
+        BlocProvider<AuthCubit>(create: (_) => getIt<AuthCubit>()),
         BlocProvider<AccountSharingCubit>(
           create: (_) => getIt<AccountSharingCubit>(),
         ),
@@ -116,24 +114,6 @@ class MyApp extends StatelessWidget {
                     context
                         .read<AccountSharingCubit>()
                         .stopWatchingSharedAccounts();
-                  }
-
-                  // Firebase reported the user disappeared on its own
-                  // (expired/revoked session, cleared site data).
-                  if (authState is SessionExpired) {
-                    context
-                        .read<AccountSharingCubit>()
-                        .stopWatchingSharedAccounts();
-
-                    showAnimatedSnackDialog(
-                      context,
-                      message: 'session_expired'.tr(),
-                      type: AnimatedSnackBarType.warning,
-                    );
-
-                    if (context.mounted) {
-                      context.goNamed(AppRoutes.loginScreen);
-                    }
                   }
                 },
                 child: BlocListener<AccountSharingCubit, AccountSharingState>(

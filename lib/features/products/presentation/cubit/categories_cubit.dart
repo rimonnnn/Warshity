@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/products/data/models/category_model.dart';
 import 'package:warshity/features/products/data/repo/categories_repository.dart';
 import 'package:warshity/features/products/presentation/cubit/categories_state.dart';
@@ -18,21 +17,14 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
     _subscription?.cancel();
 
-    try {
-      _subscription = repository.watchCategories().listen(
-        (categories) {
-          emit(CategoriesLoaded(categories));
-        },
-        onError: (error) {
-          if (isClosed) return;
-          emit(CategoriesError(AppFailure.map(error).message));
-        },
-      );
-    } catch (error) {
-      // Synchronous throw (e.g. no signed-in user) must not crash the build.
-      if (isClosed) return;
-      emit(CategoriesError(AppFailure.map(error).message));
-    }
+    _subscription = repository.watchCategories().listen(
+      (categories) {
+        emit(CategoriesLoaded(categories));
+      },
+      onError: (error) {
+        emit(CategoriesError(error.toString()));
+      },
+    );
   }
 
   List<CategoryModel> _currentCategories() {

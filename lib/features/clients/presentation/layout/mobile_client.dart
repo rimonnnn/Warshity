@@ -8,7 +8,6 @@ import 'package:warshity/core/routing/app_routes.dart';
 import 'package:warshity/core/styling/app_assets.dart';
 import 'package:warshity/core/widgets/add_client_dialog.dart';
 import 'package:warshity/core/widgets/app_filter_tabs.dart';
-import 'package:warshity/core/widgets/error_state_view.dart';
 import 'package:warshity/core/widgets/spacing_widgets.dart';
 import 'package:warshity/features/clients/presentation/cubit/add_client_cubit.dart';
 import 'package:warshity/features/clients/presentation/cubit/clients_cubit.dart';
@@ -147,11 +146,7 @@ class _MobileCustomersState extends State<MobileClient> {
                       );
                     }
                     if (state is ClientsError) {
-                      return ErrorStateView(
-                        message: state.message,
-                        onRetry: () =>
-                            context.read<ClientsCubit>().watchClients(),
-                      );
+                      return Center(child: Text(state.message));
                     }
                     return const SizedBox();
                   },
