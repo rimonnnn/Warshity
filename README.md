@@ -35,15 +35,15 @@ light and dark themes and Arabic and English interfaces.
 ### Mobile App
 
 <p align="center">
-  <img src="docs/screenshots/mobile/dashboard/en-light.png"
+  <img src="docs/screenshots/mobile/dashboard_en_light.jpg"
        width="30%"
        alt="Masiter Mobile Dashboard" />
 
-  <img src="docs/screenshots/mobile/products/en-light.png"
+  <img src="docs/screenshots/mobile/clients_en_light.jpg"
        width="30%"
-       alt="Masiter Product Management" />
+       alt="Masiter Clients Management" />
 
-  <img src="docs/screenshots/mobile/invoices/en-light.png"
+  <img src="docs/screenshots/mobile/invoices_en_light.jpg"
        width="30%"
        alt="Masiter Invoice Management" />
 </p>
@@ -59,17 +59,13 @@ light and dark themes and Arabic and English interfaces.
 ### Themes & Localization
 
 <p align="center">
-  <img src="docs/screenshots/mobile/dashboard/en-dark.png"
+  <img src="docs/screenshots/mobile/dashboard_en_dark.jpg"
        width="30%"
        alt="Masiter Dark Mode" />
 
-  <img src="docs/screenshots/mobile/dashboard/ar-light.png"
+  <img src="docs/screenshots/mobile/dashboard_ar_light.jpg"
        width="30%"
        alt="Masiter Arabic Interface" />
-
-  <img src="docs/screenshots/mobile/dashboard/ar-dark.png"
-       width="30%"
-       alt="Masiter Arabic Dark Mode" />
 </p>
 
 
