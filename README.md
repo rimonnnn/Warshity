@@ -27,6 +27,52 @@
 
 The application supports Arabic and English, light and dark themes, and printable invoice layouts for common paper sizes. Its product model is based on a **one-time purchase rather than a recurring subscription**.
 
+## Screenshots
+
+Explore Masiter across mobile and web, with support for
+light and dark themes and Arabic and English interfaces.
+
+### Mobile App
+
+<p align="center">
+  <img src="docs/screenshots/mobile/dashboard/en-light.png"
+       width="30%"
+       alt="Masiter Mobile Dashboard" />
+
+  <img src="docs/screenshots/mobile/products/en-light.png"
+       width="30%"
+       alt="Masiter Product Management" />
+
+  <img src="docs/screenshots/mobile/invoices/en-light.png"
+       width="30%"
+       alt="Masiter Invoice Management" />
+</p>
+
+### Web App
+
+<p align="center">
+  <img src="docs/screenshots/web/dashboard/en-light.png"
+       width="85%"
+       alt="Masiter Web Dashboard" />
+</p>
+
+### Themes & Localization
+
+<p align="center">
+  <img src="docs/screenshots/mobile/dashboard/en-dark.png"
+       width="30%"
+       alt="Masiter Dark Mode" />
+
+  <img src="docs/screenshots/mobile/dashboard/ar-light.png"
+       width="30%"
+       alt="Masiter Arabic Interface" />
+
+  <img src="docs/screenshots/mobile/dashboard/ar-dark.png"
+       width="30%"
+       alt="Masiter Arabic Dark Mode" />
+</p>
+
+
 ## Key Features
 
 ### 📦 Products & Inventory
