@@ -46,29 +46,24 @@ It supports Arabic and English, light and dark themes, and printable invoice lay
 ## Key Features
 
 ### 📦 Products & Inventory
-
 - Organize products with details such as category and unit.
 - Store product images in Supabase Storage.
 - Receive low-stock notifications for items that need attention.
 
 ### 🧾 Sales Invoices
-
 - Create and manage customer sales invoices.
 - Generate PDF invoices and print them in layouts designed for **58 mm** thermal, **80 mm** thermal, and **A4** paper.
 
 ### 👥 Customers & Receivables
-
 - Keep customer details and purchase history together.
 - Track customer balances and outstanding debts.
 - Apply debt payments to the oldest outstanding invoice first.
 - Receive morning reminders about outstanding receivables.
 
 ### 🔐 Account Access
-
 - Register and sign in with Firebase Authentication, including an email-verification flow.
 
 ### 🌐 User Experience
-
 - Arabic and English localization, with right-to-left layouts where applicable.
 - Light and dark themes.
 - Responsive layouts for mobile and web.
@@ -93,30 +88,30 @@ Masiter across supported platforms, languages, and themes.
 
 ## Supported Platforms and Configurations
 
-| Dimension           | Support                                         |
-| ------------------- | ----------------------------------------------- |
-| Platforms           | Android (APK builds) and Web (Firebase Hosting) |
-| Themes              | Light and Dark                                  |
-| Languages           | English and Arabic (with RTL)                   |
-| Invoice print sizes | 58 mm, 80 mm, A4                                |
+| Dimension | Support |
+|---|---|
+| Platforms | Android (APK builds) and Web (Firebase Hosting) |
+| Themes | Light and Dark |
+| Languages | English and Arabic (with RTL) |
+| Invoice print sizes | 58 mm, 80 mm, A4 |
 
 ## Tech Stack and Architecture
 
-| Area                               | Technologies                                   |
-| ---------------------------------- | ---------------------------------------------- |
-| Application                        | Flutter, Dart                                  |
-| State management                   | `flutter_bloc` (BLoC/Cubit)                    |
-| Navigation                         | `go_router`                                    |
-| Dependency injection               | `get_it`                                       |
-| Responsive UI                      | `flutter_screenutil`, `responsive_framework`   |
-| Localization                       | `easy_localization`                            |
-| Authentication                     | Firebase Authentication                        |
-| Cloud data                         | Cloud Firestore                                |
-| Product-image storage              | Supabase Storage                               |
-| PDF generation & printing          | `pdf`, `printing`                              |
-| Image loading                      | `cached_network_image`                         |
+| Area | Technologies |
+|---|---|
+| Application | Flutter, Dart |
+| State management | `flutter_bloc` (BLoC/Cubit) |
+| Navigation | `go_router` |
+| Dependency injection | `get_it` |
+| Responsive UI | `flutter_screenutil`, `responsive_framework` |
+| Localization | `easy_localization` |
+| Authentication | Firebase Authentication |
+| Cloud data | Cloud Firestore |
+| Product-image storage | Supabase Storage |
+| PDF generation & printing | `pdf`, `printing` |
+| Image loading | `cached_network_image` |
 | Local preferences / secure storage | `shared_preferences`, `flutter_secure_storage` |
-| Web hosting                        | Firebase Hosting                               |
+| Web hosting | Firebase Hosting |
 
 The code separates data and presentation responsibilities: BLoC/Cubit manages UI state, and `get_it` provides service dependencies.
 
@@ -256,34 +251,34 @@ No license file is currently included. Please contact the maintainer before reus
 
   <h2>مسيطر — إدارة عملية للمحلات والمشروعات الصغيرة</h2>
 
-**مسيطر (Masiter)** هو تطبيق مبني باستخدام Flutter لمساعدة أصحاب المحلات والمشروعات الصغيرة على تنظيم المنتجات، والمخزون، وفواتير البيع، والعملاء، والديون من مكان واحد، بدلًا من الاعتماد على السجلات الورقية المتفرقة.
+  **مسيطر (Masiter)** هو تطبيق مبني باستخدام Flutter لمساعدة أصحاب المحلات والمشروعات الصغيرة على تنظيم المنتجات، والمخزون، وفواتير البيع، والعملاء، والديون من مكان واحد، بدلًا من الاعتماد على السجلات الورقية المتفرقة.
 
   <h3>أهم المميزات</h3>
 
-- **إدارة المنتجات والمخزون:** تنظيم المنتجات حسب بياناتها مثل التصنيف والوحدة، مع تخزين صور المنتجات ومتابعة انخفاض المخزون.
-- **فواتير البيع:** إنشاء الفواتير وتصديرها بصيغة PDF وتجهيزها للطباعة بمقاسات A4 وحراري 58 مم و80 مم.
-- **العملاء والديون:** حفظ بيانات العملاء ومتابعة المشتريات والأرصدة والمبالغ المستحقة.
-- **تسجيل التحصيلات:** توزيع السداد على أقدم فاتورة مستحقة أولًا.
-- **التنبيهات:** تنبيهات انخفاض المخزون وتذكيرات تحصيل المبالغ المستحقة.
-- **مشاركة بيانات النشاط:** إتاحة مشاركة بيانات النشاط مع حساب آخر من خلال آلية مشاركة مرتبطة بالبريد الإلكتروني.
-- **الحسابات:** تسجيل الدخول وإنشاء الحسابات باستخدام Firebase Authentication مع دعم التحقق من البريد الإلكتروني.
-- **تجربة استخدام مرنة:** دعم العربية والإنجليزية، والوضع الفاتح والداكن، وواجهات متجاوبة للموبايل والويب.
-- **نموذج الشراء:** شراء لمرة واحدة دون اشتراك دوري.
+  - **إدارة المنتجات والمخزون:** تنظيم المنتجات حسب بياناتها مثل التصنيف والوحدة، مع تخزين صور المنتجات ومتابعة انخفاض المخزون.
+  - **فواتير البيع:** إنشاء الفواتير وتصديرها بصيغة PDF وتجهيزها للطباعة بمقاسات A4 وحراري 58 مم و80 مم.
+  - **العملاء والديون:** حفظ بيانات العملاء ومتابعة المشتريات والأرصدة والمبالغ المستحقة.
+  - **تسجيل التحصيلات:** توزيع السداد على أقدم فاتورة مستحقة أولًا.
+  - **التنبيهات:** تنبيهات انخفاض المخزون وتذكيرات تحصيل المبالغ المستحقة.
+  - **مشاركة بيانات النشاط:** إتاحة مشاركة بيانات النشاط مع حساب آخر من خلال آلية مشاركة مرتبطة بالبريد الإلكتروني.
+  - **الحسابات:** تسجيل الدخول وإنشاء الحسابات باستخدام Firebase Authentication مع دعم التحقق من البريد الإلكتروني.
+  - **تجربة استخدام مرنة:** دعم العربية والإنجليزية، والوضع الفاتح والداكن، وواجهات متجاوبة للموبايل والويب.
+  - **نموذج الشراء:** شراء لمرة واحدة دون اشتراك دوري.
 
   <h3>التقنيات المستخدمة</h3>
 
-Flutter وDart، وBLoC/Cubit لإدارة الحالة، وGoRouter للتنقل، وGetIt للحقن المعتمد، وEasyLocalization للترجمة، وFirebase Authentication وCloud Firestore للحسابات والبيانات، وSupabase Storage لصور المنتجات، ومكتبتا `pdf` و`printing` لإنشاء الفواتير وطباعتها.
+  Flutter وDart، وBLoC/Cubit لإدارة الحالة، وGoRouter للتنقل، وGetIt للحقن المعتمد، وEasyLocalization للترجمة، وFirebase Authentication وCloud Firestore للحسابات والبيانات، وSupabase Storage لصور المنتجات، ومكتبتا `pdf` و`printing` لإنشاء الفواتير وطباعتها.
 
   <h3>تشغيل المشروع محليًا</h3>
 
   </div>
 
-```bash
-git clone https://github.com/rimonnnn/Warshity.git
-cd Warshity
-git checkout development
-flutter pub get
-flutter run
-```
+  ```bash
+  git clone https://github.com/rimonnnn/Warshity.git
+  cd Warshity
+  git checkout development
+  flutter pub get
+  flutter run
+  ```
 
 </details>
