@@ -68,22 +68,6 @@ Screenshots are grouped by **platform → language → theme**. Expand a section
   </tr>
 </table>
 
-</details>
-
-<details>
-<summary><strong>🌙 Dark Mode</strong></summary>
-<br />
-
-<table align="center">
-  <tr>
-    <td align="center"><img src="docs/screenshots/mobile/dashboard_ar_dark.jpg" width="220" alt="Dashboard, Arabic, dark" /><br /><strong>Dashboard</strong></td>
-    <td align="center"><img src="docs/screenshots/mobile/clients_ar_dark.jpg" width="220" alt="Clients, Arabic, dark" /><br /><strong>Clients</strong></td>
-    <td align="center"><img src="docs/screenshots/mobile/invoices_ar_dark.jpg" width="220" alt="Invoices, Arabic, dark" /><br /><strong>Invoices</strong></td>
-  </tr>
-</table>
-
-</details>
-
 ---
 
 ## 🖥️ Web
