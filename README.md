@@ -249,6 +249,10 @@ A restrained teal-and-slate palette:
 
 [GitHub](https://github.com/rimonnnn) • [LinkedIn](https://www.linkedin.com/in/rimon-abdelmasih/) • [Portfolio](https://rimonnnn.github.io/)
 
+**Kirolos Emad** — Flutter Developer
+
+[GitHub](https://github.com/kero12-eg) • [LinkedIn](https://www.linkedin.com/in/kirolos-emad-805612369?utm_source=share_via&utm_content=profile&utm_medium=member_ios) • [Portfolio](https://rimonnnn.github.io/)
+
 Masiter has been developed collaboratively. Repository and application branding may continue to evolve.
 
 ## License
