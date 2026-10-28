@@ -16,7 +16,7 @@
     &nbsp;•&nbsp;
     <a href="https://rimonnnn.github.io/">👤 Portfolio</a>
         &nbsp;•&nbsp;
-    <a href="https://kero12-eg.github.io/KERO_EMAD/">👤 Portfolio1</a>
+    <a href="https://kero12-eg.github.io/">👤 Portfolio1</a>
     &nbsp;•&nbsp;
     <a href="#arabic">🇪🇬 العربية</a>
   </p>
@@ -253,7 +253,7 @@ A restrained teal-and-slate palette:
 
 **Kirolos Emad** — Flutter Developer
 
-[GitHub](https://github.com/kero12-eg) • [LinkedIn](https://www.linkedin.com/in/kirolos-emad-805612369?utm_source=share_via&utm_content=profile&utm_medium=member_ios) • [Portfolio](https://kero12-eg.github.io/KERO_EMAD/)
+[GitHub](https://github.com/kero12-eg) • [LinkedIn](https://www.linkedin.com/in/kirolos-emad-805612369?utm_source=share_via&utm_content=profile&utm_medium=member_ios) • [Portfolio](https://kero12-eg.github.io/)
 
 Masiter has been developed collaboratively. Repository and application branding may continue to evolve.
 
