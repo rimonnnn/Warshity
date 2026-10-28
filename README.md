@@ -7,7 +7,7 @@
   <p>
     <a href="https://github.com/rimonnnn/Warshity/releases"><strong>⬇️ Download APK</strong></a>
     &nbsp;•&nbsp;
-    <a href="SCREENSHOTS.md">🖼️ Screenshots</a>
+    <a href="screenshots.md.md">🖼️ screenshots.md</a>
     &nbsp;•&nbsp;
     <a href="https://rimonnnn.github.io/">👤 Portfolio</a>
     &nbsp;•&nbsp;
@@ -25,10 +25,10 @@
 </div>
 
 <p align="center">
-  <img src="docs/screenshots/mobile/dashboard_en_light.jpg" width="22%" alt="Mobile dashboard, English, light" />
-  <img src="docs/screenshots/mobile/invoices_en_light.jpg" width="22%" alt="Mobile invoices, English, light" />
-  <img src="docs/screenshots/mobile/dashboard_en_dark.jpg" width="22%" alt="Mobile dashboard, English, dark" />
-  <img src="docs/screenshots/mobile/dashboard_ar_light.jpg" width="22%" alt="Mobile dashboard, Arabic, light" />
+  <img src="docs/screenshots.md/mobile/dashboard_en_light.jpg" width="22%" alt="Mobile dashboard, English, light" />
+  <img src="docs/screenshots.md/mobile/invoices_en_light.jpg" width="22%" alt="Mobile invoices, English, light" />
+  <img src="docs/screenshots.md/mobile/dashboard_en_dark.jpg" width="22%" alt="Mobile dashboard, English, dark" />
+  <img src="docs/screenshots.md/mobile/dashboard_ar_light.jpg" width="22%" alt="Mobile dashboard, Arabic, light" />
 </p>
 
 ---
@@ -37,7 +37,7 @@
 
 - [Overview](#overview)
 - [Key Features](#key-features)
-- [Screenshots](#screenshots)
+- [screenshots.md](#screenshots.md)
 - [Supported Platforms and Configurations](#supported-platforms-and-configurations)
 - [Tech Stack and Architecture](#tech-stack-and-architecture)
 - [Project Structure](#project-structure)
@@ -76,14 +76,14 @@
 | 🔐 | **Account Access** | Register and sign in with Firebase Authentication, including email verification. |
 | 🌐 | **User Experience** | Arabic and English localization with RTL, light and dark themes, responsive mobile and web layouts, and cached product images with error handling. |
 
-## Screenshots
+## Screenshots.md
 
 Masiter across supported platforms, languages, and themes.
 
-**[View the full screenshot gallery →](SCREENSHOTS.md)**
+**[View the full screenshot gallery →](screenshots.md.md)**
 
 <p align="center">
-  <img src="docs/screenshots/web/web_dashboard_en_light.png" width="80%" alt="Web dashboard, English, light" />
+  <img src="docs/screenshots.md/web/web_dashboard_en_light.png" width="80%" alt="Web dashboard, English, light" />
 </p>
 
 ## Supported Platforms and Configurations
@@ -127,7 +127,7 @@ The code separates data and presentation responsibilities: BLoC/Cubit manages UI
 │   ├── images/              # App and UI assets
 │   ├── fonts/               # Fonts
 │   └── translations/        # Localization resources
-├── docs/screenshots/        # Screenshots used by README.md and SCREENSHOTS.md
+├── docs/screenshots.md/        # screenshots.md used by README.md and screenshots.md.md
 ├── test/                    # Automated tests
 ├── firebase.json            # Firebase Hosting configuration
 ├── firestore.rules          # Firestore security rules
@@ -284,6 +284,6 @@ flutter pub get
 flutter run
 ```
 
-<p align="right">📥 <a href="https://github.com/rimonnnn/Warshity/releases">تحميل ملف APK</a> • 🖼️ <a href="SCREENSHOTS.md">معرض الصور</a></p>
+<p align="right">📥 <a href="https://github.com/rimonnnn/Warshity/releases">تحميل ملف APK</a> • 🖼️ <a href="screenshots.md.md">معرض الصور</a></p>
 
 </details>
