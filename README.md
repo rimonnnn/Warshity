@@ -14,7 +14,7 @@
     &nbsp;•&nbsp;
     <a href="https://github.com/rimonnnn/Warshity/releases">📦 Releases</a>
     &nbsp;•&nbsp;
-    <a href="https://rimonnnn.github.io/">👤 Portfolio</a>
+    <a href="https://kero12-eg.github.io/KERO_EMAD/">👤 Portfolio</a>
     &nbsp;•&nbsp;
     <a href="#arabic">🇪🇬 العربية</a>
   </p>
