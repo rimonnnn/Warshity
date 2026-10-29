@@ -1,3 +1,4 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:warshity/core/constants/app_radius.dart';
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/features/clients/presentation/cubit/remove_clients_state.dart';
 import 'package:warshity/features/clients/presentation/cubit/remove_clients_cubit.dart';
@@ -41,16 +43,12 @@ class RemoveClientDialog extends StatelessWidget {
 
           case RemoveClientStatus.success:
             context.pop();
+            showAnimatedSnackDialog(context, message: "Client_deleted_succefully".tr(), type: AnimatedSnackBarType.success);
             break;
 
           case RemoveClientStatus.failure:
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state.errorMessage ?? 'something_error'.tr(),
-                ),
-              ),
-            );
+             showAnimatedSnackDialog(context, message: state.errorMessage ?? 'something_error'.tr(), type: AnimatedSnackBarType.error);
+            
             break;
         }
       },

@@ -83,6 +83,15 @@ class ProductsCubit extends Cubit<ProductsState> {
       quantity: quantity,
     );
   }
+  Future<void> updateProductPrice({
+    required String productId,
+    required double price,
+  }) async {
+    await repository.updateProductPrice(
+      productId: productId,
+      price: price,
+    );
+  }
 
   Future<void> deleteProduct(String productId) async {
     try {

@@ -1,9 +1,11 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/core/widgets/primary_button_widget.dart';
 import 'package:warshity/core/widgets/primary_text_field.dart';
 
@@ -37,44 +39,49 @@ class AddCategoryPopup {
       _entry = null;
     }
 
-    Future<void> addCategory(
-      BuildContext popupContext,
-      StateSetter setState,
-    ) async {
-      final name = controller.text.trim();
+Future<void> addCategory(
+  BuildContext popupContext,
+  StateSetter setState,
+) async {
+  final name = controller.text.trim();
 
-      if (name.isEmpty || loading) {
-        return;
+  if (name.isEmpty || loading) {
+    return;
+  }
+
+  setState(() {
+    loading = true;
+  });
+
+  try {
+    focusNode.unfocus();
+
+    await cubit.addCategory(name);
+
+    if (cubit.state is AddCategoryError) {
+      if (entry.mounted) {
+        setState(() {
+          loading = false;
+        });
       }
-
-      setState(() {
-        loading = true;
-      });
-
-      try {
-        focusNode.unfocus();
-
-        await cubit.addCategory(name);
-
-        if (cubit.state is AddCategoryError) {
-          if (entry.mounted) {
-            setState(() {
-              loading = false;
-            });
-          }
-
-          return;
-        }
-
-        close();
-      } catch (_) {
-        if (entry.mounted) {
-          setState(() {
-            loading = false;
-          });
-        }
-      }
+      return;
     }
+
+    close();
+
+    showAnimatedSnackDialog(
+      context,
+      message: 'Category added successfully'.tr(), type: AnimatedSnackBarType.success,
+      
+    );
+  } catch (_) {
+    if (entry.mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+}
 
     entry = OverlayEntry(
       builder: (overlayContext) {

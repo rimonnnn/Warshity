@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warshity/core/errors/app_failure.dart';
 import 'package:warshity/features/products/data/models/category_model.dart';
@@ -53,7 +54,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       (c) => c.name.toLowerCase() == trimmedName.toLowerCase(),
     );
     if (exists) {
-      emit(AddCategoryError(currentCategories, 'Category already exists'));
+      emit(AddCategoryError(currentCategories, 'Category already exists'.tr()));
       return;
     }
  
@@ -69,7 +70,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       emit(
         AddCategoryError(
           currentCategories,
-          'Failed to add category. Please try again.',
+          'Failed to add category. Please try again.'.tr(),
         ),
       );
     }

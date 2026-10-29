@@ -47,6 +47,16 @@ class ProductsRepository {
     await remoteDataSource.decreaseProductQuantity(productId);
   }
 
+  Future<void> updateProductPrice({
+    required String productId,
+    required double price,
+  }) async {
+    await remoteDataSource.updateProductPrice(
+      productId: productId,
+      price: price,
+    );
+  }
+
   Future<void> setProductQuantity({
     required String productId,
     required int quantity,

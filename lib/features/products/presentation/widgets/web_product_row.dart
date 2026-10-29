@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/widgets/quantity_bottom_sheet.dart';
+import 'package:warshity/core/widgets/change_product_price_dialog.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 
@@ -45,6 +46,20 @@ class ProductRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: child,
       ),
+    );
+  }
+
+  Widget _changePriceButton(BuildContext context, {double size = 18}) {
+    return IconButton(
+      tooltip: 'change_price'.tr(),
+      onPressed: () => showChangeProductPriceDialog(
+        context: context,
+        product: product,
+      ),
+      icon: Icon(Icons.price_change_outlined, size: size),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+      visualDensity: VisualDensity.compact,
     );
   }
 
@@ -123,15 +138,24 @@ class ProductRow extends StatelessWidget {
 
           Expanded(
             flex: 2,
-            child: _tapArea(
-              onTap: onTap,
-              child: Text(
-                '${formatMoney(product.price)} ${'EGP'.tr()}',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: context.colors.primary,
-                  fontWeight: FontWeight.w700,
+            child: Row(
+              children: [
+                Flexible(
+                  child: _tapArea(
+                    onTap: onTap,
+                    child: Text(
+                      '${formatMoney(product.price)} ${'EGP'.tr()}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: context.colors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                _changePriceButton(context),
+              ],
             ),
           ),
 
@@ -202,6 +226,8 @@ class ProductRow extends StatelessWidget {
           const SizedBox(width: 8),
 
           _ProductQuantityControls(product: product),
+
+          _changePriceButton(context, size: 17),
 
           _DeleteButton(
             product: product,

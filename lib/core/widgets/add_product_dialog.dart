@@ -98,7 +98,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
         isGeneratingBarcode = false;
       });
 
-      _message('Failed to generate product code. Please try again.'.tr());
+      _showUnitMessage('Failed to generate product code. Please try again.'.tr(), type: AnimatedSnackBarType.error);
     }
   }
 
@@ -304,9 +304,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
   }
 
   void _message(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    showAnimatedSnackDialog(context, message: message, type: AnimatedSnackBarType.success);
   }
 
   @override
