@@ -1,8 +1,10 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
+import 'package:warshity/core/utils/animated_snack_dialog.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 
@@ -64,14 +66,10 @@ Future<void> deleteProduct(BuildContext context, ProductModel product) async {
 
     if (!context.mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('product_deleted_successfully'.tr())),
-    );
+    showAnimatedSnackDialog(context, message: 'product_deleted_successfully'.tr(), type: AnimatedSnackBarType.success);
   } catch (_) {
     if (!context.mounted) return;
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('failed_to_delete_product'.tr())));
+    showAnimatedSnackDialog(context, message: 'failed_to_delete_product'.tr(), type:AnimatedSnackBarType.error);
   }
 }

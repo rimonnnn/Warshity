@@ -512,6 +512,54 @@ class ProductsRemoteDataSource {
     });
   }
 
+  /// Updates only the current catalog price of a product.
+  /// Existing invoice items keep the price stored on each invoice item.
+  Future<void> updateProductPrice({
+    required String productId,
+    required double price,
+  }) async {
+    if (!price.isFinite || price < 0) {
+      throw Exception('enter_valid_price'.tr());
+    }
+
+    final uid = _currentUserId;
+    final activeConnectionIds = await _getActiveConnectionIds();
+    final productRef = firestore.collection('products').doc(productId);
+
+    await firestore.runTransaction<void>((transaction) async {
+      final snapshot = await transaction.get(productRef);
+
+      if (!snapshot.exists) {
+        throw Exception('product_not_found'.tr());
+      }
+
+      final data = snapshot.data() ?? <String, dynamic>{};
+      final ownerUid = data['userId']?.toString();
+
+      var hasAccess = ownerUid == uid;
+
+      if (!hasAccess) {
+        hasAccess = _hasSharedConnectionAccess(
+          data: data,
+          activeConnectionIds: activeConnectionIds,
+        );
+      }
+
+      if (!hasAccess) {
+        final legacyUserIds = _normalizeIds(data['userIds']);
+        hasAccess = legacyUserIds.contains(uid);
+      }
+
+      if (!hasAccess) {
+        throw Exception('product_not_found'.tr());
+      }
+
+      // Deliberately update only products/{productId}.price.
+      // Invoice documents are not queried or modified here.
+      transaction.update(productRef, {'price': price});
+    });
+  }
+
   Future<void> setProductQuantity({
     required String productId,
     required int quantity,
