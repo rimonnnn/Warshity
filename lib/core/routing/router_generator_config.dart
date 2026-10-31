@@ -78,31 +78,37 @@ class RouterGeneratorConfig {
     navigatorKey: rootNavigatorKey,
     // Both platforms start on Splash: it is the single place where the app
     // waits for Firebase to restore (or deny) the persisted session.
-    initialLocation: AppRoutes.splashScreen,
+    initialLocation: kIsWeb ? AppRoutes.loginScreen : AppRoutes.splashScreen,
 
     errorBuilder: (context, state) => const NotFoundScreen(),
 
-    redirect: (context, state) {
+    redirect: (context, state) async {
       final location = state.matchedLocation;
       final authCubit = getIt<AuthCubit>();
 
-      // Splash is the session resolving route, never redirect it.
-      if (location == AppRoutes.splashScreen) {
+      // Mobile: Splash handles the initial session resolution.
+      if (!kIsWeb && location == AppRoutes.splashScreen) {
         return null;
       }
 
-      // Firebase has not answered yet (typical right after a reload or when
-      // site data was cleared). Hold the requested location and show Splash
-      // instead of building a protected page with no user.
+      // Wait for Firebase session restoration.
       if (authCubit.sessionStatus == AuthSessionStatus.unknown) {
-        _pendingLocation = state.uri.toString();
-        return AppRoutes.splashScreen;
+        if (!kIsWeb) {
+          _pendingLocation = state.uri.toString();
+          return AppRoutes.splashScreen;
+        }
+
+        // Web: Wait without displaying Flutter SplashScreen.
+        await authCubit.sessionReady;
       }
 
-      // The session is resolved, so `currentUser` can be trusted again.
+      // Firebase session is now resolved.
       final isLoggedIn = getIt<AuthRepo>().currentUser != null;
 
-      if (kIsWeb && location == AppRoutes.onboarding) {
+      // Web never displays Flutter Splash or Onboarding.
+      if (kIsWeb &&
+          (location == AppRoutes.splashScreen ||
+              location == AppRoutes.onboarding)) {
         return isLoggedIn ? AppRoutes.mainScreen : AppRoutes.loginScreen;
       }
 
@@ -112,15 +118,17 @@ class RouterGeneratorConfig {
           location == AppRoutes.forgetPassScreen ||
           location == AppRoutes.accessPassScreen;
 
+      // Signed-in users cannot access authentication screens.
       if (isLoggedIn && isGoingToAuthScreen) {
         return AppRoutes.mainScreen;
       }
 
+      // Guests cannot access protected routes.
       if (!isLoggedIn && protectedRoutes.contains(location)) {
         return AppRoutes.loginScreen;
       }
 
-      // Direct open / reload of a detail route without a usable `extra`.
+      // Detail routes require valid extra data.
       if (isLoggedIn &&
           routesRequiringExtra.contains(location) &&
           !_hasExpectedExtra(location, state.extra)) {
