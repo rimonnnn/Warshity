@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
 import 'package:warshity/core/widgets/quantity_bottom_sheet.dart';
-import 'package:warshity/core/widgets/change_product_price_dialog.dart';
 import 'package:warshity/features/products/data/models/product_model.dart';
 import 'package:warshity/features/products/presentation/cubit/products_cubit.dart';
 
@@ -49,19 +48,7 @@ class ProductRow extends StatelessWidget {
     );
   }
 
-  Widget _changePriceButton(BuildContext context, {double size = 18}) {
-    return IconButton(
-      tooltip: 'change_price'.tr(),
-      onPressed: () => showChangeProductPriceDialog(
-        context: context,
-        product: product,
-      ),
-      icon: Icon(Icons.price_change_outlined, size: size),
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints.tightFor(width: 32, height: 32),
-      visualDensity: VisualDensity.compact,
-    );
-  }
+
 
   Widget _buildFull(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -151,7 +138,6 @@ class ProductRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                _changePriceButton(context),
               ],
             ),
           ),
@@ -215,7 +201,6 @@ class ProductRow extends StatelessWidget {
 
           _ProductQuantityControls(product: product),
 
-          _changePriceButton(context, size: 17),
 
           _DeleteButton(product: product, size: 20),
         ],

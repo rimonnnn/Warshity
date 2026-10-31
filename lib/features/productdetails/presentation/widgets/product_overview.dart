@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:warshity/core/widgets/change_product_price_dialog.dart';
 
 import 'package:warshity/features/products/data/models/product_model.dart';
 
@@ -29,6 +30,12 @@ class ProductOverview extends StatelessWidget {
         icon: Icons.payments_outlined,
         title: 'selling_price'.tr(),
         value: formatPrice(product.price),
+        onChangePrice: () {
+                showChangeProductPriceDialog(
+                  context: context,
+                  product: product,
+                );
+              },
         subtitle: 'EGP'.tr(),
       ),
       MetricCard(
