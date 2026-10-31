@@ -18,7 +18,6 @@ class ProductCard extends StatelessWidget {
     this.onIncrease,
     this.onDecrease,
     this.onQuantityChanged,
-    this.onChangePrice,
     this.backgroundColor,
     this.borderRadius,
     this.padding,
@@ -39,7 +38,7 @@ class ProductCard extends StatelessWidget {
   final VoidCallback? onIncrease;
   final VoidCallback? onDecrease;
   final Future<void> Function(int quantity)? onQuantityChanged;
-  final VoidCallback? onChangePrice;
+
 
   final Color? backgroundColor;
   final Color? imageBackgroundColor;
@@ -144,24 +143,6 @@ class ProductCard extends StatelessWidget {
                       ],
                     ),
                   ),
-
-                  if (onChangePrice != null) ...[
-                    SizedBox(height: 2.h),
-                    TextButton.icon(
-                      onPressed: onChangePrice,
-                      icon: Icon(Icons.price_change_outlined, size: 14.sp),
-                      label: Text(
-                        'change_price'.tr(),
-                        style: context.text.labelSmall,
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 2.w),
-                        minimumSize: Size(0, 24.h),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ),
-                  ],
 
                   SizedBox(height: 4.h),
 

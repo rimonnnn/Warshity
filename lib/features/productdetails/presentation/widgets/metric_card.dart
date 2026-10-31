@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:warshity/core/extensions/context_extension.dart';
 
@@ -8,18 +10,18 @@ class MetricCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.value,
-    required this.subtitle,
+    required this.subtitle, this.onChangePrice,
   });
 
   final IconData icon;
   final String title;
   final String value;
   final String subtitle;
-
+  final VoidCallback? onChangePrice;
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-
+    bool isWeb = kIsWeb;
     return Container(
       constraints: const BoxConstraints(minHeight: 124),
       padding: const EdgeInsets.all(14),
@@ -55,13 +57,22 @@ class MetricCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.text.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.text.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Spacer(),
+                    if (onChangePrice != null) ...[
+                    SizedBox(height: 2.h),
+                  IconButton(onPressed: onChangePrice, icon: Icon(Icons.edit,size: isWeb? 28 : 19.sp))
+                  ],
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(

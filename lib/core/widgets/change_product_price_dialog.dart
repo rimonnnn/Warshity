@@ -52,7 +52,7 @@ Future<void> showChangeProductPriceDialog({
                           Icon(
                             Icons.price_change_outlined,
                             color: colors.primary,
-                            size: 28,
+                            size: 40,
                           ),
                           const SizedBox(width: 12),
                           Expanded(

@@ -36,10 +36,14 @@ void main() {
       await h.pumpDialog(tester);
       await h.fillValidProductForm(tester);
       await h.tapVisible(tester, addProductSaveButton);
+      await h.waitForSnackBar(tester);
 
       expect(h.productCubit.saveCalls, 0);
       expect(h.productCubit.submittedProduct, isNull);
-      expect(find.text('Please select a category'), findsOneWidget);
+      expect(
+        find.text('Please select a category', skipOffstage: false),
+        findsOneWidget,
+      );
       await h.flushSnackBar(tester);
     });
   });
