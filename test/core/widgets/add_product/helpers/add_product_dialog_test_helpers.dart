@@ -266,8 +266,15 @@ class AddProductDialogTestHarness {
     await tester.pumpAndSettle();
   }
 
+  /// Waits for the AnimatedSnackBar overlay's 400 ms entrance animation.
+  Future<void> waitForSnackBar(WidgetTester tester) async {
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+  }
+
+  /// The package keeps each snack bar visible for 8 seconds by default.
   Future<void> flushSnackBar(WidgetTester tester) async {
-    await tester.pump(const Duration(seconds: 5));
+    await tester.pump(const Duration(seconds: 9));
     await tester.pumpAndSettle();
   }
 

@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -71,20 +70,7 @@ class MetricCard extends StatelessWidget {
                     Spacer(),
                     if (onChangePrice != null) ...[
                     SizedBox(height: 2.h),
-                    TextButton.icon(
-                      onPressed: onChangePrice,
-                      icon: Icon(Icons.price_change_outlined, size: isWeb? 28 : 18.sp),
-                      label: Text(
-                        'change_price'.tr(),
-                        style: context.text.bodyMedium,
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 2.w),
-                        minimumSize: Size(0, 24.h),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ),
+                  IconButton(onPressed: onChangePrice, icon: Icon(Icons.edit,size: isWeb? 28 : 19.sp))
                   ],
                   ],
                 ),
