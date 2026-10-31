@@ -1,13 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warshity/core/di/injection.dart';
 import 'package:warshity/core/helper/transition_helper.dart';
 import 'package:warshity/core/routing/app_routes.dart';
-import 'package:warshity/features/clients_details/presentation/pages/all_client_invoices.dart';
-import 'package:warshity/features/clients_details/presentation/screens/customerdetails_screen.dart';
 import 'package:warshity/features/add_invoices/presentation/screens/add_invoice.dart';
 import 'package:warshity/features/auth/access_password/presentation/screens/access_pass_screen.dart';
 import 'package:warshity/features/auth/cubit/auth_cubit.dart';
@@ -16,6 +14,8 @@ import 'package:warshity/features/auth/forget_password/presentation/screens/forg
 import 'package:warshity/features/auth/login/presentation/screens/login_screen.dart';
 import 'package:warshity/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:warshity/features/check_invoice/presentation/screens/check_invoice.dart';
+import 'package:warshity/features/clients_details/presentation/pages/all_client_invoices.dart';
+import 'package:warshity/features/clients_details/presentation/screens/customerdetails_screen.dart';
 import 'package:warshity/features/invoices/data/models/invoice_model.dart';
 import 'package:warshity/features/invoices/presentation/pages/invoice_pages.dart';
 import 'package:warshity/features/main/presentation/screens/main_screen.dart';
@@ -71,7 +71,11 @@ class RouterGeneratorConfig {
     }
   }
 
+  static final GlobalKey<NavigatorState> rootNavigatorKey =
+      GlobalKey<NavigatorState>();
+
   static GoRouter goRouter = GoRouter(
+    navigatorKey: rootNavigatorKey,
     // Both platforms start on Splash: it is the single place where the app
     // waits for Firebase to restore (or deny) the persisted session.
     initialLocation: AppRoutes.splashScreen,

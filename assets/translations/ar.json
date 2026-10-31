@@ -669,7 +669,14 @@
   "shared_accounts_coming_soon_title": "هذه الميزة قريبًا",
   "shared_accounts_coming_soon_description": "نعمل حاليًا على تجهيز الحسابات المشتركة حتى تتمكن من التعاون في إدارة بيانات متجرك مع الأشخاص الذين تثق بهم. ستكون الميزة متاحة في تحديث قادم.",
   "shared_accounts_coming_soon_badge": "قريبًا",
-  "close": "إغلاق"
+  "close": "إغلاق",
+  
+    "title": "تحديث جديد متاح",
+    "description": "يتوفر إصدار جديد من مسيطر.",
+    "latest_version": "الإصدار الجديد: {}",
+    "whats_new": "أهم التعديلات:",
+    "later": "لاحقًا",
+    "update_now": "تحديث الآن"
 
 }
 

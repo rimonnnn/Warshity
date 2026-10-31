@@ -80,6 +80,8 @@ dependencies:
   mockito: ^5.6.4
   build_runner: ^2.15.1
   cached_network_image: ^3.4.1
+  package_info_plus: ^10.2.2
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
@@ -150,3 +152,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+dependency_overrides:
+  image: 4.10.2

@@ -663,7 +663,13 @@
   "shared_accounts_coming_soon_title": "This feature is coming soon",
   "shared_accounts_coming_soon_description": "We're putting the finishing touches on shared accounts so you can collaborate on your store data with the people you trust. It will be available in a future update.",
   "shared_accounts_coming_soon_badge": "Coming Soon",
-  "close": "Close"
+  "close": "Close",
+   "title": "Update Available",
+    "description": "A new version of Masiter is available.",
+    "latest_version": "Latest version: {}",
+    "whats_new": "What's new:",
+    "later": "Later",
+    "update_now": "Update Now"
  
 }
 
